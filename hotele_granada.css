@@ -58,7 +58,7 @@
             border: none;
             padding: 0 60px 0 60px;
             color: white;
-            background: rgba(82, 196, 26, 1);
+            background: rgb(250, 182, 13);
             font-size: 18px;
             font-weight: 700;
             cursor: pointer;
@@ -70,7 +70,7 @@
         
         .primary-concept-button:hover,
         a:hover.primary-concept-button {
-            background: rgba(82, 196, 26, .8);
+            background: rgba(250, 182, 13, .8);
             color: #fff;
         
         }
