@@ -71,7 +71,7 @@ const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
 };
 
 const options = {
-  offset: 15 // percentage of the window
+  offset: 5 // percentage of the window
 };
 
 const animation = new AnimateOnScroll(options);
