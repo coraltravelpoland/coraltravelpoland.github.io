@@ -88,6 +88,9 @@
     margin-bottom: 8px;
     filter: saturate(0) opacity(0.5);
   }
+
+  .slick-current .fkdDlb{filter:none}
+
   .fkdDlb:hover{filter:none}
   .fJCInn {
     color: rgb(0, 147, 208);
@@ -108,7 +111,7 @@
     gap: 0px;
   }
   
- 
+  .DHrFn .hotel-showcase-inner a:hover,
   :where(.css-1goufg3) a:hover {
     filter: none;
   }
@@ -118,3 +121,7 @@
     position: relative;
   }
   
+
+  .bKkiT > div {
+    padding: 4px 8px;
+    border-radius: 4px;}
