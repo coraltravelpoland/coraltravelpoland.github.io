@@ -1,8 +1,7 @@
 var swiper = new Swiper(".swiper", {
     effect: "coverflow",
-    grabCursor: true,
+    loop: true,
     centeredSlides: true,
-    slidesPerView: "auto",
     coverflowEffect: {
         rotate: 0,
         stretch: 0,
@@ -10,16 +9,6 @@ var swiper = new Swiper(".swiper", {
         modifier: 2,
         slideShadows: true
     },
-    keyboard: {
-        enabled: true
-    },
-    mousewheel: {
-        thresholdDelta: 70
-    },
-    spaceBetween: 50,
-    loop: true,
-    roundLengths: true,
-    loopAdditionalSlides: 30,
     pagination: {
         el: ".swiper-pagination",
         clickable: true
