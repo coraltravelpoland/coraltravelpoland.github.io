@@ -1,4 +1,9 @@
 var swiper = new Swiper(".swiper", {
+    loop: true,
+    speed: 1000,
+    autoplay: {
+        delay: 3000,
+    },
     effect: "coverflow",
     initialSlide: 2,
     grabCursor: true,
@@ -8,17 +13,13 @@ var swiper = new Swiper(".swiper", {
         rotate: 0,
         stretch: 0,
         depth: 90,
-        modifier: 2,
+        modifier: 1,
         slideShadows: true
     },
     keyboard: {
         enabled: true
     },
-    mousewheel: {
-        thresholdDelta: 70
-    },
     spaceBetween: 50,
-    loop: true,
     roundLengths: true,
     loopAdditionalSlides: 30,
     pagination: {
