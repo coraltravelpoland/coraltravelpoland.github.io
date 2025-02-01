@@ -18,6 +18,8 @@ var swiper = new Swiper(".swiper", {
     },
     spaceBetween: 50,
     loop: true,
+    roundLengths: true,
+    loopAdditionalSlides: 30,
     pagination: {
         el: ".swiper-pagination",
         clickable: true
