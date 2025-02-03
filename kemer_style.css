@@ -43,10 +43,10 @@
     }
     
     .swiper-slide {
-      width: 300px;
-      height: 400px;
+      width: 400px;
+      height: 500px;
       box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
-      filter: blur(1px);
+      filter: blur(0.5px);
       border-radius: 8px;
       display: flex;
       flex-direction: column;
