@@ -194,10 +194,16 @@ html,body{
     width:100%;height:100%;min-height:990px;overflow:hidden
   }
 
+  .kemer_opis{
+    width: 100%;background: rgba(255, 255, 255, 0.30);border-radius: 8px;backdrop-filter: blur(5px);-webkit-backdrop-filter: blur(5px);padding: 2em 1.5em;margin: 3em 3em;
+  }
+
   @media screen and (max-width: 600px) {
 
     .hero_slider{
         width:100%;height:100%;min-height:330px;overflow:hidden
       }
-
+      .kemer_opis{
+        width: unset;
+      }
   }
