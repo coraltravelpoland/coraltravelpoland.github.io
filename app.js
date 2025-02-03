@@ -31,8 +31,8 @@ var swiper = new Swiper(".swiper-odkryj", {
 
 const swiper_text = new Swiper(".swiper-txt", {
     loop: true, 
-    slidesPerView: 1,
-    allowTouchMove: false,
+    slidesPerView: "auto",
+    allowTouchMove: false
 });
 
 const swiper_main = new Swiper('.swiper-img', {
