@@ -47,6 +47,6 @@ navigation: {
     prevEl: ".swiper-button-prev",
 },
 thumbs: {                           //add
-    swiper: swiper-txt,            //add
+    swiper: swiper_text,            //add
 },                                  //add
 })
