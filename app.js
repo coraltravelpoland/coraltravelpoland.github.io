@@ -19,7 +19,7 @@ var swiper = new Swiper(".swiper-odkryj", {
     autoplay: {
         delay: 3000,
     },
-    initialSlide: 2,
+    initialSlide: 0,
     slideToClickedSlide: true,
     pagination: {
       el: ".swiper-pagination",
