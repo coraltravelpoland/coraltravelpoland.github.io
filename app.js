@@ -41,14 +41,14 @@ const swiper_main = new Swiper('.swiper-img', {
 loop: true,   
 slidesPerView: 1,                      
 pagination: {
-    el: '.swiper-pagination',
+    el: '.swiper-pagination2',
 },                  
 navigation: {                       
     nextEl: ".swiper-button-next",
     prevEl: ".swiper-button-prev",
 },
 thumbs: {                           //add
-    swiper: swiper_text,            //add
+    //swiper: swiper_text            //add
 }                 
 }
 
