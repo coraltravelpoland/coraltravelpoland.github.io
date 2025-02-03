@@ -13,9 +13,6 @@ var swiper = new Swiper(".swiper", {
     keyboard: {
       enabled: true
     },
-    mousewheel: {
-      thresholdDelta: 70
-    },
     spaceBetween: 10,
     loop: true,
     speed: 1000,
