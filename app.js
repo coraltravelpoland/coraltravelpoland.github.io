@@ -2,7 +2,7 @@ var swiper = new Swiper(".swiper-odkryj", {
     effect: "coverflow",
     grabCursor: true,
     centeredSlides: true,
-    slidesPerView: 5,
+    slidesPerView: "auto",
     coverflowEffect: {
       rotate: 0,
       stretch: 0,
@@ -31,7 +31,7 @@ var swiper = new Swiper(".swiper-odkryj", {
 
 const swiper_text = new Swiper(".swiper-txt", {
     loop: true, 
-    slidesPerView: "auto",
+    slidesPerView: "1",
     centeredSlides: true,
     loopAdditionalSlides: 2
 });
