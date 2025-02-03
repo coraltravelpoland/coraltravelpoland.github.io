@@ -25,7 +25,7 @@
   
   
   
-    section {
+    section#odkryj {
       position: relative;
       width: 100%;
       min-height: 50vh;
@@ -146,4 +146,69 @@
     }
   
   
+  .swiper-button-prev, .swiper-button-next {
+  position: absolute;
+  left: 10px;
+  bottom: 30px;
+  border: 2px solid var(--bs-secondary);
+  border-radius: 4px;
+  padding: 18px;
+  margin: 0;
+  width: 10px !important;
+  height: 10px;
+  color: #156280;
+  font-weight: bold;
+  font-size: 18px;
+  top: unset;
+  right: unset;
+}
+
+.swiper-button-prev:hover, .swiper-button-next:hover {
+  color: #fff;
+  background-color: #156280;
+  border-color: #156280;
+}
+
+.swiper-button-next {
+  left: 35px;
+}
+
+.swiper-button-next:after, .swiper-button-prev:after {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+
+.swiper-button-prev, .swiper-button-next {
+    position: absolute;
+    left: 10px;
+    bottom: 30px;
+    border: 2px solid #156280;
+    border-radius: 4px;
+    padding: 18px;
+    margin: 0;
+    width: 10px !important;
+    height: 10px;
+    color: #156280;
+    font-weight: bold;
+    font-size: 18px;
+    top: unset;
+    right: unset;
+  }
+  
+  .swiper-button-prev:hover, .swiper-button-next:hover {
+    color: #fff;
+    background-color: #156280;
+    border-color: #156280;
+  }
+  
+  .swiper-button-next {
+    left: 35px;
+  }
+  
+  .swiper-button-next:after, .swiper-button-prev:after {
+    font-size: 18px;
+    font-weight: 900;
+  }
   
