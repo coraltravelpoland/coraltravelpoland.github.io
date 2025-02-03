@@ -30,16 +30,13 @@ var swiper = new Swiper(".swiper-odkryj", {
 
 
 const swiper_text = new Swiper(".swiper-txt", {
-    loop: true, 
+    loop: false, 
     slidesPerView: 1,
-    centeredSlides: true,
-    loopAddBlankSlides: true,
-    loopAdditionalSlides: 2,
     allowTouchMove: false
 });
 
 const swiper_main = new Swiper('.swiper-img', {
-loop: true,   
+loop: false,   
 slidesPerView: 1,                      
 pagination: {
     el: '.swiper-pagination2',
