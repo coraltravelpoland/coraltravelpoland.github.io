@@ -26,4 +26,27 @@ var swiper = new Swiper(".swiper", {
       clickable: true
     }
   });
-  
+
+
+
+const swiper_text = new Swiper(".swiper-txt", {
+    loop: true, 
+    slidesPerView: 1,
+    allowTouchMove: false,
+})
+const swiper_main = new Swiper('.swiper-img', {
+loop: true,                         
+autoplay: {                         
+    delay: 2000,  
+},
+pagination: {
+    el: '.swiper-pagination',
+},                  
+navigation: {                       
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+},
+thumbs: {                           //add
+    swiper: swiper-txt,            //add
+},                                  //add
+})
