@@ -156,7 +156,7 @@ html,body{
 .swiper-button-prev, .swiper-button-next {
     position: absolute;
     left: 10px;
-    bottom: 30px;
+    bottom: 0px;
     border: 2px solid #156280;
     border-radius: 4px;
     padding: 18px;
