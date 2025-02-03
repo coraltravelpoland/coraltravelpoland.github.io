@@ -2,7 +2,7 @@ var swiper = new Swiper(".swiper-odkryj", {
     effect: "coverflow",
     grabCursor: true,
     centeredSlides: true,
-    slidesPerView: "auto",
+    slidesPerView: 5,
     coverflowEffect: {
       rotate: 0,
       stretch: 0,
@@ -31,14 +31,15 @@ var swiper = new Swiper(".swiper-odkryj", {
 
 const swiper_text = new Swiper(".swiper-txt", {
     loop: true, 
-    slidesPerView: "auto",
+    slidesPerView: 1,
     centeredSlides: true,
     loopAdditionalSlides: 2,
     allowTouchMove: false
 });
 
 const swiper_main = new Swiper('.swiper-img', {
-loop: true,                         
+loop: true,   
+slidesPerView: 1,                      
 pagination: {
     el: '.swiper-pagination',
 },                  
