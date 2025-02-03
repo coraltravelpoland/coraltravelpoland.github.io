@@ -1,3 +1,8 @@
+
+html,body{
+    overflow-x: hidden;
+}
+
 #header-row {
     background-color: #fff !important; /* Black background color */
     position: fixed; /* Make it stick/fixed */
