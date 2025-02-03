@@ -33,7 +33,8 @@ const swiper_text = new Swiper(".swiper-txt", {
     loop: true, 
     slidesPerView: "1",
     centeredSlides: true,
-    loopAdditionalSlides: 2
+    loopAdditionalSlides: 2,
+    allowTouchMove: false
 });
 
 const swiper_main = new Swiper('.swiper-img', {
