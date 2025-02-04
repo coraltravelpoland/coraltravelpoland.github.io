@@ -243,6 +243,12 @@ html,body{
 }
 
 
+.kemer-okazje h1{text-align: center;color: #005f8f;margin: 2em 0 .5em 0;}
+.kemer-okazje p{
+    text-align: center;color: #005f8f;font-size: 20px;margin: 0em 0 3em 0
+}
+
+
   @media screen and (max-width: 600px) {
 
     .hero_slider{
@@ -258,7 +264,8 @@ html,body{
         font-size: 60px;
     }
     .jhQeTJ,.jdENRs {
-        padding:2em;
+        padding:0 2em 2em;
+        margin-top:0;
     }
         
     .kemer-title{
@@ -273,6 +280,13 @@ html,body{
     .kemer_wycieczki h1{
         padding-right: 4em;
     }
-
+    .kemer-okazje h1{text-align: center;color: #005f8f;margin: 1em 0 .5em 0;}
+    .kemer-okazje p{
+        text-align: center;
+        color: #005f8f;
+        font-size: 20px;
+        margin: 0em 0 1em 0;
+        line-height: 140%;
+    }
 
   }
