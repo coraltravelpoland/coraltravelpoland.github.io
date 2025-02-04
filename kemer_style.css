@@ -267,7 +267,7 @@ html,body{
         margin-bottom: 1em;
     }
     .pani-plaza{
-        width: 200px;
+        max-width: 200px;
     }
 
     .kemer-wycieczki h1{
