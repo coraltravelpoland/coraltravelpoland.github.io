@@ -234,6 +234,14 @@ html,body{
     font-family: Barlow, sans-serif;font-size: 118px;color: #edecec;font-style: italic;margin: 30px 0px;
 }
 
+.kemer-title{
+    font-size: 42px;color: #333;margin: 0px 0 16px;font-weight: bold;
+}
+
+.pani-plaza{
+    width: 360px;position:absolute; bottom:0
+}
+
   @media screen and (max-width: 600px) {
 
     .hero_slider{
@@ -251,4 +259,13 @@ html,body{
     .jhQeTJ,.jdENRs {
         padding:2em;
     }
+    
+.kemer-title{
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 1em;
+}
+.pani-plaza{{
+    width: 200px;
+}
   }
