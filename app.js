@@ -71,4 +71,6 @@ function czytajWiecej(event) {
 
 
 
-AOS.init();
+  window.addEventListener('load', () => {
+    aos.init();
+});
