@@ -52,11 +52,10 @@ thumbs: {                           //add
 
 );
 
-
-function czytajWiecej() {
-    var dots = document.getElementById("dots");
-    var moreText = document.getElementById("more");
-    var btnText = document.getElementById("myBtn");
+function czytajWiecej(event) {
+    var dots = event.target.previousElementSibling.querySelector(".dots");
+    var moreText = event.target.previousElementSibling.querySelector(".more");
+    var btnText = event.target;
   
     if (dots.style.display === "none") {
       dots.style.display = "inline";
@@ -68,5 +67,8 @@ function czytajWiecej() {
       moreText.style.display = "inline";
     }
   }
+
+
+
 
 AOS.init();
