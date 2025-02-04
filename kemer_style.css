@@ -242,6 +242,7 @@ html,body{
     width: 360px;position:absolute; bottom:0
 }
 
+
   @media screen and (max-width: 600px) {
 
     .hero_slider{
@@ -268,4 +269,10 @@ html,body{
 .pani-plaza{{
     width: 200px;
 }
+
+.kemer-wycieczki h1{
+    max-width:50%
+}
+
+
   }
