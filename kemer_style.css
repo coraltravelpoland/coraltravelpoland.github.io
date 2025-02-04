@@ -33,12 +33,13 @@ html,body{
     padding: 15px 60px;
     border-style: none;
     margin:5em 0;
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 .kemer_hotels_btn:hover{
     background: #ee762d;
     opacity: 0.8;
+    text-decoration: underline;
 }
 
   .fLSRNY {
