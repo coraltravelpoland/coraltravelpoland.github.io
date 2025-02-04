@@ -71,6 +71,6 @@ function czytajWiecej(event) {
 
 
 
-  window.addEventListener('load', () => {
-    aos.init();
+  $(window).on("scroll", function () {
+    AOS.init();
 });
