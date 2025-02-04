@@ -15,6 +15,7 @@ var swiper = new Swiper(".swiper-odkryj", {
     },
     spaceBetween: 10,
     loop: true,
+    cssMode:true,
     speed: 1000,
     autoplay: {
         delay: 3000,
