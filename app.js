@@ -51,3 +51,5 @@ thumbs: {                           //add
 }
 
 );
+
+AOS.init();
