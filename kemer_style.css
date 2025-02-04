@@ -26,7 +26,8 @@ html,body{
   }
 
 .kemer_hotels_btn{
-    font-size: 17px;font-weight: bold;background: #ee762d;padding: 15px 60px;border-style: none;margin:5em 0
+    color: #fff;font-size: 17px;font-weight: bold;background: #ee762d;padding: 15px 60px;border-style: none;margin:5em 0;
+
 }
 
 .kemer_hotels_btn:hover{
