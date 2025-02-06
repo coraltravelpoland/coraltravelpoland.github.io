@@ -79,11 +79,15 @@
 
 
 
+
 <script>
-	function scrollParent() {
-		window.parent.postMessage('scrollToElement', '*');
-	}
-</script>
+    const scrollButton = document.getElementById('SR7_5_1-15-17');
+
+    scrollButton.addEventListener('click', () => {
+      window.parent.postMessage('scrollToElement', '*');
+    });
+  </script>
+
 
 		</body>
 	</html>
