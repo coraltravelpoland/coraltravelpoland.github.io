@@ -204,12 +204,9 @@
                 "version": "6.7.25",
                 "actions": [
                     {
-                        "a": "menu",
+                        "a": "callback",
                         "evt": "click",
-                        "http": "keep",
-                        "target": "_self",
-                        "flw": "follow",
-                        "anchor": "#odkryj_kemer",
+                        "target": "window.parent.parent.scrollTo(0,200)",
                         "src": [
                             17
                         ]
