@@ -266,7 +266,7 @@ a.anchor {
   visibility: hidden;
 }
 
-.cta_btn{
+a.cta_btn{
   margin: 0 auto;
   position: absolute;
   z-index: 999;
@@ -281,10 +281,17 @@ a.anchor {
   text-align: center;
   justify-content: center;
   font-size: 18px;
+  color: #fff !important;
+  text-decoration: none;
+  border:0
 }
 
   @media screen and (max-width: 600px) {
-
+    a.cta_btn{
+      padding: 10px 20px;
+      bottom: 10%;
+      
+    }
     .hero_slider{
         width:100%;height:100%;min-height:330px;overflow:hidden
       }
