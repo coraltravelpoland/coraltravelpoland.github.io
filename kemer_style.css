@@ -260,7 +260,7 @@ html,body{
 a.anchor {
   display: block;
   position: relative;
-  top: -250px;
+  top: -137px;
   visibility: hidden;
 }
 
@@ -312,5 +312,7 @@ section#odkryj .swiper-slide {
     width: 350px;
     height: 400px;
 }
+
+a.anchor {  top: -137px;}
 
   }
