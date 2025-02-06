@@ -274,7 +274,7 @@ a.cta_btn{
   right: 0;
   max-width: 350px;
   bottom: 30%;
-  background: rgb(232, 78, 15);
+  background: rgba(232, 78, 15,1);
   border-radius: 50px;
   /*! text-transform: uppercase; */
   padding: 20px 20px;
@@ -285,12 +285,14 @@ a.cta_btn{
   text-decoration: none;
   border:0
 }
-
+a:hover.cta_btn{
+  background: rgba(232, 78, 15,.8);
+}
   @media screen and (max-width: 600px) {
     a.cta_btn{
       padding: 10px 20px;
       bottom: 10%;
-      
+
     }
     .hero_slider{
         width:100%;height:100%;min-height:330px;overflow:hidden
