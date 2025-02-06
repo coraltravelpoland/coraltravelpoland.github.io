@@ -291,7 +291,7 @@ a:hover.cta_btn{
   @media screen and (max-width: 600px) {
     a.cta_btn{
       padding: 10px 20px;
-      bottom: 10%;
+      top: calc(200px + 10%);
 
     }
     .hero_slider{
