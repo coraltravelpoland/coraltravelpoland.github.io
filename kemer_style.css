@@ -273,7 +273,7 @@ a.cta_btn{
   left: 0;
   right: 0;
   max-width: 350px;
-  bottom: 30%;
+  top: calc(200px + 40%);
   background: rgba(232, 78, 15,1);
   border-radius: 50px;
   /*! text-transform: uppercase; */
