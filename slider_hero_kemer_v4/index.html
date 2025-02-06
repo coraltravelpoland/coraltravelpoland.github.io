@@ -67,12 +67,10 @@
 
 
 				<script>
-					const scrollButton = document.getElementById('SR7_5_1-15-17');
-				
-					scrollButton.addEventListener('click', () => {
-					  window.parent.postMessage('scrollToElement', '*');
-					});
-				  </script>
+					function scrollParent() {
+						window.parent.postMessage('scrollToElement', '*');
+					}
+				</script>
 
 				<script>
 					SR7.PMH ??={}; SR7.PMH["SR7_5_1"] = {cn:100,state:false,fn: function() { if (_tpt!==undefined && _tpt.prepareModuleHeight !== undefined) {  _tpt.prepareModuleHeight({id:"SR7_5_1",el:[999,999,999,999,400],type:'standard',shdw:'0',gh:[999,999,999,999,400],gw:[1240,1240,1240,1240,480],vpt:['-100px&#039;,&#039;-100px&#039;,&#039;-100px&#039;,&#039;-100px&#039;,&#039;-100px'],size:{fullWidth:true, fullHeight:false},mh:'0',onh:0,onw:0,bg:{color:'{"orig":"transparent","type":"solid","string":"transparent"}'}});   SR7.PMH["SR7_5_1"].state=true;} else if(SR7.PMH["SR7_5_1"].cn-->0)	setTimeout( SR7.PMH["SR7_5_1"].fn,19);}};SR7.PMH["SR7_5_1" ].fn();
