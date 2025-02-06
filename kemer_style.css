@@ -266,6 +266,23 @@ a.anchor {
   visibility: hidden;
 }
 
+.cta_btn{
+  margin: 0 auto;
+  position: absolute;
+  z-index: 999;
+  left: 0;
+  right: 0;
+  max-width: 350px;
+  bottom: 30%;
+  background: rgb(232, 78, 15);
+  border-radius: 50px;
+  /*! text-transform: uppercase; */
+  padding: 20px 20px;
+  text-align: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
   @media screen and (max-width: 600px) {
 
     .hero_slider{
@@ -285,7 +302,7 @@ a.anchor {
         margin-top:0;
     }
     .efJKxc{background: rgb(239, 251, 255);}
-            
+
     .kemer-title{
         font-size: 28px;
         font-weight: 700;
