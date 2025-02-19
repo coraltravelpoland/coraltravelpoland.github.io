@@ -1,5 +1,4 @@
-const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
-
+  const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
   const windowTop = offset * window.innerHeight / 100;
   const windowBottom = window.innerHeight - windowTop;
   const windowLeft = 0;
@@ -7,14 +6,9 @@ const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
 
   this.start = element => {
     window.requestAnimationFrame(() => {
-
       element.style.animationDelay = element.dataset.animationDelay;
       element.style.animationDuration = element.dataset.animationDuration;
-
-
       element.classList.add(element.dataset.animation);
-
-
       element.dataset.animated = "true";
     });
   };
@@ -31,7 +25,6 @@ const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
     const elementLeft = elementRect.left;
     const elementRight = elementRect.right;
 
-
     return (
       elementTop <= windowBottom &&
       elementBottom >= windowTop &&
@@ -40,18 +33,15 @@ const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
 
   };
 
-
   this.verifyElementsInViewport = (els = elements) => {
     for (let i = 0, len = els.length; i < len; i++) {
       if (els[i].dataset.animated) continue;
-
       this.inViewport(els[i]) && this.start(els[i]);
     }
   };
 
   this.getElements = () =>
   document.querySelectorAll("[data-animation]:not([data-animated])");
-
   this.update = () => {
     elements = this.getElements();
     elements && this.verifyElementsInViewport(elements);
