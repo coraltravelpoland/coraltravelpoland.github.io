@@ -1,8 +1,13 @@
 /* CALLPAGE mobile */
 @include media-breakpoint-down(tablet) {
-#callpage.cp-callpage [data-brand-color~="background"] {
+#callpage.cp-callpage [data-brand-color~="background"],
+#callpage > div.cp-button-section.cp-callpage__button > div.cp-widget-button > div
+{
     background-color: #fff !important;
   }
+
+  #callpage .cp-widget-button__inner{box-shadow: 0 0 0 0 !important;}
+#callpage > div.cp-button-section.cp-callpage__button > div.cp-widget-button > div
 }
 
 
