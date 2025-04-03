@@ -1,3 +1,11 @@
+/* CALLPAGE mobile */
+@include media-breakpoint-down(tablet) {
+#callpage.cp-callpage [data-brand-color~="background"] {
+    background-color: #fff !important;
+  }
+}
+
+
 /* custom top menu */
 /*
     .WCJRC .where-to-buy{
