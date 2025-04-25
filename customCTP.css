@@ -242,6 +242,53 @@ width: auto;
 }
 
 
+@media screen and (max-width: 567px) { 
+
+    .efJKxc,.trkCh{
+        background: #ffffff;
+        padding: 0;
+    }
+    .htDGW{
+        padding: 20px;
+    }
+    
+     
+    .heading-bottom .heading-tabs div.heading-tab.active {
+        background: rgb(0, 147, 208) !important;
+        
+    }
+    
+    .heading-bottom .heading-tabs div.heading-tab:hover{
+        background: rgb(0, 147, 208) !important;
+        color: #fff;
+    }   
+    
+    .comPo {
+      flex-direction: row-reverse;
+      margin: 8px 0px 16px;
+      
+    }
+    .comPo .heading-top{
+        min-width: 220px;
+        width: auto;
+    }
+    
+    .fRZwaW{
+        margin: 8px;
+        width: auto;
+    }
+        
+        .swiper-button-next::after, .swiper-button-prev::after{            font-size:12px; font-weight: bold;        }
+        .swiper-pagination-bullet-active{background:#EE7442;}
+        .swiper-button-next, .swiper-button-prev{width: 20px;          height: 20px;}
+        .swiper-button-next{right: -12px;}
+        .swiper-button-prev{left: -12px;}       
+        
+        
+
+}
+
+
 /*     desktop   
  */
 @media screen and (min-width: 767px) { 
@@ -294,4 +341,36 @@ html, body {overflow-x:hidden}
 
 
 
+/* CSS-for-widgets-desktop */
+.jBbdSp {
+    background: rgb(255, 255, 255); !important
+}
+.jBbdSp .heading-left .heading-tabs div.heading-tab.active {
+    background: rgb(0, 147, 208);
+}
+.jBbdSp .heading-left .heading-tabs div.heading-tab:hover {
+    background: rgb(0, 147, 208);
+    color: rgb(255, 255, 255);
+}
+.jBbdSp .heading-left {
+    gap: 0px;
+}
+.heading-tabs {
+    gap: 10px;
+}
+
+/* CSS-for-custom-text-desktop */
+.custom-text-style-1 {
+    text-align: left;
+}
+.custom-text-style-1 h2 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.custom-text-style-1 p {
+    font-size: 1em;
+    color: gray;
+    margin: 5px 0;
+}
 }
