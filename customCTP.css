@@ -24,8 +24,8 @@ transform: translateY(-50%);
 z-index: 2;
 color: #333 !important;}
   
-.swiper-button-next{right: -50px;}
-.swiper-button-prev{left: -50px;} 
+.swiper-button-next{right: -50px !important;}
+.swiper-button-prev{left: -50px !important;} 
     
     
 
