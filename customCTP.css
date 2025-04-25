@@ -2,6 +2,248 @@
 a{text-decoration: none;}
 #section-row-4.row{--bs-gutter-x:0 !important;}
 
+
+.swiper-button-next::after, .swiper-button-prev::after{            font-size:18px;        }
+.swiper-pagination-bullet-active{background:#EE7442;}
+.swiper-button-next, .swiper-button-prev{
+    
+width: 50px;
+height: 50px;
+box-shadow: rgba(0, 0, 0, 0.08) 0px 6px 16px, rgba(0, 0, 0, 0.12) 0px 3px 6px -4px, rgba(0, 0, 0, 0.05) 0px 9px 28px 8px;
+background:        rgb(255, 255, 255);
+border-radius:        50%;
+cursor: pointer;
+display: flex;
+-moz-box-align: center;
+align-items: center;
+-moz-box-pack: center;
+justify-content: center;
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+z-index: 2;
+color: #333;}
+  
+.swiper-button-next{right: -50px;}
+.swiper-button-prev{left: -50px;} 
+    
+    
+
+   html, body {
+      overflow-x:hidden 
+    } 
+.hRgeQM{background: #fff !important}
+.basic-menu.horizontal .basic-menu-item .menu-item-label{
+  padding-left: 0;
+  
+  border-radius: 8px;
+  padding: 0px 16px;
+  margin-right: 0px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+.basic-menu.horizontal .basic-menu-item .menu-item-label:hover{
+  background: rgba(120, 171, 220,.1);  
+}    
+
+   .submenu .menu-item-label:hover
+   {
+  background: rgba(253, 206, 134,0) !important;  
+}    
+
+.basic-menu.horizontal .submenu{
+    min-width: 300px;
+}
+
+.basic-menu-item:has(.menu-item-label):has(.submenu) .menu-item-label::after{
+    content: url("https://b2ccdn.coraltravel.pl/content/nav_arrow_down.svg");
+    margin-left: 8px;
+}
+
+.submenu .menu-item-label::after{
+    content: none !important;
+    margin-left: inherit;
+}
+
+.kiUziT {padding: 0px 5px;}
+
+
+.brKGwz .navigations-container .navigations .slick-dots li .dot,
+.isigOm .slick-dots li .dot {
+    width: 15px;
+    height: 25px;
+    border-radius: 15px;
+    background: rgb(0, 119, 177);
+    
+}
+
+  .brKGwz .navigations-container .navigations .slick-dots li .dot {
+  border: 3px solid rgb(255, 255, 255);
+ }
+
+.isigOm .slick-dots li{
+    width: auto !important;
+    height: auto !important;
+}
+
+.isigOm .navigations .slick-dots{
+gap: 5px;
+}
+
+.brKGwz .navigations-container{
+bottom: 20px;
+}
+
+.eUxvVk,
+.hYKDFy .wrapper,
+.brKGwz .carouselContainer .ant-carousel .slick-slider .slick-list{
+    border-radius: 16px;
+}
+
+.jLnPBy .quicksearch-packagetour-search-button{
+    border-radius: 8px;
+}
+
+
+    .trkCh{
+background: #ffffff;
+padding: 0;
+    }
+    .htDGW{
+padding: 20px;
+    }
+    
+     
+    .heading-bottom .heading-tabs div.heading-tab.active {
+background: rgb(0, 147, 208) !important;
+
+    }
+    
+    .heading-bottom .heading-tabs div.heading-tab:hover{
+    background: rgb(0, 147, 208) !important;
+    color: #fff;
+    }   
+    
+    .comPo {
+      flex-direction: row-reverse;
+      margin: 8px 0px 16px;
+      
+    }
+    .comPo .heading-top{
+min-width: 220px;
+width: auto;
+    }
+    
+    
+    
+    
+    .bs5.container {
+      text-align: center;
+      max-width: 1480px !important;}
+    .beach-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.beach-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+.image-overlay.red{background-color: #F47A63; /* red color */}
+
+.image-overlay.turquise{background-color: #00A9C6; /* turquise color */}
+.image-overlay.orange_dark{background-color: #ff7b29; /* Orange dark color */}
+.image-overlay.orange{background-color: #FAB60B; /* Orange color */}
+.image-overlay.green {background-color: #af81b8;}    
+
+.image-clip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    clip-path: circle(45% at 74% 69%);
+    transition: clip-path 0.5s ease;
+}
+    
+     .image-clip.last-minute {
+    clip-path:circle(60% at 50% 74%);
+    
+}
+     .box:hover .image-clip,
+      .image-container:hover .image-clip {
+    /*clip-path: circle(150% at center);*/
+    cursor: pointer;
+}
+
+    
+    
+    .bs5 h2, .bs5 h4{z-index:99;}
+
+
+    .cwwLHB .placeholder{
+    background-color: transparent !important;
+    cursor: pointer !important;
+    }      
+    
+    a{text-decoration: none;}
+
+
+    
+    .image-container img {border-radius: 8px;}
+    
+    .stretched-link::after {z-index: 999;}
+
+    
+    .swiper-kierunki .swiper-slide{position:relative;}
+    .swiper-kierunki .swiper-slide h2{
+          position: absolute;
+          color: #fff;
+          left: 10px;
+          top: 10px;
+          font-size: 18px;
+          text-transform: uppercase;
+          font-weight: 700;
+    }
+    .swiper-kierunki .swiper-slide p{
+          position: absolute;
+          top: 30px;
+          left: 10px;
+          color: #fff;
+          font-size: 14px;
+          text-align: left;
+          line-height: 120%;
+        
+    }
+    .swiper-kierunki .swiper-slide img{border-radius: 12px;}
+      .swiper-pagination-clickable .swiper-pagination-bullet {
+    cursor: pointer;
+    background: rgb(51, 194, 255);
+}
+
+.swiper-pagination-bullet-active {
+    background: #EE7442 !important;
+}
+#section-row-9{
+    display:none;
+}
+
+
+/*     desktop   
+ */
 @media screen and (min-width: 767px) { 
 
 html, body {overflow-x:hidden} 
