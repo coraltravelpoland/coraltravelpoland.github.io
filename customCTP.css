@@ -1,3 +1,55 @@
 /* BS5 reset */
 a{text-decoration: none;}
 #section-row-4.row{--bs-gutter-x:0 !important;}
+
+@media screen and (min-width: 767px) { 
+
+html, body {overflow-x:hidden} 
+        
+
+.kiUziT {padding: 0px 5px;}
+
+
+.brKGwz .navigations-container .navigations .slick-dots li .dot,
+.isigOm .slick-dots li .dot {
+    width: 15px;
+    height: 25px;
+    border-radius: 15px;
+    background: rgb(0, 119, 177);
+}
+
+  .brKGwz .navigations-container .navigations .slick-dots li .dot {border: 3px solid rgb(255, 255, 255); }
+
+.isigOm .slick-dots li{width: auto !important;height: auto !important;}
+
+.isigOm .navigations .slick-dots{gap: 5px;}
+
+.brKGwz .navigations-container{bottom: 20px;}
+
+.eUxvVk,
+.hYKDFy .wrapper,
+.brKGwz .carouselContainer .ant-carousel .slick-slider .slick-list{border-radius: 16px;}
+
+.jLnPBy .quicksearch-packagetour-search-button{border-radius: 8px;}
+
+
+
+.trkCh{background: #ffffff;padding: 0;}
+.htDGW{padding: 20px;}
+
+
+.heading-bottom .heading-tabs div.heading-tab.active {background: rgb(0, 147, 208) !important;}
+.heading-bottom .heading-tabs div.heading-tab:hover{background: rgb(0, 147, 208) !important;color: #fff;}   
+
+.comPo {flex-direction: row-reverse;margin: 8px 0px 16px;}
+.comPo .heading-top{min-width: 220px;width: auto;}
+
+.image-container img {min-height: 315px; }
+
+.gQCxxL {padding: 0;}
+.gQCxxL .hotel-showcase-inner {border-radius: 18px; padding: 0;}
+.layout-container-limit {padding: 0px 40px;}
+
+
+
+}
