@@ -2,6 +2,11 @@
 a{text-decoration: none;}
 #section-row-4.row{--bs-gutter-x:0 !important;}
 
+.egLSsd{
+    margin: 8px 16px;
+    padding:0;
+}
+
 
 .swiper-button-next::after, .swiper-button-prev::after{            font-size:18px !important;        }
 .swiper-pagination-bullet-active{background:#EE7442;}
@@ -175,7 +180,7 @@ width: auto;
     width: 100%;
     height: 100%;
     background-color: transparent;
-    clip-path: circle(45% at 74% 69%);
+    clip-path: circle(40% at 75% 70%);
     transition: clip-path 0.5s ease;
 }
     
