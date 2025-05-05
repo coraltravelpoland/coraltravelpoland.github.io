@@ -129,12 +129,12 @@ background: rgb(0, 147, 208) !important;
     color: #fff;
     }   
     
-    .comPo {
+    .gjbArq {
       flex-direction: row-reverse;
       margin: 8px 0px 16px;
       
     }
-    .comPo .heading-top{
+    .gjbArq .heading-top{
 min-width: 220px;
 width: auto;
     }
