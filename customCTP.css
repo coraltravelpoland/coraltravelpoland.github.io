@@ -130,8 +130,8 @@ background: rgb(0, 147, 208) !important;
     }   
     
     .gjbArq {
-      flex-direction: row-reverse;
-      margin: 8px 0px 16px;
+      flex-direction: row-reverse !important;
+      margin: 8px 0px 16px !important;
       
     }
     .gjbArq .heading-top{
