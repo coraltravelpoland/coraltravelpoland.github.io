@@ -312,7 +312,7 @@ html, body {overflow-x:hidden}
     background: rgb(0, 119, 177);
 }
 
-#section-row-4 .gqgNiq .swiper-pagination .swiper-pagination-bullet .dot {
+.cMJeTw .swiper-pagination .swiper-pagination-bullet .dot {
     display: block;
     width: 17px !important;
     height: 25px !important;
@@ -322,7 +322,7 @@ html, body {overflow-x:hidden}
     opacity: 0.5 !important;
      border:  2px solid rgba(255, 255, 255, 0.8);  
 }
-#section-row-4 .gqgNiq .swiper-pagination .swiper-pagination-bullet {
+.cMJeTw .swiper-pagination .swiper-pagination-bullet {
     width: 15px !important;
     height: 10px !important;
 }
