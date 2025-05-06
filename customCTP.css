@@ -312,7 +312,7 @@ html, body {overflow-x:hidden}
     background: rgb(0, 119, 177);
 }
 
-.gqgNiq .swiper-pagination .swiper-pagination-bullet .dot {
+#swiper-wrapper-225826145476e30b .gqgNiq .swiper-pagination .swiper-pagination-bullet .dot {
     display: block;
     opacity: 0.3;
     width: 15px !important;
@@ -324,7 +324,7 @@ html, body {overflow-x:hidden}
       opacity: 0.4 !important;
       /* border:  2px solid rgba(255, 255, 255, 0.8);     */
 }
-.gqgNiq .swiper-pagination .swiper-pagination-bullet {
+#swiper-wrapper-225826145476e30b .gqgNiq .swiper-pagination .swiper-pagination-bullet {
     width: 15px !important;
     height: 10px !important;
 }
