@@ -314,13 +314,15 @@ html, body {overflow-x:hidden}
 
 .gqgNiq .swiper-pagination .swiper-pagination-bullet .dot {
     display: block;
-    width: 18px !important;
+    opacity: 0.3;
+    width: 15px !important;
     height: 25px !important;
     cursor: pointer;
     border-radius: 15px !important;
-    background: rgb(0, 119, 177) !important;
-    opacity: 0.4 !important;
-    border:  2px solid rgba(255, 255, 255, 0.8);    
+    background:
+    rgb(0, 119, 177) !important;
+      opacity: 0.4 !important;
+      /* border:  2px solid rgba(255, 255, 255, 0.8);     */
 }
 .gqgNiq .swiper-pagination .swiper-pagination-bullet {
     width: 15px !important;
