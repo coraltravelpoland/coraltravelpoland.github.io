@@ -314,15 +314,13 @@ html, body {overflow-x:hidden}
 
 #section-row-4 .gqgNiq .swiper-pagination .swiper-pagination-bullet .dot {
     display: block;
-    opacity: 0.3;
-    width: 15px !important;
+    width: 17px !important;
     height: 25px !important;
     cursor: pointer;
     border-radius: 15px !important;
-    background:
-    rgb(0, 119, 177) !important;
-      opacity: 0.4 !important;
-      /* border:  2px solid rgba(255, 255, 255, 0.8);     */
+    background:rgb(0, 119, 177) !important;
+    opacity: 0.5 !important;
+     border:  2px solid rgba(255, 255, 255, 0.8);  
 }
 #section-row-4 .gqgNiq .swiper-pagination .swiper-pagination-bullet {
     width: 15px !important;
