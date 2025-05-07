@@ -289,7 +289,7 @@ width: auto;
         .swiper-button-next{right: -12px;}
         .swiper-button-prev{left: -12px;}       
         
-.bs5 h4 {
+.bs5 .slide_card h4 {
             max-width: 200px;
             text-align: left;}
 
