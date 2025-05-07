@@ -129,11 +129,7 @@ background: rgb(0, 147, 208) !important;
     color: #fff;
     }   
     
-    .gjbArq {
-      flex-direction: row-reverse !important;
-      margin: 8px 0px 16px !important;
-      
-    }
+
     .gjbArq .heading-top{
 min-width: 220px;
 width: auto;
@@ -314,6 +310,11 @@ html, body {overflow-x:hidden}
 
 .kiUziT {padding: 0px 5px;}
 
+.gjbArq {
+    flex-direction: row-reverse !important;
+    margin: 8px 0px 16px !important;
+    
+  }
 
 .brKGwz .navigations-container .navigations .slick-dots li .dot,
 .isigOm .slick-dots li .dot {
