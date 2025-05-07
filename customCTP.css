@@ -289,8 +289,19 @@ width: auto;
         .swiper-button-next{right: -12px;}
         .swiper-button-prev{left: -12px;}       
         
-        
+        .bs5 h2, .bs5 h4 {
+            max-width: 200px;
+            text-align: left;}
 
+        .swiper-kierunki .swiper-slide h2 {
+                left: 5%;
+                top: 5%;
+        }
+
+        .swiper-kierunki .swiper-slide p {
+                    top: 15%;
+                    left: 5%;
+        }
 }
 
 
