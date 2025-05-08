@@ -230,7 +230,9 @@ width: auto;
         
     }
     .swiper-kierunki .swiper-slide img{border-radius: 12px;}
-      .swiper-pagination-clickable .swiper-pagination-bullet {
+    .swiper-polecane .swiper-slide a{}
+
+    .swiper-pagination-clickable .swiper-pagination-bullet {
     cursor: pointer;
     background: rgb(51, 194, 255);
 }
