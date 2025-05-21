@@ -8,6 +8,11 @@ a {
     text-decoration: none;
 }
 
+.ebcIxa a {
+  text-decoration: unset !important;
+}
+
+
 #section-row-4.row {
     --bs-gutter-x: 0 !important;
 }
@@ -64,7 +69,7 @@ a {
 
 
 .DynamicLayout_dynamicLayout__bjaGu.DynamicLayout_Homepage__tlBoD,
-.hRgeQM,
+.hRgeQM,.gMAkCD
 .ggZJys {
     background: #fff !important
 }
