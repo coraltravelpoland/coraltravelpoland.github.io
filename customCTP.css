@@ -334,13 +334,15 @@ a {
         color: #fff;
     }
 
-    .comPo {
+    .comPo, .fnxzcT {
         flex-direction: row-reverse;
         margin: 8px 0px 16px;
 
     }
 
-    .comPo .heading-top {
+    .comPo .heading-top,
+    .fnxzcT .heading-top
+     {
         min-width: 220px;
         width: auto;
     }
