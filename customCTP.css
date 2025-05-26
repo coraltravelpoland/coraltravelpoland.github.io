@@ -334,13 +334,13 @@ a {
         color: #fff;
     }
 
-    .comPo {
+    .fnxzcT {
         flex-direction: row-reverse;
         margin: 8px 0px 16px;
 
     }
 
-    .comPo .heading-top {
+    .fnxzcT .heading-top {
         min-width: 220px;
         width: auto;
     }
@@ -489,12 +489,12 @@ a {
         color: #fff !important;
     }
 
-    .comPo {
+    .fnxzcT {
         flex-direction: row-reverse;
         margin: 8px 0px 16px;
     }
 
-    .comPo .heading-top {
+    .fnxzcT .heading-top {
         min-width: 220px;
         width: auto;
     }
