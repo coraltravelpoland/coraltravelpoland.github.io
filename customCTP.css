@@ -12,6 +12,13 @@ a {
   text-decoration: unset !important;
 }
 
+.DynamicLayout_dynamicLayout__bjaGu.DynamicLayout_Homepage__tlBoD,
+.hRgeQM,.gMAkCD,.eLQaNa,
+.ggZJys,.iNhGfB {
+    background: #fff !important
+}
+
+
 
 #section-row-4.row {
     --bs-gutter-x: 0 !important;
@@ -68,11 +75,6 @@ a {
 
 
 
-.DynamicLayout_dynamicLayout__bjaGu.DynamicLayout_Homepage__tlBoD,
-.hRgeQM,.gMAkCD,.eLQaNa,
-.ggZJys {
-    background: #fff !important
-}
 
 
 /* Nav bg - start */
@@ -406,7 +408,7 @@ a {
         padding: 0px 5px;
     }
 
-    .gjbArq, .jNYRpO {
+    .gjbArq, .jNYRpO, .fRtHdP {
         flex-direction: row-reverse !important;
         margin: 8px 0px 16px !important;
 
