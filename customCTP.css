@@ -392,8 +392,11 @@ a {
     }
 
 
+/* ukryj callpage na mobile */
+#callpageWrapper{
+    visibility: hidden;
+    display: none;
 }
-
 
 /*    only desktop   
  */
