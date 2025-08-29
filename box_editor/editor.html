@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edytor Boksów - Wersja Finalna</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    
+    <!-- Wspólny plik CSS dla edytora i eksportu -->
+    <link rel="stylesheet" href="boxes-common.css">
+    
+</head>
+<body>
+    <!-- CZĘŚĆ 2: STRUKTURA HTML -->
+    <div class="container my-5">
+        <h1 class="mb-4">Edytor Boksów</h1>
+        
+
+        
+        <!-- Kontener na boksy -->
+        <div class="box-container">
+            <div class="masonry-grid" id="boxesContainer"></div>
+            
+            <div class="mobile-swiper-container">
+                <div class="swiper" id="mobileSwiper">
+                    <div class="swiper-wrapper" id="swiperWrapper"></div>
+                    <div class="swiper-pagination"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Przyciski akcji -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h5>Zarządzanie</h5>
+                <button class="btn btn-info mb-2" onclick="addNewBox()">➕ Dodaj boks</button>
+                <button class="btn btn-warning mb-2" onclick="duplicateBox()">📋 Duplikuj ostatni</button>
+                <button class="btn btn-danger mb-2" onclick="clearAll()">🗑️ Wyczyść wszystko</button>
+                <button class="btn btn-secondary mb-2" onclick="resetToDefault()">🔄 Przywróć domyślne</button>
+            </div>
+            <div class="col-md-6">
+                <h5>Eksport</h5>
+                <button class="btn btn-primary mb-2" onclick="exportCode()">📄 Generuj HTML ze Swiperem</button>
+                <button class="btn btn-success mb-2" onclick="copyCode()">📋 Kopiuj HTML</button>
+                <button class="btn btn-dark mb-2" onclick="downloadCSS()">🎨 Pobierz CSS</button>
+                <button class="btn btn-warning mb-2" onclick="exportJSON()">💾 Eksportuj JSON</button>
+                <button class="btn btn-info mb-2" onclick="downloadJSON()">⬇️ Pobierz JSON</button>
+                <input type="file" id="jsonFile" accept=".json" style="display:none;" onchange="loadJSON(event)">
+                <button class="btn btn-secondary mb-2" onclick="document.getElementById('jsonFile').click()">📂 Wczytaj JSON</button>
+            </div>
+        </div>
+        
+        <!-- Sekcje eksportu -->
+        <div id="exportedCode" class="mt-3" style="display:none;">
+            <h5>Kod HTML do CMS (z obsługą Swipera dla mobile):</h5>
+            <pre style="background:#f8f9fa; padding:15px; border-radius:5px; max-height:400px; overflow-y:auto;"></pre>
+            <button class="btn btn-sm btn-secondary" onclick="copyCode()">Kopiuj kod</button>
+        </div>
+        
+        <div id="jsonOutput" class="mt-3" style="display:none;">
+            <h5>Dane JSON:</h5>
+            <pre style="background:#f8f9fa; padding:15px; border-radius:5px; max-height:400px; overflow-y:auto;"></pre>
+            <button class="btn btn-sm btn-secondary" onclick="copyJSON()">Kopiuj JSON</button>
+        </div>
+        
+        <!-- Status -->
+        <div class="alert alert-success mt-3">
+            💾 Automatyczny zapis w localStorage | Ostatni: <span id="lastSave">-</span>
+        </div>
+    </div>
+
+    <!-- CZĘŚĆ 3: MODAL EDYCJI -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edytuj boks</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Lewa kolumna -->
+                        <div class="col-md-6">
+                            <h6>📝 Treść</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Tytuł</label>
+                                <input type="text" class="form-control" id="editTitle">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Podtytuł</label>
+                                <input type="text" class="form-control" id="editSubtitle">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">URL obrazka (bazowy, bez rozszerzenia)</label>
+                                <input type="text" class="form-control" id="editImage" placeholder="np. https://domena.pl/obrazek">
+                                <small class="text-muted">Podaj URL bez rozszerzenia - system automatycznie doda .avif, .webp i .jpg</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Link (opcjonalnie)</label>
+                                <input type="text" class="form-control" id="editLink">
+                            </div>
+                            
+                            <hr>
+                            
+                            <h6>🔤 Rozmiary czcionek</h6>
+                            <div class="mb-3">
+                                <label>Tytuł: <span id="titleSizeVal">28</span>px</label>
+                                <input type="range" class="form-control" id="editTitleSize" 
+                                       min="16" max="48" step="1" value="28" 
+                                       oninput="document.getElementById('titleSizeVal').textContent=this.value">
+                            </div>
+                            <div class="mb-3">
+                                <label>Podtytuł: <span id="subtitleSizeVal">18</span>px</label>
+                                <input type="range" class="form-control" id="editSubtitleSize" 
+                                       min="12" max="32" step="1" value="18" 
+                                       oninput="document.getElementById('subtitleSizeVal').textContent=this.value">
+                            </div>
+                        </div>
+                        
+                        <!-- Prawa kolumna -->
+                        <div class="col-md-6">
+                            <h6>🎨 Wygląd</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Układ</label>
+                                <div class="d-flex gap-2">
+                                    <div class="layout-option" onclick="selectLayout('standard')">
+                                        <div style="font-size:24px">⬜</div>
+                                        <small>Standard</small>
+                                    </div>
+                                    <div class="layout-option" onclick="selectLayout('double')">
+                                        <div style="font-size:24px">⬛</div>
+                                        <small>Podwójny</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Szerokość</label>
+                                <select class="form-select" id="editWidth">
+                                    <option value="3">25% (3 kolumny)</option>
+                                    <option value="4">33% (4 kolumny)</option>
+                                    <option value="6">50% (6 kolumn)</option>
+                                    <option value="8">66% (8 kolumn)</option>
+                                    <option value="12">100% (12 kolumn)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Tło boksa</label>
+                                
+                                <!-- Typ tła -->
+                                <div class="btn-group w-100 mb-2" role="group">
+                                    <button type="button" class="btn btn-outline-primary" id="bgTypeSolid" onclick="setBgType('solid')">Jednolity kolor</button>
+                                    <button type="button" class="btn btn-outline-primary" id="bgTypeGradient" onclick="setBgType('gradient')">Gradient</button>
+                                </div>
+                                
+                                <!-- Jednolity kolor -->
+                                <div id="solidColorSection">
+                                    <div>
+                                        <span class="color-preset" style="background:#FF8A80;" onclick="setColor('#FF8A80')"></span>
+                                        <span class="color-preset" style="background:#17A2B8;" onclick="setColor('#17A2B8')"></span>
+                                        <span class="color-preset" style="background:#FFC107;" onclick="setColor('#FFC107')"></span>
+                                        <span class="color-preset" style="background:#DC3545;" onclick="setColor('#DC3545')"></span>
+                                        <span class="color-preset" style="background:#9ACD32;" onclick="setColor('#9ACD32')"></span>
+                                        <span class="color-preset" style="background:#007BFF;" onclick="setColor('#007BFF')"></span>
+                                        <span class="color-preset" style="background:#6C757D;" onclick="setColor('#6C757D')"></span>
+                                        <span class="color-preset" style="background:#28A745;" onclick="setColor('#28A745')"></span>
+                                    </div>
+                                    
+                                    <div class="input-group mt-2">
+                                        <input type="color" class="form-control" id="editColor" style="max-width: 80px;">
+                                        <input type="text" class="form-control" id="editColorHex" placeholder="#FF0000" maxlength="7" 
+                                               oninput="updateColorFromHex(this.value)">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="validateAndSetHex()">Ustaw</button>
+                                    </div>
+                                    <small class="text-muted">Wybierz kolor lub wprowadź kod HEX</small>
+                                </div>
+                                
+                                <!-- Gradient -->
+                                <div id="gradientSection" style="display:none;">
+                                    <label class="form-label">Kolor startowy</label>
+                                    <input type="color" class="form-control mb-2" id="editGradientStart" value="#FF8A80">
+                                    
+                                    <label class="form-label">Kolor końcowy</label>
+                                    <input type="color" class="form-control mb-2" id="editGradientEnd" value="#FFC107">
+                                    
+                                    <label class="form-label">Kierunek: <span id="gradientAngleVal">135</span>°</label>
+                                    <input type="range" class="form-control" id="editGradientAngle" 
+                                           min="0" max="360" step="15" value="135" 
+                                           oninput="document.getElementById('gradientAngleVal').textContent=this.value">
+                                           
+                                    <div class="mt-2">
+                                        <small>Presety gradientów:</small>
+                                        <div>
+                                            <span class="color-preset" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);" 
+                                                  onclick="setGradientPreset('#667eea', '#764ba2', 135)" title="Fioletowy"></span>
+                                            <span class="color-preset" style="background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%);" 
+                                                  onclick="setGradientPreset('#f093fb', '#f5576c', 135)" title="Różowy"></span>
+                                            <span class="color-preset" style="background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);" 
+                                                  onclick="setGradientPreset('#4facfe', '#00f2fe', 135)" title="Niebieski"></span>
+                                            <span class="color-preset" style="background:linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);" 
+                                                  onclick="setGradientPreset('#43e97b', '#38f9d7', 135)" title="Zielony"></span>
+                                            <span class="color-preset" style="background:linear-gradient(135deg, #fa709a 0%, #fee140 100%);" 
+                                                  onclick="setGradientPreset('#fa709a', '#fee140', 135)" title="Słoneczny"></span>
+                                            <span class="color-preset" style="background:linear-gradient(135deg, #30cfd0 0%, #330867 100%);" 
+                                                  onclick="setGradientPreset('#30cfd0', '#330867', 135)" title="Kosmiczny"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <strong>Różnice między układami:</strong>
+                                <br>📐 <strong>Standard</strong>: Normalny rozmiar, tekst po lewej, obrazek z maską kołową
+                                <br>⬛ <strong>Podwójny</strong>: PODWÓJNA WYSOKOŚĆ, tekst po lewej, większy obrazek z większą maską
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="deleteBox()">🗑️ Usuń</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEdit()">💾 Zapisz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CZĘŚĆ 4: SKRYPTY -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <script>
+        // CZĘŚĆ 5: DANE I KONFIGURACJA
+        
+        // Domyślne boksy
+        const defaultBoxes = [
+        {id: 1,      title: "Last Minute",      subtitle: "złap okazję na wakacje",      image: "https://b2ccdn.coraltravel.pl/content/HOMEPAGE/polecane/m/opt/last-minute-opt-832x1160.webp",      "bgType": "solid",      "color": "#f47a63",      "gradientStart": "",      "gradientEnd": "",      "gradientAngle": 135,      "width": "4",      "layout": "double",      "titleSize": 32,      "subtitleSize": 22,      "link": ""    },
+        {id: 2,      title: "Back to school",      subtitle: "urlop przed szkołą",      image: "https://b2ccdn.coraltravel.pl/content/HOMEPAGE/polecane/m/back_to_school@2x",      "bgType": "solid",      "color": "#00a9c6",      "gradientStart": "",      "gradientEnd": "",      "gradientAngle": 135,      "width": "4",      "layout": "standard",      "titleSize": 32,      "subtitleSize": 22,      "link": "https://www.coraltravel.pl/sl/homepage-back-to-school"    },    
+        {id: 3,      title: "Długi weekend",      subtitle: "listopad pod palmami",      image: "https://b2ccdn.coraltravel.pl/content/HOMEPAGE/polecane/m/opt/dlugi-weekend-opt-832x548",      "bgType": "solid",      "color": "#fab60b",      "gradientStart": "#fa709a",      "gradientEnd": "#fee140",      "gradientAngle": 135,      "width": "4",      "layout": "standard",      "titleSize": 32,      "subtitleSize": 20,      "link": "https://coraltravel.pl/sl/homepage-listopad"    },    
+        {id: 4,      title: "Święta i Sylwester", subtitle: "na rajskiej plaży",      image: "https://b2ccdn.coraltravel.pl/content/content/homepage/hity/desktop/410x275_HITY_swieta.webp",      "bgType": "solid",      "color": "#ce2420",      "gradientStart": "",      "gradientEnd": "",      "gradientAngle": 135,      "width": "4",      "layout": "standard",      "titleSize": 32,      "subtitleSize": 22,      "link": ""    },    
+        {id: 6,      title: "Ferie",      subtitle: "czas na relaks",      image: "https://b2ccdn.coraltravel.pl/content/content/homepage/hity/desktop/410x275_Ferie.webp",      "bgType": "solid",      "color": "#bdd01b",      "gradientStart": "#667eea",      "gradientEnd": "#764ba2",      "gradientAngle": 135,      "width": "4",      "layout": "standard",      "titleSize": 32,      "subtitleSize": 22,      "link": ""    }
+
+        ];
+        
+        // Zmienne globalne
+        let boxes = [];
+        let currentEditId = null;
+        let currentLayout = 'standard';
+        let currentBgType = 'solid';
+        let draggedElement = null;
+        let mobileSwiper = null;
+        
+        // CZĘŚĆ 6: FUNKCJE GŁÓWNE
+        
+        // Renderowanie boksów
+        function renderBoxes() {
+            // Desktop
+            const container = document.getElementById('boxesContainer');
+            container.innerHTML = boxes.map(box => {
+                const doubleHeight = box.layout === 'double' ? 'double-height' : '';
+                const linkStart = box.link ? `<a href="${box.link}" target="_blank" style="text-decoration:none;">` : '';
+                const linkEnd = box.link ? '</a>' : '';
+                const maskClass = box.layout === 'standard' ? 'circle-mask-standard' : 
+                                 box.layout === 'double' ? 'circle-mask-double' : '';
+                
+                // Przygotuj styl tła
+                const bgStyle = box.bgType === 'gradient' 
+                    ? `background: linear-gradient(${box.gradientAngle}deg, ${box.gradientStart} 0%, ${box.gradientEnd} 100%);`
+                    : `background: ${box.color};`;
+                
+                // Generuj element picture
+                const pictureElement = generatePictureElement(box.image, box.title);
+                
+                return `
+                <div class="box-item ${doubleHeight}" data-id="${box.id}" data-width="${box.width}" draggable="true">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="edit-controls">
+                        <button class="edit-btn" onclick="openEdit(${box.id})">✏️</button>
+                    </div>
+                    ${linkStart}
+                    <div class="box-card layout-${box.layout}" style="${bgStyle}">
+                        <div class="box-content">
+                            <h2 class="box-title" style="font-size:${box.titleSize}px">${box.title}</h2>
+                            <p class="box-subtitle" style="font-size:${box.subtitleSize}px">${box.subtitle}</p>
+                        </div>
+                        <div class="box-image-container ${maskClass}">
+                            ${pictureElement}
+                        </div>
+                    </div>
+                    ${linkEnd}
+                </div>`;
+            }).join('');
+            
+            // Mobile Swiper
+            const swiperContainer = document.getElementById('swiperWrapper');
+            swiperContainer.innerHTML = boxes.map(box => {
+                const linkStart = box.link ? `<a href="${box.link}" target="_blank" style="text-decoration:none;">` : '';
+                const linkEnd = box.link ? '</a>' : '';
+                const maskClass = box.layout === 'standard' ? 'circle-mask-standard' : 
+                                 box.layout === 'double' ? 'circle-mask-double' : '';
+                
+                // Przygotuj styl tła
+                const bgStyle = box.bgType === 'gradient' 
+                    ? `background: linear-gradient(${box.gradientAngle}deg, ${box.gradientStart} 0%, ${box.gradientEnd} 100%);`
+                    : `background: ${box.color};`;
+                
+                // Generuj element picture
+                const pictureElement = generatePictureElement(box.image, box.title);
+                
+                return `
+                <div class="swiper-slide">
+                    ${linkStart}
+                    <div class="box-card layout-${box.layout}" style="${bgStyle}">
+                        <div class="box-content">
+                            <h2 class="box-title" style="font-size:${box.titleSize}px">${box.title}</h2>
+                            <p class="box-subtitle" style="font-size:${box.subtitleSize}px">${box.subtitle}</p>
+                        </div>
+                        <div class="box-image-container ${maskClass}">
+                            ${pictureElement}
+                        </div>
+                    </div>
+                    ${linkEnd}
+                </div>`;
+            }).join('');
+            
+            initDragAndDrop();
+            if (window.innerWidth <= 575) initSwiper();
+        }
+        
+        // Funkcja generująca element picture
+        function generatePictureElement(imageUrl, altText) {
+            // Sprawdź czy URL już ma rozszerzenie
+            const hasExtension = /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(imageUrl);
+            
+            if (hasExtension) {
+                // Jeśli ma rozszerzenie, użyj prostego img
+                return `<img src="${imageUrl}" alt="${altText}" class="box-image" loading="lazy" decoding="async">`;
+            }
+            
+            // Jeśli nie ma rozszerzenia, generuj picture z różnymi formatami
+            return `
+                <picture>
+                    <source type="image/avif" srcset="${imageUrl}.avif">
+                    <source type="image/webp" srcset="${imageUrl}.webp">
+                    <img src="${imageUrl}.jpg" alt="${altText}" class="box-image" loading="lazy" decoding="async">
+                </picture>`;
+        }
+        
+        // CZĘŚĆ 7: DRAG & DROP
+        
+        function initDragAndDrop() {
+            document.querySelectorAll('.box-item').forEach(item => {
+                item.ondragstart = (e) => {
+                    draggedElement = item;
+                    item.classList.add('dragging');
+                };
+                
+                item.ondragend = () => {
+                    item.classList.remove('dragging');
+                    draggedElement = null;
+                    saveToLocalStorage();
+                };
+                
+                item.ondragover = (e) => {
+                    e.preventDefault();
+                    if (draggedElement && draggedElement !== item) {
+                        const rect = item.getBoundingClientRect();
+                        if (e.clientX < rect.left + rect.width / 2) {
+                            item.parentNode.insertBefore(draggedElement, item);
+                        } else {
+                            item.parentNode.insertBefore(draggedElement, item.nextSibling);
+                        }
+                        updateBoxOrder();
+                    }
+                };
+            });
+        }
+        
+        function updateBoxOrder() {
+            const newOrder = [];
+            document.querySelectorAll('.box-item').forEach(item => {
+                const box = boxes.find(b => b.id === parseInt(item.dataset.id));
+                if (box) newOrder.push(box);
+            });
+            boxes = newOrder;
+        }
+        
+        // CZĘŚĆ 8: SWIPER
+        
+        function initSwiper() {
+            if (mobileSwiper) mobileSwiper.destroy(true, true);
+            
+            mobileSwiper = new Swiper('#mobileSwiper', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: boxes.length > 1,
+                pagination: { 
+                    el: '.swiper-pagination', 
+                    clickable: true 
+                },
+                navigation: { 
+                    nextEl: '.swiper-button-next', 
+                    prevEl: '.swiper-button-prev' 
+                },
+                autoplay: { 
+                    delay: 5000,
+                    disableOnInteraction: false
+                }
+            });
+        }
+        
+        // CZĘŚĆ 9: CRUD OPERACJE
+        
+        function openEdit(id) {
+            currentEditId = id;
+            const box = boxes.find(b => b.id === id);
+            
+            document.getElementById('editTitle').value = box.title;
+            document.getElementById('editSubtitle').value = box.subtitle;
+            document.getElementById('editImage').value = box.image;
+            document.getElementById('editColor').value = box.color;
+            document.getElementById('editColorHex').value = box.color; // Ustaw też HEX
+            document.getElementById('editWidth').value = box.width;
+            document.getElementById('editLink').value = box.link || '';
+            document.getElementById('editTitleSize').value = box.titleSize;
+            document.getElementById('editSubtitleSize').value = box.subtitleSize;
+            document.getElementById('titleSizeVal').textContent = box.titleSize;
+            document.getElementById('subtitleSizeVal').textContent = box.subtitleSize;
+            
+            // Ustaw typ tła
+            currentBgType = box.bgType || 'solid';
+            setBgType(currentBgType);
+            
+            // Ustaw gradient jeśli istnieje
+            if (box.gradientStart) {
+                document.getElementById('editGradientStart').value = box.gradientStart;
+                document.getElementById('editGradientEnd').value = box.gradientEnd;
+                document.getElementById('editGradientAngle').value = box.gradientAngle || 135;
+                document.getElementById('gradientAngleVal').textContent = box.gradientAngle || 135;
+            }
+            
+            currentLayout = box.layout;
+            document.querySelectorAll('.layout-option').forEach(o => o.classList.remove('active'));
+            const layoutIndex = box.layout === 'standard' ? 0 : 1;
+            document.querySelectorAll('.layout-option')[layoutIndex].classList.add('active');
+            
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+        
+        function saveEdit() {
+            const box = boxes.find(b => b.id === currentEditId);
+            
+            box.title = document.getElementById('editTitle').value;
+            box.subtitle = document.getElementById('editSubtitle').value;
+            box.image = document.getElementById('editImage').value;
+            box.color = document.getElementById('editColor').value;
+            box.width = document.getElementById('editWidth').value;
+            box.link = document.getElementById('editLink').value;
+            box.titleSize = parseInt(document.getElementById('editTitleSize').value);
+            box.subtitleSize = parseInt(document.getElementById('editSubtitleSize').value);
+            box.layout = currentLayout;
+            box.bgType = currentBgType;
+            
+            // Zapisz gradient jeśli aktywny
+            if (currentBgType === 'gradient') {
+                box.gradientStart = document.getElementById('editGradientStart').value;
+                box.gradientEnd = document.getElementById('editGradientEnd').value;
+                box.gradientAngle = parseInt(document.getElementById('editGradientAngle').value);
+            }
+            
+            saveToLocalStorage();
+            renderBoxes();
+            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+        }
+        
+        function deleteBox() {
+            if (confirm('Czy na pewno usunąć ten boks?')) {
+                boxes = boxes.filter(b => b.id !== currentEditId);
+                saveToLocalStorage();
+                renderBoxes();
+                bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+            }
+        }
+        
+        function addNewBox() {
+            const newId = Math.max(...boxes.map(b => b.id), 0) + 1;
+            
+            boxes.push({
+                id: newId,
+                title: "Nowy boks " + newId,
+                subtitle: "Kliknij aby edytować",
+                image: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=500",
+                bgType: "solid",
+                color: "#007BFF",
+                gradientStart: "#667eea",
+                gradientEnd: "#764ba2",
+                gradientAngle: 135,
+                width: "4",
+                layout: "standard",
+                titleSize: 28,
+                subtitleSize: 18,
+                link: ""
+            });
+            
+            saveToLocalStorage();
+            renderBoxes();
+            setTimeout(() => openEdit(newId), 100);
+        }
+        
+        function duplicateBox() {
+            if (boxes.length === 0) {
+                alert('Brak boksów do duplikacji');
+                return;
+            }
+            
+            const lastBox = boxes[boxes.length - 1];
+            const newId = Math.max(...boxes.map(b => b.id), 0) + 1;
+            
+            boxes.push({
+                ...lastBox,
+                id: newId,
+                title: lastBox.title + " (kopia)"
+            });
+            
+            saveToLocalStorage();
+            renderBoxes();
+        }
+        
+        function clearAll() {
+            if (confirm('Usunąć wszystkie boksy?')) {
+                boxes = [];
+                saveToLocalStorage();
+                renderBoxes();
+            }
+        }
+        
+        function resetToDefault() {
+            if (confirm('Przywrócić domyślne boksy?')) {
+                boxes = JSON.parse(JSON.stringify(defaultBoxes));
+                saveToLocalStorage();
+                renderBoxes();
+            }
+        }
+        
+        // CZĘŚĆ 10: POMOCNICZE FUNKCJE UI
+        
+        function selectLayout(layout) {
+            currentLayout = layout;
+            document.querySelectorAll('.layout-option').forEach(o => o.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+        
+        function setColor(color) {
+            document.getElementById('editColor').value = color;
+            document.getElementById('editColorHex').value = color;
+            document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Funkcje dla obsługi HEX
+        function updateColorFromHex(hex) {
+            if (hex.match(/^#[0-9A-Fa-f]{6}$/)) {
+                document.getElementById('editColor').value = hex;
+            }
+        }
+        
+        function validateAndSetHex() {
+            const hexInput = document.getElementById('editColorHex');
+            let hex = hexInput.value.trim();
+            
+            // Dodaj # jeśli brakuje
+            if (!hex.startsWith('#')) {
+                hex = '#' + hex;
+            }
+            
+            // Walidacja HEX
+            if (hex.match(/^#[0-9A-Fa-f]{6}$/)) {
+                document.getElementById('editColor').value = hex;
+                hexInput.value = hex;
+            } else {
+                alert('Nieprawidłowy kod HEX. Użyj formatu #RRGGBB');
+            }
+        }
+        
+        // Synchronizacja color picker z HEX input
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorPicker = document.getElementById('editColor');
+            const hexInput = document.getElementById('editColorHex');
+            
+            if (colorPicker && hexInput) {
+                colorPicker.addEventListener('input', function() {
+                    hexInput.value = this.value;
+                });
+            }
+        });
+        
+        function setBgType(type) {
+            currentBgType = type;
+            
+            // Aktualizuj przyciski
+            if (type === 'solid') {
+                document.getElementById('bgTypeSolid').classList.add('btn-primary');
+                document.getElementById('bgTypeSolid').classList.remove('btn-outline-primary');
+                document.getElementById('bgTypeGradient').classList.remove('btn-primary');
+                document.getElementById('bgTypeGradient').classList.add('btn-outline-primary');
+                
+                document.getElementById('solidColorSection').style.display = 'block';
+                document.getElementById('gradientSection').style.display = 'none';
+            } else {
+                document.getElementById('bgTypeGradient').classList.add('btn-primary');
+                document.getElementById('bgTypeGradient').classList.remove('btn-outline-primary');
+                document.getElementById('bgTypeSolid').classList.remove('btn-primary');
+                document.getElementById('bgTypeSolid').classList.add('btn-outline-primary');
+                
+                document.getElementById('solidColorSection').style.display = 'none';
+                document.getElementById('gradientSection').style.display = 'block';
+            }
+        }
+        
+        function setGradientPreset(start, end, angle) {
+            document.getElementById('editGradientStart').value = start;
+            document.getElementById('editGradientEnd').value = end;
+            document.getElementById('editGradientAngle').value = angle;
+            document.getElementById('gradientAngleVal').textContent = angle;
+        }
+        
+        // CZĘŚĆ 11: LOCAL STORAGE
+        
+        function saveToLocalStorage() {
+            try {
+                const data = {
+                    boxes: boxes,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('boxEditorData', JSON.stringify(data));
+                updateSaveStatus();
+            } catch (e) {
+                console.error('Błąd zapisu:', e);
+            }
+        }
+        
+        function loadFromLocalStorage() {
+            try {
+                const data = localStorage.getItem('boxEditorData');
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    updateSaveStatus(parsed.timestamp);
+                    return parsed.boxes;
+                }
+            } catch (e) {
+                console.error('Błąd odczytu:', e);
+            }
+            return null;
+        }
+        
+        function updateSaveStatus(timestamp = null) {
+            const el = document.getElementById('lastSave');
+            if (el) {
+                const date = timestamp ? new Date(timestamp) : new Date();
+                el.textContent = date.toLocaleTimeString('pl-PL');
+            }
+        }
+        
+        // CZĘŚĆ 12: EKSPORT/IMPORT - ULEPSZONA WERSJA
+        
+        function exportCode() {
+            // Generuj style CSS
+            const styles = `<style>
+/* Box Container */
+.boxes-wrapper {
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+/* Desktop Grid */
+.boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(175px, auto);
+    gap: 20px;
+    grid-auto-flow: dense;
+}
+
+/* Box widths */
+.box-col-3 { grid-column: span 3; }
+.box-col-4 { grid-column: span 4; }
+.box-col-6 { grid-column: span 6; }
+.box-col-8 { grid-column: span 8; }
+.box-col-12 { grid-column: span 12; }
+
+/* Double height */
+.box-double-height { grid-row: span 2; }
+
+/* Box card */
+.box-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+    min-height: 350px;
+    transition: transform 0.3s;
+    text-decoration: none;
+}
+
+.box-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+/* Standard layout */
+.box-layout-standard .box-image-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 70%;
+    height: 105%;
+    overflow: hidden;
+    border-radius: 15px 0 0 0;
+}
+
+.box-layout-standard .box-image-wrapper.mask-standard {
+    clip-path: circle(50% at 60% 70%);
+}
+
+.box-layout-standard .box-text {
+    padding: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* Double layout */
+.box-layout-double {
+    min-height: 100%;
+}
+
+.box-layout-double .box-text {
+    padding: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.box-layout-double .box-image-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 15px 0 0 0;
+}
+
+.box-layout-double .box-image-wrapper.mask-double {
+    clip-path: circle(60% at 50% 70%);
+}
+
+/* Text styles */
+.box-title {
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0px;
+}
+
+.box-subtitle {
+    color: white;
+    margin: 0;
+}
+
+.box-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right;
+}
+
+/* Mobile Swiper */
+.mobile-swiper-wrapper {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .boxes-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .box-col-3 { grid-column: span 3; }
+    .box-col-4 { grid-column: span 6; }
+    .box-col-6 { grid-column: span 6; }
+    .box-col-8 { grid-column: span 6; }
+    .box-col-12 { grid-column: span 6; }
+}
+
+@media (max-width: 575px) {
+    .boxes-grid { display: none !important; }
+    .mobile-swiper-wrapper { display: block !important; }
+    
+    .swiper { width: 100%; padding-bottom: 50px; }
+    .swiper-slide { height: auto; }
+    .swiper-slide .box-card { height: 400px; }
+    
+    .swiper-pagination { bottom: 10px !important; }
+    
+    .swiper-button-next, .swiper-button-prev {
+        color: #fff;
+        background: rgba(0,0,0,0.5);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    
+    .swiper-button-next:after, .swiper-button-prev:after {
+        font-size: 20px;
+    }
+}
+</style>`;
+
+            // Generuj HTML dla desktop
+            const desktopHTML = boxes.map(box => {
+                const doubleHeight = box.layout === 'double' ? 'box-double-height' : '';
+                const bgStyle = box.bgType === 'gradient' 
+                    ? `background: linear-gradient(${box.gradientAngle}deg, ${box.gradientStart} 0%, ${box.gradientEnd} 100%);`
+                    : `background: ${box.color};`;
+                    
+                const linkStart = box.link ? `<a href="${box.link}" target="_blank" class="box-card box-layout-${box.layout}" style="${bgStyle}">` : `<div class="box-card box-layout-${box.layout}" style="${bgStyle}">`;
+                const linkEnd = box.link ? '</a>' : '</div>';
+                const maskClass = box.layout === 'standard' ? 'mask-standard' : 
+                                 box.layout === 'double' ? 'mask-double' : '';
+                
+                // Generuj element picture dla eksportu
+                const pictureElement = generatePictureElementForExport(box.image, box.title);
+                
+                return `    <div class="box-col-${box.width} ${doubleHeight}">
+        ${linkStart}
+            <div class="box-text">
+                <h2 class="box-title" style="font-size:${box.titleSize}px">${box.title}</h2>
+                <p class="box-subtitle" style="font-size:${box.subtitleSize}px">${box.subtitle}</p>
+            </div>
+            <div class="box-image-wrapper ${maskClass}">
+                ${pictureElement}
+            </div>
+        ${linkEnd}
+    </div>`;
+            }).join('\n');
+
+            // Generuj HTML dla mobile (Swiper)
+            const mobileHTML = boxes.map(box => {
+                const bgStyle = box.bgType === 'gradient' 
+                    ? `background: linear-gradient(${box.gradientAngle}deg, ${box.gradientStart} 0%, ${box.gradientEnd} 100%);`
+                    : `background: ${box.color};`;
+                    
+                const linkStart = box.link ? `<a href="${box.link}" target="_blank" class="box-card box-layout-${box.layout}" style="${bgStyle}">` : `<div class="box-card box-layout-${box.layout}" style="${bgStyle}">`;
+                const linkEnd = box.link ? '</a>' : '</div>';
+                const maskClass = box.layout === 'standard' ? 'mask-standard' : 
+                                 box.layout === 'double' ? 'mask-double' : '';
+                
+                // Generuj element picture dla eksportu
+                const pictureElement = generatePictureElementForExport(box.image, box.title);
+                
+                return `        <div class="swiper-slide">
+            ${linkStart}
+                <div class="box-text">
+                    <h2 class="box-title" style="font-size:${box.titleSize}px">${box.title}</h2>
+                    <p class="box-subtitle" style="font-size:${box.subtitleSize}px">${box.subtitle}</p>
+                </div>
+                <div class="box-image-wrapper ${maskClass}">
+                    ${pictureElement}
+                </div>
+            ${linkEnd}
+        </div>`;
+            }).join('\n');
+
+            // Kompletny kod HTML
+            const fullHTML = `<!-- Swiper CSS - dodaj w sekcji HEAD -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+${styles}
+
+<!-- HTML Content -->
+<div class="boxes-wrapper">
+    <!-- Desktop Grid -->
+    <div class="boxes-grid">
+${desktopHTML}
+    </div>
+    
+    <!-- Mobile Swiper -->
+    <div class="mobile-swiper-wrapper">
+        <div class="swiper" id="boxesSwiper">
+            <div class="swiper-wrapper">
+${mobileHTML}
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Swiper JS - dodaj przed końcem BODY -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"><\/script>
+<script>
+// Inicjalizacja Swipera dla mobile
+document.addEventListener('DOMContentLoaded', function() {
+    let swiperInstance = null;
+    
+    function initOrDestroySwiper() {
+        if (window.innerWidth <= 575) {
+            if (!swiperInstance) {
+                swiperInstance = new Swiper('#boxesSwiper', {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                    loop: true,
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev'
+                    },
+                    autoplay: {
+                        delay: 5000,
+                        disableOnInteraction: false
+                    }
+                });
+            }
+        } else {
+            if (swiperInstance) {
+                swiperInstance.destroy(true, true);
+                swiperInstance = null;
+            }
+        }
+    }
+    
+    // Inicjalizacja przy załadowaniu
+    initOrDestroySwiper();
+    
+    // Reinicjalizacja przy zmianie rozmiaru okna
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            initOrDestroySwiper();
+        }, 250);
+    });
+});
+<\/script>`;
+            
+            document.getElementById('exportedCode').style.display = 'block';
+            document.getElementById('exportedCode').querySelector('pre').textContent = fullHTML;
+            document.getElementById('jsonOutput').style.display = 'none';
+        }
+        
+        // Funkcja generująca element picture dla eksportu
+        function generatePictureElementForExport(imageUrl, altText) {
+            // Sprawdź czy URL już ma rozszerzenie
+            const hasExtension = /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(imageUrl);
+            
+            if (hasExtension) {
+                // Jeśli ma rozszerzenie, użyj prostego img
+                return `<img src="${imageUrl}" alt="${altText}" class="box-image" loading="lazy" decoding="async">`;
+            }
+            
+            // Jeśli nie ma rozszerzenia, generuj picture z różnymi formatami
+            const cleanAlt = altText.replace(/"/g, '&quot;');
+            return `<picture>
+                    <source type="image/avif" srcset="${imageUrl}.avif">
+                    <source type="image/webp" srcset="${imageUrl}.webp">
+                    <img src="${imageUrl}.jpg" alt="${cleanAlt}" class="box-image" loading="lazy" decoding="async">
+                </picture>`;
+        }
+        
+        // Funkcja do pobrania pliku CSS
+        function downloadCSS() {
+            const cssContent = `/* ================================
+   BOX STYLES - Plik stylów dla boksów
+   ================================ */
+
+/* --------------------------------
+   KONTENER GŁÓWNY
+   -------------------------------- */
+.boxes-wrapper {
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+}
+
+/* --------------------------------
+   DESKTOP - GRID LAYOUT
+   -------------------------------- */
+.boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(175px, auto);
+    gap: 20px;
+    grid-auto-flow: dense;
+}
+
+/* Szerokości kolumn w gridzie */
+.box-col-3 { grid-column: span 3; }
+.box-col-4 { grid-column: span 4; }
+.box-col-6 { grid-column: span 6; }
+.box-col-8 { grid-column: span 8; }
+.box-col-12 { grid-column: span 12; }
+
+/* Podwójna wysokość */
+.box-double-height { 
+    grid-row: span 2; 
+}
+
+/* --------------------------------
+   KARTA BOKSA - WSPÓLNE STYLE
+   -------------------------------- */
+.box-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+    min-height: 350px;
+    transition: transform 0.3s;
+    text-decoration: none;
+}
+
+.box-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+/* --------------------------------
+   UKŁAD STANDARD
+   -------------------------------- */
+.box-layout-standard .box-image-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 70%;
+    height: 105%;
+    overflow: hidden;
+    border-radius: 15px 0 0 0;
+}
+
+.box-layout-standard .box-image-wrapper.mask-standard {
+    clip-path: circle(50% at 60% 70%);
+}
+
+.box-layout-standard .box-text {
+    padding: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* --------------------------------
+   UKŁAD PODWÓJNY (DOUBLE)
+   -------------------------------- */
+.box-layout-double {
+    min-height: 100%;
+}
+
+.box-layout-double .box-text {
+    padding: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.box-layout-double .box-image-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 15px 0 0 0;
+}
+
+.box-layout-double .box-image-wrapper.mask-double {
+    clip-path: circle(60% at 50% 70%);
+}
+
+/* --------------------------------
+   STYLE TEKSTÓW
+   -------------------------------- */
+.box-title {
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0px;
+}
+
+.box-subtitle {
+    color: white;
+    margin: 0;
+}
+
+/* --------------------------------
+   OBRAZEK
+   -------------------------------- */
+.box-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right;
+}
+
+/* --------------------------------
+   MOBILE - SWIPER CONTAINER
+   -------------------------------- */
+.mobile-swiper-wrapper {
+    display: none;
+}
+
+/* --------------------------------
+   TABLET (768px i mniej)
+   -------------------------------- */
+@media (max-width: 768px) {
+    .boxes-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    /* Dostosowanie szerokości dla tabletu */
+    .box-col-3 { grid-column: span 3; }
+    .box-col-4 { grid-column: span 6; }
+    .box-col-6 { grid-column: span 6; }
+    .box-col-8 { grid-column: span 6; }
+    .box-col-12 { grid-column: span 6; }
+}
+
+/* --------------------------------
+   MOBILE (575px i mniej)
+   -------------------------------- */
+@media (max-width: 575px) {
+    /* Ukryj grid na mobile */
+    .boxes-grid { 
+        display: none !important; 
+    }
+    
+    /* Pokaż swiper na mobile */
+    .mobile-swiper-wrapper { 
+        display: block !important; 
+    }
+    
+    /* Swiper container */
+    .swiper { 
+        width: 100%; 
+        padding-bottom: 50px; 
+    }
+    
+    .swiper-slide { 
+        height: auto; 
+    }
+    
+    /* Wysokość karty na mobile */
+    .swiper-slide .box-card { 
+        height: 400px; 
+    }
+    
+    /* Paginacja */
+    .swiper-pagination { 
+        bottom: 10px !important; 
+    }
+    
+    /* Przyciski nawigacji */
+    .swiper-button-next, 
+    .swiper-button-prev {
+        color: #fff;
+        background: rgba(0,0,0,0.5);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    
+    .swiper-button-next:after, 
+    .swiper-button-prev:after {
+        font-size: 20px;
+    }
+}`;
+            
+            const blob = new Blob([cssContent], { type: 'text/css' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'box-styles.css';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function copyCode() {
+            const code = document.getElementById('exportedCode').querySelector('pre').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Kod HTML skopiowany!');
+            });
+        }
+        
+        function exportJSON() {
+            const data = {
+                version: "1.0",
+                date: new Date().toISOString(),
+                boxes: boxes
+            };
+            
+            const json = JSON.stringify(data, null, 2);
+            document.getElementById('jsonOutput').style.display = 'block';
+            document.getElementById('jsonOutput').querySelector('pre').textContent = json;
+            document.getElementById('exportedCode').style.display = 'none';
+        }
+        
+        function copyJSON() {
+            const json = document.getElementById('jsonOutput').querySelector('pre').textContent;
+            navigator.clipboard.writeText(json).then(() => {
+                alert('JSON skopiowany!');
+            });
+        }
+        
+        function downloadJSON() {
+            const data = {
+                version: "1.0",
+                date: new Date().toISOString(),
+                boxes: boxes
+            };
+            
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `boxes-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadJSON(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.boxes && Array.isArray(data.boxes)) {
+                            boxes = data.boxes;
+                            saveToLocalStorage();
+                            renderBoxes();
+                            alert('JSON wczytany pomyślnie!');
+                        }
+                    } catch (err) {
+                        alert('Błąd wczytywania: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+            event.target.value = '';
+        }
+        
+        // CZĘŚĆ 13: INICJALIZACJA
+        
+        // Wczytaj dane lub użyj domyślnych
+        const savedBoxes = loadFromLocalStorage();
+        boxes = savedBoxes || JSON.parse(JSON.stringify(defaultBoxes));
+        
+        // Renderuj boksy
+        renderBoxes();
+        
+        // Obsługa zmiany rozmiaru okna
+        window.addEventListener('resize', () => {
+            const isMobile = window.innerWidth <= 575;
+            
+            if (isMobile && !mobileSwiper) {
+                initSwiper();
+            } else if (!isMobile && mobileSwiper) {
+                mobileSwiper.destroy(true, true);
+                mobileSwiper = null;
+            }
+        });
+        
+        // Auto-zapis przy zamykaniu
+        window.addEventListener('beforeunload', saveToLocalStorage);
+    </script>
+</body>
+</html>
