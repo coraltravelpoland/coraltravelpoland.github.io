@@ -278,7 +278,7 @@
     
     .swiper-slide .box-card {
         height: 315px;
-        min-height: 200
+        min-height: 200px;
     }
     
     .swiper-pagination {
