@@ -911,53 +911,49 @@ ${mobileHTML}
 
 <!-- Swiper JS - dodaj przed końcem BODY -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"><\/script>
-<script>
-// Inicjalizacja Swipera dla mobile
-document.addEventListener('DOMContentLoaded', function() {
-    let swiperInstance = null;
-    
-    function initOrDestroySwiper() {
-        if (window.innerWidth <= 575) {
-            if (!swiperInstance) {
-                swiperInstance = new Swiper('#boxesSwiper', {
-                    slidesPerView: 1,
-                    spaceBetween: 20,
-                    loop: true,
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true
-                    },
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev'
-                    },
-                    autoplay: {
-                        delay: 5000,
-                        disableOnInteraction: false
-                    }
-                });
+    <script>
+        // Use IIFE to avoid global scope pollution
+        (function() {
+            // Check if Swiper is already initialized
+            if (typeof window.boxesSwiperInstance !== 'undefined' && window.boxesSwiperInstance !== null) {
+                // Destroy existing instance
+                window.boxesSwiperInstance.destroy(true, true);
             }
-        } else {
-            if (swiperInstance) {
-                swiperInstance.destroy(true, true);
-                swiperInstance = null;
-            }
-        }
-    }
-    
-    // Inicjalizacja przy załadowaniu
-    initOrDestroySwiper();
-    
-    // Reinicjalizacja przy zmianie rozmiaru okna
-    let resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            initOrDestroySwiper();
-        }, 250);
-    });
-});
-<\/script>`;
+            
+            // Initialize new Swiper instance
+            window.boxesSwiperInstance = new Swiper('.boxesSwiper', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                }
+            });
+        })();
+    </script>`;
             
             document.getElementById('exportedCode').style.display = 'block';
             document.getElementById('exportedCode').querySelector('pre').textContent = fullHTML;
