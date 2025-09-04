@@ -133,11 +133,11 @@
         "thumb": "https:\/\/b2ccdn.coraltravel.pl\/content\/KEMER\/KEMER_opt_bg.jpg",
         "aU": [],
         "imgs": [
-            {
-                "lib_id": 1228,
-                "lib": "medialibrary",
-                "src": "assets\/visit_kemer_logo-1.jpg"
-            },
+            // {
+            //     "lib_id": 1228,
+            //     "lib": "medialibrary",
+            //     "src": "assets\/visit_kemer_logo-1.jpg"
+            // },
             {
                 "lib_id": 1070,
                 "lib": "medialibrary",
