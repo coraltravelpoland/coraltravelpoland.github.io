@@ -1,0 +1,682 @@
+<style>
+    .ct-blog-slider-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    .ct-blog-slider-header {
+        text-align: left;
+        margin-bottom: 50px;
+        color: #2c3e50;
+    }
+    
+    .ct-blog-slider-header h2 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+    
+    .ct-blog-slider-header p {
+        font-size: 14px;
+        opacity: 0.9;
+        color: #6c757d;
+    }
+    
+    /* Main Content Layout */
+    .ct-blog-content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 20px;
+        align-items: stretch;
+    }
+    
+    /* Swiper Container */
+    .ct-blog-slider-section {
+        overflow: hidden;
+    
+    }
+    
+    .ct-blog-swiper-container {
+        padding: 0 10px;
+        overflow: hidden;
+    }
+    
+    .ct-blog-swiper-container .swiper-wrapper {
+        display: flex;
+        align-items: stretch;
+    }
+    
+    .ct-blog-swiper-container .swiper-slide {
+        height: auto;
+        display: flex;
+        padding: 20px 0 20px 0px;
+    }
+    
+    /* Static Blog Card Section */
+    .ct-blog-static-section {
+        display: flex;
+        align-items: stretch;
+        margin: 20px 0;
+    }
+    
+    /* Post Card Styles */
+    .ct-blog-post-link {
+        text-decoration: none !important;
+        color: inherit;
+        display: flex;
+        width: 100%;
+    }
+    
+    .ct-blog-post-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        min-height: 450px;
+    }
+    
+    .ct-blog-post-card:hover {
+        /* transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15); */
+    }
+    
+    /* Special Card for Blog Main Page */
+    .ct-blog-special-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 450px;
+        background: url('https://b2ccdn.coraltravel.pl/content/blog_coral2.webp') center/cover;
+    }
+    
+    .ct-blog-special-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%);
+        z-index: 1;
+    }
+    
+    .ct-blog-special-content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 30px;
+        color: white;
+    }
+    
+    .ct-blog-post-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(45deg, #f0f2f5, #e9ecef);
+    }
+    
+    .ct-blog-post-content {
+        padding: 25px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .ct-blog-post-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        display: -webkit-box;
+        /*-webkit-line-clamp: 2;*/
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .ct-blog-special-card .ct-blog-post-title {
+        color: white;
+        font-size: 1.8rem;
+        -webkit-line-clamp: unset;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin-bottom: 20px;
+    }
+    
+    .ct-blog-post-excerpt {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex: 1;
+    }
+    
+    .ct-blog-special-card .ct-blog-post-excerpt {
+        color: rgba(255,255,255,0.95);
+        font-size: 1.05rem;
+        -webkit-line-clamp: unset;
+        line-height: 1.6;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        margin-bottom: 25px;
+    }
+    
+    .ct-blog-post-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .ct-blog-post-date {
+        color: #868e96;
+        font-size: 0.85rem;
+    }
+    
+    .ct-blog-post-author {
+        color: #495057;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .ct-blog-read-more {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 20px;
+        background: rgba(0, 147, 208,0.1);
+        color: rgb(0, 133, 188);
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        gap: 8px;
+        margin-top: auto;
+    }
+    
+    .ct-blog-read-more:hover {
+        background: #0073a7;
+        transform: translateX(3px);
+        color: #fff;
+    }
+    
+    .ct-blog-special-card .ct-blog-read-more {
+        background: white;
+        color: #333;
+        /*padding: 10px 30px;*/
+        /*font-size: 1rem;*/
+        /*font-weight: 600;*/
+        /*text-align: center;*/
+        /*justify-content: center;*/
+        /*border-radius: 8px;*/
+        /*box-shadow: 0 4px 15px rgba(0,0,0,0.2);*/
+        /*display: inline-block;*/
+        /*width: auto;*/
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 20px;
+    
+        color: rgb(0, 133, 188);
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        gap: 8px;
+        margin-top: auto;        
+    }
+    
+    .ct-blog-special-card .ct-blog-read-more:hover {
+        /*background: #f0f0f0;*/
+        /*transform: scale(1.05);*/
+        /*box-shadow: 0 6px 20px rgba(0,0,0,0.3);*/
+        background: #0073a7;
+        transform: translateX(3px);
+        color: #fff;        
+    }
+    
+    /* Swiper Navigation */
+    .ct-blog-swiper-container .swiper-button-next,
+    .ct-blog-swiper-container .swiper-button-prev {
+        color: #667eea;
+        background: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        top:50%;
+    }
+    
+    .ct-blog-swiper-container .swiper-button-next:after,
+    .ct-blog-swiper-container .swiper-button-prev:after {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    
+    .ct-blog-swiper-container .swiper-button-next:hover,
+    .ct-blog-swiper-container .swiper-button-prev:hover {
+    
+    }
+    
+    /* Swiper Pagination */
+    .ct-blog-slider-container .swiper-pagination{
+        bottom:auto !important;
+    }
+    .ct-blog-swiper-container .swiper-pagination-bullet {
+        background: rgb(0, 147, 208);
+        opacity: 0.5;
+        width: 10px;
+        height: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .ct-blog-swiper-container .swiper-pagination-bullet-active {
+        opacity: 1;
+        width: 25px;
+        border-radius: 5px;
+    }
+    
+    /* Loading State */
+    .ct-blog-loading {
+        text-align: center;
+        color: #2c3e50;
+        font-size: 1.2rem;
+        margin-top: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .ct-blog-spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid #e9ecef;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        animation: ctBlogSpin 1s linear infinite;
+    }
+    
+    @keyframes ctBlogSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .ct-blog-content-wrapper {
+            grid-template-columns: 1fr 300px;
+        }
+    }
+    
+    @media (max-width: 1024px) {
+        .ct-blog-swiper-container .swiper-button-next,
+        .ct-blog-swiper-container .swiper-button-prev {
+            display: none;
+        }
+        
+        .ct-blog-content-wrapper {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        .ct-blog-static-section {
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .ct-blog-slider-container {
+            padding: 20px 10px;
+            margin:12px;
+        }
+        
+        .ct-blog-slider-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .ct-blog-post-content {
+            padding: 20px;
+        }
+        
+        .ct-blog-post-card {
+            min-height: 400px;
+        }
+        
+        .ct-blog-special-card .ct-blog-post-title {
+            font-size: 1.5rem;
+        }
+        
+        .ct-blog-special-card .ct-blog-post-excerpt {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+
+<div class="ct-blog-slider-container">
+    <div id="ct-blog-loading" class="ct-blog-loading">
+        <span>Ładowanie postów</span>
+        <div class="ct-blog-spinner"></div>
+    </div>
+
+    <div id="ct-blog-main-content" class="ct-blog-content-wrapper" style="display: none;">
+        <!-- Slider Section -->
+        <div class="ct-blog-slider-section">
+            <div class="ct-blog-swiper-container">
+                <div class="swiper-wrapper" id="ct-blog-swiper-wrapper">
+                    <!-- Posts will be dynamically added here -->
+                </div>
+                <!-- Navigation buttons -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <!-- Pagination -->
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+
+        <!-- Static Blog Card Section -->
+        <div class="ct-blog-static-section">
+            <a href="https://www.coraltravel.pl/blog/" target="_blank" rel="noopener noreferrer" class="ct-blog-post-link">
+                <article class="ct-blog-post-card ct-blog-special-card">
+                    <div class="ct-blog-special-content">
+                        <h2 class="ct-blog-post-title">Blog Coral Travel</h2>
+                        <p class="ct-blog-post-excerpt">
+                            Jeszcze więcej podróżniczych inspiracji czeka na Ciebie!<br>Odkryj nasze pozostałe artykuły i&nbsp;znajdź kierunek, który skradnie Twoje serce.
+                        </p>
+                        <span class="ct-blog-read-more">
+                            Zobacz wszystkie wpisy →
+                        </span>
+                    </div>
+                </article>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    (function() {
+        'use strict';
+
+        // Sprawdź czy skrypt już został załadowany
+        if (window.ctBlogSliderInitialized) {
+            console.log('CT Blog Slider już zainicjalizowany');
+            return;
+        }
+        window.ctBlogSliderInitialized = true;
+
+        // Konfiguracja
+        const CT_CONFIG = {
+            DIRECT_API_URL: 'https://www.coraltravel.pl/blog/wp-json/wp/v2/posts?tags=396',
+            POSTS_COUNT: 10,
+            TIMEOUT: 10000
+        };
+
+        // Funkcja do formatowania daty
+        function formatCTDate(dateString) {
+            try {
+                const options = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                return new Date(dateString).toLocaleDateString('pl-PL', options);
+            } catch (error) {
+                return 'Data niepoprawna';
+            }
+        }
+
+        // Funkcja do usuwania tagów HTML
+        function stripCTHtml(html) {
+            try {
+                const tmp = document.createElement('div');
+                tmp.innerHTML = html;
+                return tmp.textContent || tmp.innerText || '';
+            } catch (error) {
+                return html;
+            }
+        }
+
+        // Funkcja do escaping HTML
+        function escapeCTHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Funkcja do tworzenia opisu posta
+        function getCTPostContent(post) {
+            let content = '';
+
+            if (post.excerpt && post.excerpt.rendered) {
+                content = post.excerpt.rendered;
+            } else if (post.content && post.content.rendered) {
+                content = post.content.rendered;
+            } else if (post.title && post.title.rendered) {
+                content = `Przeczytaj więcej o: ${post.title.rendered}`;
+            } else {
+                content = 'Interesujący artykuł o podróżach. Kliknij aby przeczytać więcej!';
+            }
+
+            const cleanContent = stripCTHtml(content);
+            const truncated = cleanContent.length > 150 ?
+                cleanContent.substring(0, 150) + '...' :
+                cleanContent;
+
+            return truncated;
+        }
+
+        // Funkcja do tworzenia karty posta
+        function createCTPostCard(post) {
+            try {
+                let featuredImage = '';
+                if (post._embedded &&
+                    post._embedded['wp:featuredmedia'] &&
+                    post._embedded['wp:featuredmedia'][0] &&
+                    post._embedded['wp:featuredmedia'][0].source_url) {
+                    featuredImage = post._embedded['wp:featuredmedia'][0].source_url;
+                }
+
+                let authorName = 'Coral Travel';
+                if (post._embedded &&
+                    post._embedded.author &&
+                    post._embedded.author[0] &&
+                    post._embedded.author[0].name) {
+                    authorName = post._embedded.author[0].name;
+                }
+
+                const title = post.title && post.title.rendered ?
+                    stripCTHtml(post.title.rendered) : 'Brak tytułu';
+
+                const excerpt = getCTPostContent(post);
+                const link = post.link || '#';
+                const date = post.date || new Date().toISOString();
+
+                return `
+                        <div class="swiper-slide">
+                            <a href="${escapeCTHtml(link)}" target="_blank" rel="noopener noreferrer" class="ct-blog-post-link">
+                                <article class="ct-blog-post-card">
+                                    ${featuredImage ? 
+                                        `<img src="${escapeCTHtml(featuredImage)}" alt="${escapeCTHtml(title)}" class="ct-blog-post-image" loading="lazy" onerror="this.style.display='none'">` : 
+                                        '<div class="ct-blog-post-image"></div>'
+                                    }
+                                    <div class="ct-blog-post-content">
+                                        <h2 class="ct-blog-post-title">${escapeCTHtml(title)}</h2>
+                                        <div class="ct-blog-post-meta">
+                                            <span class="ct-blog-post-date">${formatCTDate(date)}</span>
+                                            <span class="ct-blog-post-author">by ${escapeCTHtml(authorName)}</span>
+                                        </div>
+                                        <p class="ct-blog-post-excerpt">${escapeCTHtml(excerpt)}</p>
+                                        <span class="ct-blog-read-more">
+                                            Czytaj więcej →
+                                        </span>
+                                    </div>
+                                </article>
+                            </a>
+                        </div>
+                    `;
+            } catch (error) {
+                return '';
+            }
+        }
+
+        // Funkcja z timeout dla fetch
+        function fetchCTWithTimeout(url, timeout = CT_CONFIG.TIMEOUT) {
+            return new Promise((resolve, reject) => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    reject(new Error(`Timeout po ${timeout}ms`));
+                }, timeout);
+
+                fetch(url, {
+                        signal: controller.signal,
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        clearTimeout(timeoutId);
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        clearTimeout(timeoutId);
+                        reject(error);
+                    });
+            });
+        }
+
+        // Inicjalizacja Swiper
+        let ctBlogSwiperInstance = null;
+
+        function initCTSwiper() {
+            // Zniszcz poprzednią instancję jeśli istnieje
+            if (ctBlogSwiperInstance) {
+                ctBlogSwiperInstance.destroy(true, true);
+                ctBlogSwiperInstance = null;
+            }
+
+            // Utworz nową instancję
+            ctBlogSwiperInstance = new Swiper('.ct-blog-swiper-container', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.ct-blog-swiper-container .swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.ct-blog-swiper-container .swiper-button-next',
+                    prevEl: '.ct-blog-swiper-container .swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        slidesPerView: 2,
+                        spaceBetween: 25,
+                    },
+                    1200: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+        }
+
+        // Główna funkcja do pobierania i wyświetlania postów
+        async function fetchAndDisplayCTPosts() {
+            const loading = document.getElementById('ct-blog-loading');
+            const mainContent = document.getElementById('ct-blog-main-content');
+            const swiperWrapper = document.getElementById('ct-blog-swiper-wrapper');
+
+            try {
+                const url = new URL(CT_CONFIG.DIRECT_API_URL);
+                url.searchParams.append('per_page', CT_CONFIG.POSTS_COUNT);
+                url.searchParams.append('_embed', '1');
+
+                const response = await fetchCTWithTimeout(url.toString());
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const posts = await response.json();
+
+                if (!Array.isArray(posts) || posts.length === 0) {
+                    throw new Error('Brak dostępnych postów');
+                }
+
+                // Tworzenie kart postów
+                const postsHTML = posts.map(post => createCTPostCard(post)).join('');
+
+                // Wstawienie do DOM
+                swiperWrapper.innerHTML = postsHTML;
+
+                // Ukrycie loadingu i pokazanie zawartości
+                loading.style.display = 'none';
+                mainContent.style.display = 'grid';
+
+                // Inicjalizacja Swiper po załadowaniu postów
+                setTimeout(() => {
+                    initCTSwiper();
+                }, 100);
+
+            } catch (error) {
+                console.error('Błąd podczas pobierania postów:', error);
+                loading.innerHTML = '<p>Nie udało się załadować postów. Spróbuj odświeżyć stronę.</p>';
+            }
+        }
+
+        // Sprawdzenie wsparcia przeglądarki
+        function checkCTBrowserSupport() {
+            if (!window.fetch) {
+                document.getElementById('ct-blog-loading').innerHTML =
+                    '<p>Twoja przeglądarka nie wspiera tej funkcji. Zaktualizuj przeglądarkę.</p>';
+                return false;
+            }
+            return true;
+        }
+
+        // Inicjalizacja z opóźnieniem
+        function delayedCTInit() {
+            setTimeout(() => {
+                if (checkCTBrowserSupport()) {
+                    fetchAndDisplayCTPosts();
+                }
+            }, 1000);
+        }
+
+        // Start aplikacji
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                delayedCTInit();
+            });
+        } else {
+            // DOM już załadowany
+            delayedCTInit();
+        }
+    })();
+</script>
