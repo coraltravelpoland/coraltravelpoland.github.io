@@ -19,6 +19,11 @@ a {
 }
 
 
+.hot-deals-heading{
+flex-direction: row-reverse;
+  margin: 8px 0 16px;
+}
+
 
 #section-row-4.row {
     --bs-gutter-x: 0 !important;
