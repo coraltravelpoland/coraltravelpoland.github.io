@@ -318,6 +318,22 @@ flex-direction: row-reverse;
     display: none;
 }
 
+/* NEWSY 2026*/
+
+
+.NewsViewBlock_newsViewBlock__RxgzM{}
+.NewsViewBlock_newsViewBlock__RxgzM .NewsViewBlock_imageContainer__L_m7L img{
+width: 100%;
+  border-radius: 8px;
+}
+
+.NewsViewBlock_newsViewBlock__RxgzM  .HtmlContentBlock_htmlContentBlock__GaAiy{
+
+  font-size: 18px;
+  line-height: 170%;
+  max-width: 80%;
+  margin: 4em auto;
+}
 
 @media screen and (max-width: 567px) {
 
