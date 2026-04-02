@@ -8,6 +8,10 @@ a {
     text-decoration: none;
 }
 
+.BestSellerItem_topArea__Zerr1::after {
+  background: linear-gradient(180deg,rgba(102,102,102,0),rgba(0, 0, 0, 0.55) 87.02%);
+}
+
 .ebcIxa a {
   text-decoration: unset !important;
 }
