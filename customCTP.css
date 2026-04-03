@@ -12,6 +12,10 @@ a {
   background: linear-gradient(180deg,rgba(102,102,102,0),rgba(0, 0, 0, 0.55) 87.02%) !important;
 }
 
+.BestSellerHotelCard_hotelCard__U0Hqf .BestSellerHotelCard_hotelCardBottom__sfPZa{
+    min-height: 24px;
+}
+
 .ebcIxa a {
   text-decoration: unset !important;
 }
