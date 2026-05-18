@@ -1609,20 +1609,48 @@ function analyzeItem(item) {
     text: isDirect ? 'Odpowiedź zaczyna się bezpośrednio (dobrze dla snippets)' : 'Zacznij odpowiedź bezpośrednio (np. "Tak,…" lub od sedna tematu)' });
   if (!isDirect) score -= 7;
 
-  // Duplicate detection
-  const others = items.filter((it, idx) => it !== item);
-  const similar = others.some(other => {
-    const ow = other.q.toLowerCase().split(/\s+/);
-    const tw = q.toLowerCase().split(/\s+/);
-    const common = tw.filter(w => ow.includes(w) && w.length > 4);
-    return common.length / Math.max(tw.length, 1) > 0.6;
-  });
-  checks.push({ ok: !similar, level: similar ? 'warn' : 'ok',
-    text: similar ? 'Podobne pytanie już istnieje – możliwa duplikacja treści' : 'Brak duplikatów – pytanie unikalne' });
-  if (similar) score -= 10;
+  // Duplicate detection — trzy poziomy: identyczne, bardzo podobne, podobne
+  const STOP = new Set(['jak','czy','co','gdzie','kiedy','ile','kto','czym','jest','są','nie','dla','się','tego','przez','przy','jakie','jaki','jaka','można','należy','który','która','które','oraz','i','a','w','z','do','na','po','o','to','że','się','to','ten','ta','te']);
+  function tokenize(str) {
+    return str.toLowerCase().replace(/[?!.,;:]/g,'').split(/\s+/).filter(w => w.length > 3 && !STOP.has(w));
+  }
+  function jaccardSim(a, b) {
+    const sa = new Set(a), sb = new Set(b);
+    const inter = [...sa].filter(w => sb.has(w)).length;
+    const union = new Set([...sa,...sb]).size;
+    return union ? inter / union : 0;
+  }
+
+  const qTokens = tokenize(q);
+  let dupLevel = 0; // 0=brak, 1=podobne, 2=bardzo podobne, 3=identyczne
+  let dupWith = '';
+
+  for (const other of items) {
+    if (other === item) continue;
+    const oq = other.q.trim();
+    // Exact match (normalized)
+    if (q.toLowerCase().replace(/[^a-ząćęłńóśźż\s]/gi,'').trim() === oq.toLowerCase().replace(/[^a-ząćęłńóśźż\s]/gi,'').trim()) {
+      dupLevel = 3; dupWith = oq; break;
+    }
+    const sim = jaccardSim(qTokens, tokenize(oq));
+    if (sim > 0.75 && dupLevel < 2) { dupLevel = 2; dupWith = oq; }
+    else if (sim > 0.45 && dupLevel < 1) { dupLevel = 1; dupWith = oq; }
+  }
+
+  const dupMessages = [
+    'Brak duplikatów – pytanie unikalne',
+    `Podobne pytanie istnieje: „${dupWith.substring(0,55)}${dupWith.length>55?'…':''}"`,
+    `Bardzo podobne pytanie: „${dupWith.substring(0,55)}${dupWith.length>55?'…':''}"`,
+    `Identyczne pytanie: „${dupWith.substring(0,55)}${dupWith.length>55?'…':''}"`,
+  ];
+  const dupLevels = ['ok','warn','warn','bad'];
+  const dupPenalty = [0, 5, 15, 25];
+
+  checks.push({ ok: dupLevel === 0, level: dupLevels[dupLevel], text: dupMessages[dupLevel] });
+  score -= dupPenalty[dupLevel];
 
   score = Math.max(0, Math.min(100, score));
-  return { score, checks, qWords, aWords, qChars, aChars, kwRatio: Math.round(kwRatio * 100) };
+  return { score, checks, qWords, aWords, qChars, aChars, kwRatio: Math.round(kwRatio * 100), dupLevel };
 }
 
 function runRuleAnalysis() {
@@ -1719,7 +1747,9 @@ function renderSeoResults(results, aiGlobal, providerLabel) {
     if (!r.checks[0].ok) chips.push('<span class="chip chip-warn">Brak ?</span>');
     if (r.aWords < 30) chips.push('<span class="chip chip-red">Krótka odp.</span>');
     if (r.aWords >= 40 && r.aWords <= 60) chips.push('<span class="chip chip-green">Snippet ✓</span>');
-    if (r.checks[6] && !r.checks[6].ok) chips.push('<span class="chip chip-warn">Duplikat?</span>');
+    if (r.dupLevel >= 3) chips.push('<span class="chip chip-red">Identyczny!</span>');
+    else if (r.dupLevel === 2) chips.push('<span class="chip chip-warn">B. podobne</span>');
+    else if (r.dupLevel === 1) chips.push('<span class="chip chip-warn">Podobne</span>');
     return `
     <div class="seo-item-card">
       <div class="seo-item-head" onclick="toggleSeoItem(${i})">
