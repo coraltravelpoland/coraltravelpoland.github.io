@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generator FAQ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f6f7f9; --bg3: #eef0f4;
+    --text: #111827; --text2: #4b5563; --text3: #9ca3af;
+    --border: #e5e7eb; --border2: #d1d5db;
+    --accent: #1a6ef5; --accent-bg: #eff4ff;
+    --success: #059669; --success-bg: #ecfdf5;
+    --danger: #dc2626; --danger-bg: #fef2f2;
+    --warn: #d97706; --warn-bg: #fffbeb;
+    --radius: 8px; --radius-lg: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    font-size: 14px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
+
+  /* Layout */
+  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .main { display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar-header { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; }
+  .sidebar-logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sidebar-logo-icon svg { width: 18px; height: 18px; stroke: white; fill: none; }
+  .sidebar-logo-text { font-weight: 700; font-size: 15px; color: var(--text); letter-spacing: -0.01em; }
+  .sidebar-logo-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+  .nav { padding: 12px 10px; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius); color: var(--text2); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.12s; border: none; background: none; width: 100%; text-align: left; }
+  .nav-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; flex-shrink: 0; }
+  .nav-item:hover { background: var(--bg2); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent); }
+  .nav-sep { height: 1px; background: var(--border); margin: 8px 10px; }
+
+  .sidebar-footer { padding: 12px 14px; border-top: 1px solid var(--border); }
+  .mammoth-status { font-size: 11px; padding: 7px 10px; border-radius: var(--radius); display: flex; align-items: center; gap: 6px; }
+  .mammoth-status.ok { background: var(--success-bg); color: var(--success); }
+  .mammoth-status.warn { background: var(--warn-bg); color: var(--warn); }
+  .mammoth-status svg { width: 13px; height: 13px; stroke: currentColor; fill: none; flex-shrink: 0; }
+
+  /* Topbar */
+  .topbar { background: var(--bg); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .topbar-actions { display: flex; gap: 8px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius); font-size: 12.5px; font-weight: 500; cursor: pointer; transition: all 0.12s; border: 1px solid transparent; white-space: nowrap; font-family: inherit; }
+  .btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; flex-shrink: 0; }
+  .btn-ghost { background: none; border-color: var(--border2); color: var(--text2); }
+  .btn-ghost:hover { background: var(--bg2); color: var(--text); border-color: var(--border2); }
+  .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn-primary:hover { background: #1558d6; }
+  .btn-success { background: var(--success); color: white; border-color: var(--success); }
+  .btn-success:hover { background: #047857; }
+  .btn-danger-ghost { background: none; border-color: transparent; color: var(--text3); }
+  .btn-danger-ghost:hover { background: var(--danger-bg); color: var(--danger); border-color: transparent; }
+  .btn-sm { padding: 5px 10px; font-size: 11.5px; }
+  .btn-icon { padding: 6px; width: 30px; height: 30px; justify-content: center; }
+
+  /* Sections */
+  .section { display: none; flex: 1; flex-direction: column; }
+  .section.active { display: flex; }
+  .section-body { padding: 24px; flex: 1; }
+
+  /* Cards */
+  .card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+  .card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 7px; }
+  .card-title svg { width: 15px; height: 15px; stroke: currentColor; fill: none; color: var(--accent); }
+  .card-body { padding: 18px; }
+
+  /* Editor */
+  .qa-list { display: flex; flex-direction: column; gap: 10px; }
+  .qa-item { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); transition: box-shadow 0.1s, border-color 0.1s; }
+  .qa-item:hover { border-color: var(--border2); }
+  .qa-item.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-bg); }
+  .qa-item.dragging { opacity: 0.35; }
+  .qa-item-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px 0; }
+  .drag-handle { cursor: grab; color: var(--text3); padding: 2px; }
+  .drag-handle:active { cursor: grabbing; }
+  .drag-handle svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+  .qa-badge { font-size: 10.5px; font-weight: 600; color: var(--accent); background: var(--accent-bg); border-radius: 5px; padding: 2px 7px; letter-spacing: 0.03em; }
+  .qa-actions { margin-left: auto; display: flex; gap: 2px; }
+  .qa-fields { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field-label { font-size: 10.5px; font-weight: 600; color: var(--text3); letter-spacing: 0.05em; text-transform: uppercase; }
+  input[type="text"], textarea, select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text); background: var(--bg); font-family: inherit; transition: border-color 0.12s, box-shadow 0.12s; outline: none; }
+  input[type="text"]:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,110,245,0.1); }
+  textarea { resize: vertical; min-height: 72px; line-height: 1.55; }
+  select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+
+  .add-qa-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); color: var(--text3); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.12s; background: none; font-family: inherit; width: 100%; margin-top: 4px; }
+  .add-qa-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+  .add-qa-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+
+  /* Import zone */
+  .drop-zone { border: 2px dashed var(--border2); border-radius: var(--radius-lg); padding: 36px 24px; text-align: center; transition: all 0.15s; cursor: pointer; }
+  .drop-zone:hover, .drop-zone.drag-active { border-color: var(--accent); background: var(--accent-bg); }
+  .drop-zone-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--bg3); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .drop-zone-icon svg { width: 24px; height: 24px; stroke: var(--text2); fill: none; }
+  .drop-zone-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .drop-zone-sub { font-size: 12px; color: var(--text3); line-height: 1.5; }
+  .drop-zone-btn { display: inline-block; margin-top: 14px; padding: 7px 16px; background: var(--accent); color: white; border-radius: var(--radius); font-size: 12px; font-weight: 500; cursor: pointer; }
+  .formats-list { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .format-badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); background: var(--bg); font-weight: 500; }
+
+  .import-log { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; font-size: 12px; line-height: 1.7; color: var(--text2); font-family: 'SF Mono', 'Fira Code', monospace; max-height: 200px; overflow-y: auto; }
+  .log-ok { color: var(--success); }
+  .log-warn { color: var(--warn); }
+  .log-err { color: var(--danger); }
+
+  .parse-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .radio-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; transition: all 0.12s; display: flex; align-items: flex-start; gap: 10px; }
+  .radio-card:hover { border-color: var(--border2); }
+  .radio-card.selected { border-color: var(--accent); background: var(--accent-bg); }
+  .radio-card input { margin-top: 2px; accent-color: var(--accent); }
+  .radio-card-title { font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .radio-card-sub { font-size: 11px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+
+  /* Settings */
+  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .settings-grid .full { grid-column: 1 / -1; }
+  .field-hint { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .color-input-row { display: flex; gap: 8px; align-items: center; }
+  input[type="color"] { width: 38px; height: 34px; border: 1px solid var(--border); border-radius: var(--radius); padding: 2px 3px; cursor: pointer; background: var(--bg); flex-shrink: 0; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg2); border-radius: var(--radius); }
+  .toggle-label { font-size: 13px; color: var(--text); }
+  .toggle-label span { font-size: 11px; color: var(--text3); display: block; margin-top: 1px; }
+  .toggle { position: relative; width: 38px; height: 22px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-track { position: absolute; inset: 0; background: var(--border2); border-radius: 22px; cursor: pointer; transition: 0.2s; }
+  .toggle input:checked + .toggle-track { background: var(--accent); }
+  .toggle-track::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+  .toggle input:checked + .toggle-track::before { transform: translateX(16px); }
+
+  /* Preview */
+  .preview-wrapper { background: var(--bg3); border-radius: var(--radius-lg); padding: 32px 24px; }
+  .preview-device-bar { display: flex; gap: 5px; margin-bottom: 16px; }
+  .preview-device-bar button { padding: 5px 12px; border: 1px solid var(--border); border-radius: 20px; font-size: 11px; cursor: pointer; background: var(--bg); color: var(--text2); font-family: inherit; transition: all 0.1s; }
+  .preview-device-bar button.active { background: var(--text); color: white; border-color: var(--text); }
+  #preview-frame { background: var(--bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 32px; width: 100%; transition: max-width 0.2s; }
+  #preview-frame.mobile { max-width: 390px; margin: 0 auto; }
+  #preview-frame.tablet { max-width: 640px; margin: 0 auto; }
+
+  /* Code */
+  .code-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
+  .code-tab { padding: 9px 16px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--text3); border-bottom: 2px solid transparent; transition: all 0.12s; font-family: inherit; }
+  .code-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--bg); }
+  .code-tab:hover:not(.active) { color: var(--text); }
+  .code-display { background: var(--bg); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+  .code-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+  .code-info { font-size: 11.5px; color: var(--text3); }
+  pre.code-pre { font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace; font-size: 12px; line-height: 1.65; padding: 16px; overflow-x: auto; color: var(--text); max-height: 480px; white-space: pre; }
+  .copy-feedback { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--success); opacity: 0; transition: opacity 0.2s; }
+  .copy-feedback.show { opacity: 1; }
+  .copy-feedback svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
+
+  /* Download bar */
+  .download-bar { background: var(--bg); border-top: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .download-bar-label { font-size: 12.5px; color: var(--text2); flex: 1; }
+
+  /* Badges / misc */
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge-blue { background: var(--accent-bg); color: var(--accent); }
+  .badge-green { background: var(--success-bg); color: var(--success); }
+  .badge-warn { background: var(--warn-bg); color: var(--warn); }
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--text3); }
+  .empty-state svg { width: 40px; height: 40px; stroke: currentColor; fill: none; opacity: 0.4; margin: 0 auto 12px; display: block; }
+  .empty-state p { font-size: 13px; }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .info-box { background: var(--accent-bg); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 11px 14px; font-size: 12px; color: #1e40af; line-height: 1.55; display: flex; gap: 8px; align-items: flex-start; }
+  .info-box svg { width: 15px; height: 15px; stroke: currentColor; fill: none; flex-shrink: 0; margin-top: 1px; }
+  .warn-box { background: var(--warn-bg); border: 1px solid #fcd34d; border-radius: var(--radius); padding: 11px 14px; font-size: 12px; color: #92400e; line-height: 1.55; display: flex; gap: 8px; align-items: flex-start; }
+  .warn-box svg { width: 15px; height: 15px; stroke: currentColor; fill: none; flex-shrink: 0; margin-top: 1px; }
+
+  .qa-count { font-size: 12px; color: var(--text3); padding: 3px 8px; background: var(--bg2); border-radius: 20px; }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+
+  @media (max-width: 720px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--border); }
+    .sidebar-header { border-bottom: none; }
+    .nav { display: flex; flex-direction: row; flex-wrap: wrap; padding: 6px; }
+    .sidebar-footer { display: none; }
+    .settings-grid { grid-template-columns: 1fr; }
+    .parse-options { grid-template-columns: 1fr; }
+  }
+  .seo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .seo-metric { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+  .seo-metric-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .seo-metric-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+  .seo-metric-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .seo-overview { display: flex; gap: 24px; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 20px; }
+  .seo-overview-scores { display: flex; gap: 24px; flex-shrink: 0; }
+  .score-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-label { text-align: center; margin-top: 6px; font-size: 11px; color: var(--text3); }
+  .seo-overview-details { flex: 1; }
+  .seo-bars { display: flex; flex-direction: column; gap: 8px; }
+  .seo-bar-row { display: flex; align-items: center; gap: 8px; }
+  .seo-bar-label { font-size: 12px; color: var(--text2); width: 130px; flex-shrink: 0; }
+  .seo-bar-track { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .seo-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .seo-bar-val { font-size: 12px; color: var(--text2); width: 28px; text-align: right; flex-shrink: 0; font-weight: 600; }
+  .seo-items { display: flex; flex-direction: column; gap: 10px; }
+  .seo-item-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .seo-item-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; user-select: none; }
+  .seo-item-head:hover { background: var(--bg2); }
+  .seo-item-score { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .score-great { background: #d1fae5; color: #065f46; }
+  .score-good  { background: #bbf7d0; color: #065f46; }
+  .score-ok    { background: var(--warn-bg); color: #92400e; }
+  .score-bad   { background: var(--danger-bg); color: #991b1b; }
+  .seo-item-q { flex: 1; font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seo-item-chips { display: flex; gap: 5px; flex-wrap: nowrap; flex-shrink: 0; }
+  .chip { font-size: 10.5px; padding: 2px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .chip-green { background: #d1fae5; color: #065f46; }
+  .chip-warn  { background: var(--warn-bg); color: #92400e; }
+  .chip-red   { background: var(--danger-bg); color: #991b1b; }
+  .chip-blue  { background: var(--accent-bg); color: var(--accent); }
+  .seo-item-body { border-top: 1px solid var(--border); padding: 14px 16px; display: none; }
+  .seo-item-body.open { display: block; }
+  .seo-checks { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+  .seo-check { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.45; }
+  .seo-check-icon { width: 17px; height: 17px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
+  .check-ok   { background: #d1fae5; color: #065f46; }
+  .check-warn { background: var(--warn-bg); color: #92400e; }
+  .check-bad  { background: var(--danger-bg); color: #991b1b; }
+  .seo-ai-box { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: var(--radius); padding: 12px 14px; margin-top: 10px; font-size: 13px; line-height: 1.7; color: var(--text); }
+  .seo-ai-label { font-size: 10.5px; font-weight: 700; color: #7c3aed; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+  .ai-spinner { width: 12px; height: 12px; border: 2px solid #ddd6fe; border-top-color: #7c3aed; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .seo-global-issues { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 20px; }
+  .seo-global-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
+  .seo-global-title svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .issue-list { display: flex; flex-direction: column; gap: 7px; }
+  .issue-row { font-size: 12.5px; color: var(--text2); display: flex; gap: 8px; align-items: flex-start; line-height: 1.45; }
+  .issue-row::before { content: '→'; color: var(--warn); flex-shrink: 0; font-weight: 700; }
+  .ai-global-section { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 20px; }
+  .ai-global-title { font-size: 11px; font-weight: 700; color: #7c3aed; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .ai-global-body { font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+  .provider-btn { display:inline-flex;align-items:center;gap:5px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text3);font-family:inherit;transition:all .12s; }
+  .provider-btn.active { background:var(--accent);color:white; }
+  .provider-btn:not(.active):hover { background:var(--bg2);color:var(--text); }
+
+  /* ── Guidelines ─────────────────────────────────────────────────────────── */
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .guide-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .guide-card-head { padding: 14px 16px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+  .guide-card-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .guide-card-icon svg { width: 17px; height: 17px; stroke: currentColor; fill: none; }
+  .guide-card-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .guide-card-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .guide-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .guide-rule { display: flex; gap: 9px; align-items: flex-start; }
+  .guide-rule-dot { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .dot-ok   { background: #d1fae5; color: #065f46; }
+  .dot-warn { background: #fef3c7; color: #92400e; }
+  .dot-bad  { background: #fee2e2; color: #991b1b; }
+  .dot-tip  { background: var(--accent-bg); color: var(--accent); }
+  .dot-ai   { background: #f5f3ff; color: #7c3aed; }
+  .guide-rule-text { font-size: 12.5px; color: var(--text); line-height: 1.55; }
+  .guide-rule-text strong { font-weight: 600; }
+  .guide-rule-text code { font-family: var(--font-mono,monospace); font-size: 11px; background: var(--bg2); padding: 1px 5px; border-radius: 4px; }
+  .guide-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; padding: 2px 7px; border-radius: 20px; font-weight: 500; margin-right: 3px; }
+  .tag-green { background: #d1fae5; color: #065f46; }
+  .tag-blue  { background: var(--accent-bg); color: var(--accent); }
+  .tag-purple{ background: #f5f3ff; color: #7c3aed; }
+  .tag-amber { background: #fef3c7; color: #92400e; }
+  .tag-red   { background: #fee2e2; color: #991b1b; }
+  .guide-hero { background: linear-gradient(135deg,#f0f4ff 0%,#f5f3ff 100%); border: 1px solid #c7d2fe; border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .guide-hero-stat { text-align: center; min-width: 80px; }
+  .guide-hero-num { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .guide-hero-label { font-size: 11px; color: var(--text2); margin-top: 4px; line-height: 1.3; }
+  .guide-divider { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin: 20px 0 12px; display: flex; align-items: center; gap: 10px; }
+  .guide-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .guide-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .guide-table th { background: var(--bg2); padding: 7px 10px; text-align: left; font-weight: 600; color: var(--text2); font-size: 11px; letter-spacing: 0.03em; }
+  .guide-table td { padding: 7px 10px; border-top: 1px solid var(--border); color: var(--text); line-height: 1.45; vertical-align: top; }
+  .guide-table tr:hover td { background: var(--bg2); }
+  .guide-example { background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; font-size: 12px; line-height: 1.6; color: var(--text2); margin-top: 4px; border-left: 3px solid var(--accent); }
+  .guide-example strong { color: var(--text); }
+  @media (max-width: 700px) { .guide-grid { grid-template-columns: 1fr; } .guide-hero { flex-direction: column; } }
+  @media (max-width: 860px) { .seo-grid { grid-template-columns: repeat(2, 1fr); } .seo-overview { flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <div class="sidebar-logo-text">FAQ Generator</div>
+          <div class="sidebar-logo-sub">schema.org · offline</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" onclick="showSection('editor')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Pytania i odpowiedzi
+      </button>
+      <button class="nav-item" onclick="showSection('import')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import z pliku
+      </button>
+      <div class="nav-sep"></div>
+      <button class="nav-item" onclick="showSection('settings')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Ustawienia wyglądu
+      </button>
+      <button class="nav-item" onclick="showSection('preview')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Podgląd
+      </button>
+      <button class="nav-item" onclick="showSection('seo')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        Analiza SEO
+      </button>
+      <button class="nav-item" onclick="showSection('code')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Generuj kod
+      </button>
+      <div class="nav-sep"></div>
+      <button class="nav-item" onclick="showSection('guide')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Wytyczne SEO
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div id="storage-bar" style="display:none; align-items:center; gap:7px; font-size:11.5px; color:var(--text2); padding:8px 10px; background:var(--success-bg); border-radius:var(--radius); margin-bottom:8px; line-height:1.4;"></div>
+      <div class="mammoth-status warn" id="mammoth-status">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Ładowanie parsera .docx…
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- EDITOR -->
+    <section class="section active" id="section-editor">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-title">Pytania i odpowiedzi</span>
+          <span class="qa-count" id="qa-count">0 pytań</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="clearAll()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Wyczyść
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="showSection('preview')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Podgląd
+          </button>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="qa-list" id="qa-list"></div>
+        <button class="add-qa-btn" onclick="addItem()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Dodaj pytanie
+        </button>
+      </div>
+    </section>
+
+    <!-- IMPORT -->
+    <section class="section" id="section-import">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-title">Import z pliku</span>
+        </div>
+      </div>
+      <div class="section-body" style="max-width:680px;">
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header">
+            <span class="card-title">
+              <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Format par Q&A
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="parse-options" id="parse-options">
+              <label class="radio-card selected" onclick="selectParseMode('auto')">
+                <input type="radio" name="parse" value="auto" checked>
+                <div>
+                  <div class="radio-card-title">Automatyczny</div>
+                  <div class="radio-card-sub">Wykrywa pytania (znak ?, nagłówki, prefiks Q:)</div>
+                </div>
+              </label>
+              <label class="radio-card" onclick="selectParseMode('qa')">
+                <input type="radio" name="parse" value="qa">
+                <div>
+                  <div class="radio-card-title">Prefiks Q: / A:</div>
+                  <div class="radio-card-sub">Q: pytanie<br>A: odpowiedź</div>
+                </div>
+              </label>
+              <label class="radio-card" onclick="selectParseMode('heading')">
+                <input type="radio" name="parse" value="heading">
+                <div>
+                  <div class="radio-card-title">Nagłówek + akapit</div>
+                  <div class="radio-card-sub">Nagłówek = pytanie, następny akapit = odpowiedź</div>
+                </div>
+              </label>
+              <label class="radio-card" onclick="selectParseMode('numbered')">
+                <input type="radio" name="parse" value="numbered">
+                <div>
+                  <div class="radio-card-title">Numerowane</div>
+                  <div class="radio-card-sub">1. Pytanie?<br>Odpowiedź na następnych linijkach</div>
+                </div>
+              </label>
+            </div>
+            <div class="info-box" style="margin-bottom:0;">
+              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Tryb <strong>Auto</strong> działa najlepiej w większości przypadków. Dla .docx sprawdź wynik i popraw ręcznie jeśli potrzeba.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-body">
+            <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
+              <div class="drop-zone-icon">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div class="drop-zone-title">Przeciągnij plik lub kliknij, aby wybrać</div>
+              <div class="drop-zone-sub">Obsługiwane formaty plików z pytaniami i odpowiedziami</div>
+              <div class="formats-list">
+                <span class="format-badge">.docx</span>
+                <span class="format-badge">.doc (jako .txt)</span>
+                <span class="format-badge">.txt</span>
+                <span class="format-badge">.md</span>
+                <span class="format-badge">.csv</span>
+              </div>
+              <div class="drop-zone-btn">Wybierz plik</div>
+            </div>
+            <input type="file" id="file-input" accept=".docx,.txt,.md,.csv,.doc" style="display:none" onchange="handleFileInput(this.files[0])">
+          </div>
+        </div>
+
+        <div id="import-log-wrap" style="display:none;">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Wynik importu
+              </span>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span id="import-summary" class="badge badge-blue"></span>
+                <button class="btn btn-success btn-sm" id="import-confirm-btn" onclick="confirmImport()" style="display:none;">
+                  <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Dodaj do FAQ
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="import-log" id="import-log"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="section" id="section-settings">
+      <div class="topbar">
+        <div class="topbar-left"><span class="topbar-title">Ustawienia wyglądu</span></div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="resetSettings()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Domyślne
+          </button>
+        </div>
+      </div>
+      <div class="section-body" style="max-width:640px;">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header"><span class="card-title">Treść</span></div>
+          <div class="card-body">
+            <div class="settings-grid">
+              <div class="field full">
+                <div class="field-label">Tytuł sekcji FAQ</div>
+                <input type="text" id="cfg-title" value="Często zadawane pytania" oninput="schedulePreviewRefresh()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header"><span class="card-title">Wygląd accordion</span></div>
+          <div class="card-body">
+            <div class="settings-grid">
+              <div class="field">
+                <div class="field-label">Styl elementów</div>
+                <select id="cfg-style" onchange="schedulePreviewRefresh()">
+                  <option value="minimal">Minimal – linie poziome</option>
+                  <option value="bordered">Bordered – obramowanie</option>
+                  <option value="card">Cards – karty z tłem</option>
+                  <option value="flush">Flush – bez obramowania</option>
+                </select>
+              </div>
+              <div class="field">
+                <div class="field-label">Ikona toggle</div>
+                <select id="cfg-icon" onchange="schedulePreviewRefresh()">
+                  <option value="chevron">Strzałka ˅</option>
+                  <option value="plus">Plus / Minus +/−</option>
+                  <option value="arrow">Strzałka boczna ›</option>
+                  <option value="none">Brak ikony</option>
+                </select>
+              </div>
+              <div class="field">
+                <div class="field-label">Kolor akcentu (pytanie)</div>
+                <div class="color-input-row">
+                  <input type="color" id="cfg-color-pick" value="#111827" oninput="syncColorPick(this.value)">
+                  <input type="text" id="cfg-color" value="#111827" oninput="syncColorText(this.value)" maxlength="7" placeholder="#111827">
+                </div>
+              </div>
+              <div class="field">
+                <div class="field-label">Kolor odpowiedzi (tekst)</div>
+                <div class="color-input-row">
+                  <input type="color" id="cfg-answer-color-pick" value="#4b5563" oninput="syncAnswerColorPick(this.value)">
+                  <input type="text" id="cfg-answer-color" value="#4b5563" oninput="syncAnswerColorText(this.value)" maxlength="7" placeholder="#4b5563">
+                </div>
+              </div>
+              <div class="field">
+                <div class="field-label">Max. szerokość kontenera</div>
+                <input type="text" id="cfg-maxwidth" value="720px" oninput="schedulePreviewRefresh()">
+              </div>
+              <div class="field">
+                <div class="field-label">Font (rodzina)</div>
+                <select id="cfg-font" onchange="schedulePreviewRefresh()">
+                  <option value="system">System UI (domyślny)</option>
+                  <option value="serif">Serif (Georgia)</option>
+                  <option value="inter">Inter (Google Fonts)</option>
+                  <option value="lato">Lato (Google Fonts)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header"><span class="card-title">Opcje kodu</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="toggle-row">
+              <div class="toggle-label">
+                Mikrodane schema.org FAQPage
+                <span>Pomaga w rich snippets w Google</span>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-schema" checked onchange="schedulePreviewRefresh()"><span class="toggle-track"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                CSS inline (samodzielny blok)
+                <span>Styl wbudowany – działa bez arkusza CMS</span>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-inline-css" checked onchange="schedulePreviewRefresh()"><span class="toggle-track"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                JavaScript – zamykanie innych elementów
+                <span>Opcjonalny; &lt;details&gt; działa też bez JS</span>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-js" checked onchange="schedulePreviewRefresh()"><span class="toggle-track"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                Animacja rozwijania (CSS transition)
+                <span>Płynne otwieranie – wymaga JS</span>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-anim" checked onchange="schedulePreviewRefresh()"><span class="toggle-track"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREVIEW -->
+    <section class="section" id="section-preview">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-title">Podgląd</span>
+          <div class="preview-device-bar">
+            <button class="active" onclick="setDevice('desktop',this)">Desktop</button>
+            <button onclick="setDevice('tablet',this)">Tablet</button>
+            <button onclick="setDevice('mobile',this)">Mobile</button>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="refreshPreview()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Odśwież
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="showSection('code')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Generuj kod
+          </button>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="preview-wrapper">
+          <div id="preview-frame">
+            <div id="preview-content"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO ANALYSIS -->
+    <section class="section" id="section-seo">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-title">Analiza SEO</span>
+          <span class="qa-count" id="seo-status-badge"></span>
+        </div>
+        <div class="topbar-actions" style="gap:6px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;">
+            <button class="provider-btn active" id="prov-claude" onclick="setProvider('claude')" title="Claude (Anthropic) — bez klucza API">
+              <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none;"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+              Claude
+            </button>
+            <button class="provider-btn" id="prov-grok" onclick="setProvider('grok')" title="Grok (xAI) — wymaga klucza API">
+              <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Grok
+            </button>
+            <button class="provider-btn" id="prov-openai" onclick="setProvider('openai')" title="OpenAI GPT-4o — wymaga klucza API">
+              <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              OpenAI
+            </button>
+          </div>
+          <div id="ext-key-wrap" style="display:none;position:relative;">
+            <input type="password" id="ext-api-key" placeholder="klucz API…" oninput="lsSaveKey('seo',this.value)" style="width:200px;padding:6px 30px 6px 10px;font-size:12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;outline:none;">
+            <button onclick="toggleKeyVis()" title="Pokaż/ukryj" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;line-height:1;">
+              <svg id="eye-icon" viewBox="0 0 24 24" stroke-width="2" style="width:14px;height:14px;stroke:currentColor;fill:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="seo-run-rules-btn" onclick="runRuleAnalysis()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Odśwież
+          </button>
+          <button class="btn btn-primary btn-sm" id="seo-ai-btn" onclick="runAiAnalysis()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><circle cx="18" cy="6" r="4" fill="none"/><path d="M18 4v2l1.5 1.5" stroke-width="1.5"/></svg>
+            Analiza AI
+          </button>
+        </div>
+      </div>
+      <div class="section-body" id="seo-body">
+        <!-- filled by JS -->
+        <div class="empty-state" id="seo-empty">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p>Kliknij „Odśwież" lub „Analiza AI", aby ocenić pytania i odpowiedzi pod kątem SEO.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CODE -->
+    <section class="section" id="section-code">
+      <div class="topbar">
+        <div class="topbar-left"><span class="topbar-title">Gotowy kod HTML</span></div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="showSection('settings')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Ustawienia
+          </button>
+          <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;" title="Wybierz model AI do grupowania">
+            <button class="provider-btn active" id="code-prov-claude" onclick="setCodeProvider('claude')" style="font-size:11px;padding:5px 10px;">Claude</button>
+            <button class="provider-btn" id="code-prov-grok" onclick="setCodeProvider('grok')" style="font-size:11px;padding:5px 10px;">Grok</button>
+            <button class="provider-btn" id="code-prov-openai" onclick="setCodeProvider('openai')" style="font-size:11px;padding:5px 10px;">OpenAI</button>
+          </div>
+          <div id="code-key-wrap" style="display:none;position:relative;">
+            <input type="password" id="code-api-key" placeholder="klucz API…" oninput="lsSaveKey('code',this.value)" style="width:180px;padding:5px 28px 5px 9px;font-size:12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;outline:none;">
+            <button onclick="toggleCodeKeyVis()" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;">
+              <svg id="code-eye-icon" viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <button class="btn btn-primary btn-sm" id="ai-group-btn" onclick="runAiGrouping()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><path d="M5 9v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><line x1="12" y1="13" x2="12" y2="17"/><rect x="7" y="17" width="10" height="4" rx="1"/></svg>
+            AI: Dobierz grupy
+          </button>
+        </div>
+      </div>
+
+      <!-- SPLIT BANNER — visible only when items > 15 -->
+      <div id="split-banner" style="display:none; padding:0 24px 0;">
+        <div style="margin-top:16px; background:#fffbeb; border:1px solid #fcd34d; border-radius:var(--radius-lg); padding:16px 18px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:240px;">
+              <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:4px;">
+                <svg viewBox="0 0 24 24" stroke-width="2" style="width:15px;height:15px;stroke:#d97706;fill:none;vertical-align:-2px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Masz <span id="split-count"></span> pytań — zalecany podział na podstrony
+              </div>
+              <div style="font-size:12px;color:#92400e;line-height:1.55;">
+                Optymalnie 4–8 pytań na podstronę (featured snippets, PAA). Możesz podzielić automatycznie lub użyć AI uwzględniającego tematykę z dokumentu.
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap;">
+              <label style="font-size:12px;color:#92400e;font-weight:500;">Pytań na stronę:</label>
+              <select id="split-size" onchange="refreshCode()" style="width:70px;font-size:12px;padding:5px 8px;border:1px solid #fcd34d;border-radius:6px;background:#fffbeb;color:#92400e;">
+                <option value="10">10</option>
+                <option value="8" selected>8</option>
+                <option value="20">20</option>
+              </select>
+              <button class="btn btn-sm" style="background:#d97706;color:white;border-color:#d97706;" onclick="downloadAllParts()">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Pobierz wszystkie części
+              </button>
+              <button class="btn btn-ghost btn-sm" style="font-size:12px;" onclick="dismissSplit()">Ignoruj</button>
+            </div>
+          </div>
+
+          <!-- Part tabs -->
+          <div id="part-tabs-wrap" style="margin-top:14px;border-top:1px solid #fcd34d;padding-top:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:11px;color:#92400e;font-weight:600;margin-right:4px;">Część:</span>
+            <div id="part-tabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-body" style="padding-bottom:0;">
+        <div style="margin-bottom:16px;">
+          <div class="info-box" id="code-info-box">
+            <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Kod oparty na natywnym <code>&lt;details&gt;/&lt;summary&gt;</code> — działa bez JavaScript w każdej przeglądarce. JS jest opcjonalny (akordeon).</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0;" class="card">
+          <div class="code-tabs">
+            <button class="code-tab active" onclick="showCodeTab('html',this)">HTML + CSS + JS</button>
+            <button class="code-tab" onclick="showCodeTab('css-only',this)">Tylko CSS</button>
+            <button class="code-tab" onclick="showCodeTab('schema-json',this)">JSON-LD schema.org</button>
+          </div>
+          <div class="code-display">
+            <div class="code-toolbar">
+              <span class="code-info" id="code-info">— znaków</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="copy-feedback" id="copy-feedback">
+                  <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Skopiowano!
+                </span>
+                <button class="btn btn-ghost btn-sm" onclick="copyCode()">
+                  <svg viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Kopiuj
+                </button>
+              </div>
+            </div>
+            <pre class="code-pre" id="code-pre"><!-- kliknij Generuj kod --></pre>
+          </div>
+        </div>
+      </div>
+      <div class="download-bar">
+        <span class="download-bar-label" id="download-bar-label">Pobierz jako samodzielny plik HTML:</span>
+        <button class="btn btn-success btn-sm" id="download-btn" onclick="downloadCurrentPart()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Pobierz faq.html
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="copyCode()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Kopiuj kod
+        </button>
+      </div>
+    </section>
+
+
+    <!-- GUIDELINES -->
+    <section class="section" id="section-guide">
+      <div class="topbar">
+        <div class="topbar-left"><span class="topbar-title">Wytyczne SEO dla sekcji FAQ</span></div>
+        <div class="topbar-actions">
+          <span style="font-size:11.5px;color:var(--text3);">Ostatnia aktualizacja: maj 2025</span>
+        </div>
+      </div>
+      <div class="section-body" id="guide-body">
+      </div>
+    </section>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+const SAMPLE_ITEMS = [
+  { q: 'Jak długo trwa realizacja zamówienia?', a: 'Standardowy czas realizacji to 2–3 dni robocze. Zamówienia złożone przed godz. 12:00 wysyłamy tego samego dnia.' },
+  { q: 'Czy możliwy jest zwrot towaru?', a: 'Tak, masz 30 dni na zwrot od daty otrzymania przesyłki. Towar musi być nieużywany i w oryginalnym opakowaniu.' },
+  { q: 'Jakie metody płatności są dostępne?', a: 'Akceptujemy karty Visa, Mastercard, AmEx, płatności BLIK, przelew bankowy oraz PayPal.' }
+];
+let items = lsLoadItems();
+
+let currentCodeTab = 'html';
+let pendingImport = [];
+let parseMode = 'auto';
+let previewTimer = null;
+
+// ─── Mammoth check ────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const el = document.getElementById('mammoth-status');
+  if (typeof mammoth !== 'undefined') {
+    el.className = 'mammoth-status ok';
+    el.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Parser .docx gotowy`;
+  } else {
+    el.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> .docx wymaga internetu`;
+  }
+  lsLoadKeys();
+  renderEditor();
+});
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  const map = { editor: 0, import: 1, settings: 3, preview: 4, seo: 5, code: 6, guide: 7 };
+  const navItems = document.querySelectorAll('.nav-item');
+  if (map[id] !== undefined) navItems[map[id]]?.classList.add('active');
+  if (id === 'preview') refreshPreview();
+  if (id === 'code') refreshCode();
+  if (id === 'seo') runRuleAnalysis();
+  if (id === 'guide') renderGuide();
+}
+
+// ─── Editor ───────────────────────────────────────────────────────────────────
+function renderEditor() {
+  const list = document.getElementById('qa-list');
+  document.getElementById('qa-count').textContent = items.length + (items.length === 1 ? ' pytanie' : items.length < 5 ? ' pytania' : ' pytań');
+  if (!items.length) {
+    list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p>Brak pytań. Dodaj pierwsze lub zaimportuj z pliku.</p></div>`;
+    return;
+  }
+  list.innerHTML = items.map((it, i) => `
+    <div class="qa-item" draggable="true" data-i="${i}"
+         ondragstart="dStart(event,${i})" ondragover="dOver(event,${i})" ondrop="dDrop(event,${i})" ondragend="dEnd()">
+      <div class="qa-item-head">
+        <span class="drag-handle" title="Przeciągnij">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="19" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <span class="qa-badge">Q${i + 1}</span>
+        <div class="qa-actions">
+          <button class="btn btn-danger-ghost btn-icon" onclick="removeItem(${i})" title="Usuń">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="qa-fields">
+        <div class="field">
+          <div class="field-label">Pytanie</div>
+          <input type="text" value="${esc(it.q)}" placeholder="Wpisz pytanie…" oninput="items[${i}].q=this.value; debounceSave();">
+        </div>
+        <div class="field">
+          <div class="field-label">Odpowiedź</div>
+          <textarea placeholder="Wpisz odpowiedź…" oninput="items[${i}].a=this.value; debounceSave();">${esc(it.a)}</textarea>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function addItem() {
+  items.push({ q: '', a: '' });
+  splitDismissed = false;
+  saveItems();
+  renderEditor();
+  const last = document.querySelector('#qa-list .qa-item:last-child');
+  if (last) { last.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); last.querySelector('input').focus(); }
+}
+
+function removeItem(i) { items.splice(i, 1); saveItems(); renderEditor(); }
+function clearAll() { if (items.length && confirm('Usunąć wszystkie pytania?')) { items = []; saveItems(); renderEditor(); } }
+
+// ─── Drag & Drop ──────────────────────────────────────────────────────────────
+let dragSrc = null;
+function dStart(e, i) { dragSrc = i; setTimeout(() => { document.querySelector(`.qa-item[data-i="${i}"]`)?.classList.add('dragging'); }, 0); }
+function dOver(e, i) { e.preventDefault(); document.querySelectorAll('.qa-item').forEach(el => el.classList.remove('drag-over')); document.querySelector(`.qa-item[data-i="${i}"]`)?.classList.add('drag-over'); }
+function dDrop(e, i) { e.preventDefault(); if (dragSrc !== null && dragSrc !== i) { const m = items.splice(dragSrc, 1)[0]; items.splice(i, 0, m); saveItems(); } dEnd(); }
+function dEnd() { dragSrc = null; document.querySelectorAll('.qa-item').forEach(el => el.classList.remove('dragging', 'drag-over')); renderEditor(); }
+
+// ─── Import ───────────────────────────────────────────────────────────────────
+function selectParseMode(mode) {
+  parseMode = mode;
+  document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+}
+
+function dzOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-active'); }
+function dzLeave(e) { document.getElementById('drop-zone').classList.remove('drag-active'); }
+function dzDrop(e) { e.preventDefault(); dzLeave(); const f = e.dataTransfer.files[0]; if (f) handleFileInput(f); }
+
+// stores detected sections from last .docx import
+let pendingSections = []; // [{name, indices:[]}] — section groupings from headings
+
+function handleFileInput(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const log = document.getElementById('import-log');
+  const wrap = document.getElementById('import-log-wrap');
+  wrap.style.display = 'block';
+  log.innerHTML = `<span>📂 Plik: <strong>${esc(file.name)}</strong> (${(file.size/1024).toFixed(1)} KB)</span>\n`;
+  pendingSections = [];
+
+  if (ext === 'docx') {
+    if (typeof mammoth === 'undefined') {
+      log.innerHTML += `<span class="log-err">❌ Brak połączenia z internetem – mammoth.js niedostępny.</span>`;
+      return;
+    }
+    log.innerHTML += `<span>⏳ Parsowanie .docx (HTML mode – wykrywanie sekcji)…</span>\n`;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        // Use convertToHtml to preserve heading structure
+        const htmlResult = await mammoth.convertToHtml({ arrayBuffer: ev.target.result });
+        if (htmlResult.messages.length)
+          log.innerHTML += htmlResult.messages.map(m => `<span class="log-warn">⚠ ${esc(m.message)}</span>\n`).join('');
+        processDocxHtml(htmlResult.value, log);
+      } catch(err) {
+        log.innerHTML += `<span class="log-err">❌ Błąd parsowania: ${esc(String(err))}</span>`;
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else if (['txt','md','csv'].includes(ext)) {
+    const reader = new FileReader();
+    reader.onload = (ev) => processText(ev.target.result, log);
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    log.innerHTML += `<span class="log-err">❌ Nieobsługiwany format. Użyj .docx, .txt, .md lub .csv.</span>`;
+  }
+}
+
+// ── .docx HTML parser — preserves heading sections ──────────────────────────
+function processDocxHtml(html, log) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const nodes = Array.from(doc.body.children);
+
+  // Split nodes into sections by heading tags
+  const rawSections = []; // [{name, nodes[]}]
+  let currentSection = { name: null, nodes: [] };
+
+  for (const node of nodes) {
+    const tag = node.tagName.toLowerCase();
+    if (/^h[1-3]$/.test(tag)) {
+      const headingText = node.textContent.trim();
+      // Flush previous section
+      if (currentSection.nodes.length > 0 || currentSection.name) {
+        rawSections.push({ ...currentSection });
+      }
+      currentSection = { name: headingText, nodes: [] };
+    } else {
+      currentSection.nodes.push(node);
+    }
+  }
+  if (currentSection.nodes.length || currentSection.name) rawSections.push(currentSection);
+
+  const hasSections = rawSections.some(s => s.name);
+  log.innerHTML += hasSections
+    ? `<span class="log-ok">📑 Wykryto <strong>${rawSections.filter(s=>s.name).length} sekcji tematycznych</strong> z nagłówków dokumentu</span>\n`
+    : `<span>📄 Brak nagłówków sekcji – parsowanie całości jako jednolity blok</span>\n`;
+
+  // Extract Q&A pairs per section
+  const allPairs = [];
+  const detectedSections = [];
+
+  for (const section of rawSections) {
+    const sectionText = section.nodes.map(n => n.textContent).join('\n');
+    const mode = parseMode;
+    let pairs = [];
+    if (mode === 'auto') pairs = parseAuto(sectionText);
+    else if (mode === 'qa') pairs = parseQA(sectionText);
+    else if (mode === 'heading') pairs = parseHeadingText(sectionText);
+    else if (mode === 'numbered') pairs = parseNumbered(sectionText);
+
+    if (pairs.length) {
+      const startIdx = allPairs.length;
+      allPairs.push(...pairs);
+      detectedSections.push({
+        name: section.name || 'Bez sekcji',
+        indices: pairs.map((_, i) => startIdx + i)
+      });
+    }
+  }
+
+  pendingSections = detectedSections.length > 1 ? detectedSections : [];
+  renderImportResult(allPairs, log, detectedSections);
+}
+
+function processText(text, log) {
+  const mode = parseMode;
+  let pairs = [];
+  if (mode === 'auto') pairs = parseAuto(text);
+  else if (mode === 'qa') pairs = parseQA(text);
+  else if (mode === 'heading') pairs = parseHeadingText(text);
+  else if (mode === 'numbered') pairs = parseNumbered(text);
+  pendingSections = [];
+  renderImportResult(pairs, log, []);
+}
+
+function renderImportResult(pairs, log, sections) {
+  pendingImport = pairs;
+
+  log.innerHTML += `\n<span>📊 Znaleziono <strong>${pairs.length}</strong> par Q&A:</span>\n`;
+
+  if (sections.length > 1) {
+    log.innerHTML += `\n<span style="color:var(--accent);font-weight:600;">📂 Sekcje tematyczne z dokumentu:</span>\n`;
+    sections.forEach((s, si) => {
+      log.innerHTML += `<span class="log-ok">  § ${si+1}: ${esc(s.name)} — ${s.indices.length} pytań</span>\n`;
+    });
+    log.innerHTML += `\n`;
+  }
+
+  if (!pairs.length) {
+    log.innerHTML += `<span class="log-warn">⚠ Nie znaleziono par Q&A. Spróbuj inny tryb parsowania.</span>`;
+    document.getElementById('import-confirm-btn').style.display = 'none';
+    document.getElementById('import-summary').textContent = '0 par';
+    return;
+  }
+
+  pairs.forEach((p, i) => {
+    const sName = sections.find(s => s.indices.includes(i))?.name;
+    const sTag = sName ? `<span style="color:var(--accent);font-size:10px;"> [${esc(sName)}]</span>` : '';
+    log.innerHTML += `<span class="log-ok">✓ Q${i+1}${sTag.replace(/<[^>]+>/g,' ').trim()}: ${esc(p.q.substring(0,65))}${p.q.length>65?'…':''}</span>\n`;
+  });
+
+  const sNote = sections.length > 1 ? ` · ${sections.length} sekcje → AI użyje ich jako grupy` : '';
+  document.getElementById('import-summary').textContent = `${pairs.length} par Q&A${sNote}`;
+  document.getElementById('import-confirm-btn').style.display = '';
+}
+
+function confirmImport() {
+  if (!pendingImport.length) return;
+  const baseIdx = items.length;
+  items.push(...pendingImport);
+  saveItems();
+  renderEditor();
+
+  // Store detected sections so AI grouping can use them
+  if (pendingSections.length > 1) {
+    // Remap indices to actual positions in items array
+    window._lastImportSections = pendingSections.map(s => ({
+      name: s.name,
+      indices: s.indices.map(i => baseIdx + i)
+    }));
+    document.getElementById('import-log').innerHTML +=
+      `\n<span class="log-ok">✅ Dodano ${pendingImport.length} pytań (${pendingSections.length} sekcje zapamiętane — AI grupowanie uwzględni tematykę dokumentu).</span>`;
+  } else {
+    window._lastImportSections = null;
+    document.getElementById('import-log').innerHTML +=
+      `\n<span class="log-ok">✅ Dodano ${pendingImport.length} pytań do listy (łącznie: ${items.length}).</span>`;
+  }
+
+  document.getElementById('import-confirm-btn').style.display = 'none';
+  pendingImport = [];
+  pendingSections = [];
+  setTimeout(() => showSection('editor'), 800);
+}
+
+// ─── Parsers ──────────────────────────────────────────────────────────────────
+function parseAuto(text) {
+  // Try Q:/A: first
+  if (/^\s*(Q:|Pytanie:|Question:)/im.test(text)) return parseQA(text);
+  // Try numbered
+  if (/^\s*\d+\.\s+.+\?/m.test(text)) return parseNumbered(text);
+  // Try heading-based (short lines ending with ?)
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const qLines = lines.filter(l => l.endsWith('?') && l.length < 200);
+  if (qLines.length >= 2) return parseHeadingText(text);
+  // Fallback: paragraph pairs
+  return parseParagraphPairs(text);
+}
+
+function parseQA(text) {
+  const pairs = [];
+  const lines = text.split('\n');
+  let curQ = '', curA = '', inA = false;
+  for (const raw of lines) {
+    const line = raw.trim();
+    const qm = line.match(/^(?:Q:|Pytanie:|Question:|Pyt\.?)\s*(.+)/i);
+    const am = line.match(/^(?:A:|Odpowiedź:|Answer:|Odp\.?)\s*(.+)/i);
+    if (qm) { if (curQ && curA) pairs.push({ q: curQ.trim(), a: curA.trim() }); curQ = qm[1]; curA = ''; inA = false; }
+    else if (am) { curA = am[1]; inA = true; }
+    else if (inA && line) { curA += ' ' + line; }
+    else if (!inA && curQ && line) { curQ += ' ' + line; }
+  }
+  if (curQ && curA) pairs.push({ q: curQ.trim(), a: curA.trim() });
+  return pairs;
+}
+
+function parseHeadingText(text) {
+  const pairs = [];
+  const lines = text.split('\n').map(l => l.trim());
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const isHeading = line && (line.endsWith('?') || /^#{1,6}\s/.test(line) || line === line.toUpperCase() && line.length > 5);
+    if (isHeading) {
+      const q = line.replace(/^#{1,6}\s+/, '').trim();
+      let a = '';
+      i++;
+      while (i < lines.length && !lines[i].endsWith('?') && !/^#{1,6}\s/.test(lines[i])) {
+        if (lines[i]) a += (a ? ' ' : '') + lines[i];
+        i++;
+      }
+      if (q && a) pairs.push({ q, a: a.trim() });
+    } else { i++; }
+  }
+  return pairs;
+}
+
+function parseNumbered(text) {
+  const pairs = [];
+  const blocks = text.split(/\n(?=\s*\d+[\.\)]\s)/);
+  for (const block of blocks) {
+    const lines = block.trim().split('\n').map(l => l.trim()).filter(Boolean);
+    if (!lines.length) continue;
+    const qLine = lines[0].replace(/^\d+[\.\)]\s*/, '').trim();
+    const a = lines.slice(1).join(' ').trim();
+    if (qLine && a) pairs.push({ q: qLine, a });
+  }
+  return pairs;
+}
+
+function parseParagraphPairs(text) {
+  const pairs = [];
+  const paras = text.split(/\n{2,}/).map(p => p.trim()).filter(Boolean);
+  for (let i = 0; i + 1 < paras.length; i += 2) {
+    const q = paras[i].replace(/\n/g, ' ').trim();
+    const a = paras[i+1].replace(/\n/g, ' ').trim();
+    if (q && a) pairs.push({ q, a });
+  }
+  return pairs;
+}
+
+// ─── Settings ─────────────────────────────────────────────────────────────────
+function cfg(id) { const el = document.getElementById(id); return el.type === 'checkbox' ? el.checked : el.value; }
+function syncColorPick(v) { document.getElementById('cfg-color').value = v; }
+function syncColorText(v) { if (/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('cfg-color-pick').value = v; }
+function syncAnswerColorPick(v) { document.getElementById('cfg-answer-color').value = v; }
+function syncAnswerColorText(v) { if (/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('cfg-answer-color-pick').value = v; }
+
+function resetSettings() {
+  document.getElementById('cfg-title').value = 'Często zadawane pytania';
+  document.getElementById('cfg-style').value = 'minimal';
+  document.getElementById('cfg-icon').value = 'chevron';
+  document.getElementById('cfg-color').value = '#111827'; document.getElementById('cfg-color-pick').value = '#111827';
+  document.getElementById('cfg-answer-color').value = '#4b5563'; document.getElementById('cfg-answer-color-pick').value = '#4b5563';
+  document.getElementById('cfg-maxwidth').value = '720px';
+  document.getElementById('cfg-font').value = 'system';
+  document.getElementById('cfg-schema').checked = true;
+  document.getElementById('cfg-inline-css').checked = true;
+  document.getElementById('cfg-js').checked = true;
+  document.getElementById('cfg-anim').checked = true;
+}
+
+function schedulePreviewRefresh() { clearTimeout(previewTimer); previewTimer = setTimeout(refreshPreview, 150); }
+
+// ─── Preview ──────────────────────────────────────────────────────────────────
+function setDevice(mode, btn) {
+  const frame = document.getElementById('preview-frame');
+  frame.className = mode !== 'desktop' ? mode : '';
+  document.querySelectorAll('.preview-device-bar button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function refreshPreview() {
+  const code = generateHtml(false);
+  const shadow = document.getElementById('preview-content');
+  shadow.innerHTML = code;
+  // re-run any inline scripts
+  shadow.querySelectorAll('script').forEach(s => {
+    const ns = document.createElement('script');
+    ns.textContent = s.textContent;
+    s.parentNode.replaceChild(ns, s);
+  });
+}
+
+// ─── Code generation ─────────────────────────────────────────────────────────
+function generateHtml(forExport = false) {
+  const title    = cfg('cfg-title');
+  const style    = cfg('cfg-style');
+  const iconType = cfg('cfg-icon');
+  const color    = cfg('cfg-color');
+  const aColor   = cfg('cfg-answer-color');
+  const maxW     = cfg('cfg-maxwidth');
+  const fontVal  = cfg('cfg-font');
+  const withSchema = cfg('cfg-schema');
+  const withCss  = cfg('cfg-inline-css') || forExport;
+  const withJs   = cfg('cfg-js');
+  const withAnim = cfg('cfg-anim') && withJs;
+
+  const fontStack = fontVal === 'serif' ? "Georgia, 'Times New Roman', serif"
+    : fontVal === 'inter' ? "'Inter', -apple-system, sans-serif"
+    : fontVal === 'lato' ? "'Lato', -apple-system, sans-serif"
+    : "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+
+  const fontImport = (fontVal === 'inter' || fontVal === 'lato') && withCss
+    ? `@import url('https://fonts.googleapis.com/css2?family=${fontVal === 'inter' ? 'Inter:wght@400;600' : 'Lato:wght@400;700'}&display=swap');\n` : '';
+
+  const borderStyle = style === 'bordered'
+    ? `.faq-item{border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden}.faq-question{padding:14px 18px}.faq-answer p{padding:0 18px 14px;margin:0}`
+    : style === 'card'
+    ? `.faq-item{background:#f9fafb;border-radius:10px;margin-bottom:10px;overflow:hidden}.faq-question{padding:14px 18px}.faq-answer p{padding:0 18px 14px;margin:0}`
+    : style === 'flush'
+    ? `.faq-question{padding:14px 0}.faq-answer p{padding:0 0 14px;margin:0}`
+    : `.faq-list{border-top:1px solid #e5e7eb}.faq-item{border-bottom:1px solid #e5e7eb}.faq-question{padding:14px 0}.faq-answer p{padding:0 0 14px;margin:0}`;
+
+  const iconCss = iconType === 'chevron'
+    ? `.faq-icon{display:inline-block;transition:transform .25s;flex-shrink:0;margin-left:auto;padding-left:12px}details[open]>.faq-question .faq-icon{transform:rotate(180deg)}`
+    : iconType === 'plus'
+    ? `.faq-icon{margin-left:auto;padding-left:12px;font-size:1.3rem;font-weight:300;line-height:1;flex-shrink:0}.faq-question .faq-icon::before{content:'+';}details[open]>.faq-question .faq-icon::before{content:'−';}`
+    : iconType === 'arrow'
+    ? `.faq-icon{display:inline-block;transition:transform .25s;flex-shrink:0;margin-left:auto;padding-left:12px}details[open]>.faq-question .faq-icon{transform:rotate(90deg)}`
+    : '';
+
+  const animCss = withAnim ? `details>.faq-answer{overflow:hidden;max-height:0;transition:max-height .3s ease}details[open]>.faq-answer{max-height:800px}` : '';
+
+  const css = withCss ? `<style>
+${fontImport}.faq-section{max-width:${maxW};margin:0 auto;font-family:${fontStack}}
+.faq-title{font-size:1.6rem;font-weight:700;margin:0 0 1.25rem;color:${color}}
+.faq-question{display:flex;align-items:center;width:100%;cursor:pointer;font-size:1rem;font-weight:600;color:${color};background:none;border:none;text-align:left;list-style:none}
+.faq-question::marker,.faq-question::-webkit-details-marker{display:none}
+.faq-answer p{font-size:.95rem;line-height:1.75;color:${aColor};margin:0}
+${borderStyle}
+${iconCss}
+${animCss}
+</style>
+` : '';
+
+  const iconSvgChevron = `<svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>`;
+  const iconSvgArrow   = `<svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>`;
+  const iconHtml = iconType === 'chevron' ? iconSvgChevron : iconType === 'arrow' ? iconSvgArrow : iconType === 'plus' ? `<span class="faq-icon" aria-hidden="true"></span>` : '';
+
+  const schemaSection = withSchema ? ` itemscope itemtype="https://schema.org/FAQPage"` : '';
+
+  const itemsHtml = items.map(it => {
+    const qE = xmlEsc(it.q); const aE = xmlEsc(it.a);
+    const si = withSchema ? ` itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"` : '';
+    const sq = withSchema ? ` itemprop="name"` : '';
+    const sa = withSchema ? ` itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"` : '';
+    const sp = withSchema ? ` itemprop="text"` : '';
+    return `  <div class="faq-item"${si}>
+    <details>
+      <summary class="faq-question"${sq}>${qE}${iconHtml}</summary>
+      <div class="faq-answer"${sa}><p${sp}>${aE}</p></div>
+    </details>
+  </div>`;
+  }).join('\n');
+
+  const jsPart = withJs ? `
+\x3cscript\x3e
+(function(){
+  var ds=document.querySelectorAll('.faq-section details');
+  ds.forEach(function(d){d.addEventListener('toggle',function(){
+    if(d.open){ds.forEach(function(o){if(o!==d)o.removeAttribute('open');})}
+  });});
+})();
+\x3c/script>` : '';
+
+  return `${css}<section class="faq-section"${schemaSection} aria-labelledby="faq-h">
+  <h2 class="faq-title" id="faq-h">${xmlEsc(title)}</h2>
+  <div class="faq-list">
+${itemsHtml}
+  </div>
+</section>${jsPart}`;
+}
+
+function generateJsonLd() {
+  const obj = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": items.map(it => ({
+      "@type": "Question",
+      "name": it.q,
+      "acceptedAnswer": { "@type": "Answer", "text": it.a }
+    }))
+  };
+  return JSON.stringify(obj, null, 2);
+}
+
+function generateCssOnly() {
+  const tmp = cfg('cfg-inline-css');
+  document.getElementById('cfg-inline-css').checked = true;
+  const full = generateHtml(false);
+  document.getElementById('cfg-inline-css').checked = !!tmp;
+  const match = full.match(/<style>([\s\S]*?)<\/style>/);
+  return match ? match[1].trim() : '/* brak CSS */';
+}
+
+// ─── Code tab / display ───────────────────────────────────────────────────────
+let splitDismissed = false;
+let currentPartIndex = 0; // which split-part is shown (0 = all when no split)
+
+function getSplitSize() {
+  return parseInt(document.getElementById('split-size')?.value || '8');
+}
+
+function getParts() {
+  if (aiGroups) return aiGroups.map(g => g.indices.map(i => items[i]).filter(Boolean));
+  const size = getSplitSize();
+  if (splitDismissed || items.length <= size) return [items];
+  const parts = [];
+  for (let i = 0; i < items.length; i += size) parts.push(items.slice(i, i + size));
+  return parts;
+}
+
+function dismissSplit() {
+  splitDismissed = true;
+  document.getElementById('split-banner').style.display = 'none';
+  currentPartIndex = 0;
+  refreshCode();
+}
+
+function refreshCode() {
+  const parts = getParts();
+  const isSplit = parts.length > 1;
+  const banner = document.getElementById('split-banner');
+
+  // Show/hide split banner
+  if (aiGroups) {
+    renderAiGroupsBanner();
+  } else if (items.length > getSplitSize() && !splitDismissed) {
+    banner.style.display = 'block';
+    document.getElementById('split-count').textContent = items.length;
+    renderPartTabs(parts);
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // Ensure currentPartIndex is in range
+  if (currentPartIndex >= parts.length) currentPartIndex = 0;
+
+  const partItems = parts[currentPartIndex];
+  const groupName = aiGroups ? aiGroups[currentPartIndex]?.name : null;
+  const partLabel = isSplit
+    ? (groupName
+        ? ` — ${groupName} (${partItems.length} pytań)`
+        : ` — część ${currentPartIndex + 1} z ${parts.length} (pytania ${currentPartIndex * getSplitSize() + 1}–${currentPartIndex * getSplitSize() + partItems.length})`)
+    : '';
+
+  let code = '';
+  const savedItems = items;
+  items = partItems;
+  if (currentCodeTab === 'html') code = generateHtml(false);
+  else if (currentCodeTab === 'css-only') code = generateCssOnly();
+  else if (currentCodeTab === 'schema-json') code = `<script type="application/ld+json">\n${generateJsonLd()}\n<\/script>`;
+  items = savedItems;
+
+  document.getElementById('code-pre').textContent = code;
+  document.getElementById('code-info').textContent =
+    `${code.length.toLocaleString('pl')} znaków · ${partItems.length} pytań${partLabel}`;
+
+  const dlBtn = document.getElementById('download-btn');
+  const dlLabel = document.getElementById('download-bar-label');
+  if (aiGroups && aiGroups[currentPartIndex]) {
+    const g = aiGroups[currentPartIndex];
+    dlBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz faq-${esc(g.slug)}.html`;
+    dlLabel.textContent = `Pobierz grupę „${g.name}" (${g.indices.length} pytań):`;
+  } else if (isSplit) {
+    dlBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz część ${currentPartIndex + 1}`;
+    dlLabel.textContent = `Pobierz jako plik HTML (część ${currentPartIndex + 1} z ${parts.length}):`;
+  } else {
+    dlBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz faq.html`;
+    dlLabel.textContent = 'Pobierz jako samodzielny plik HTML:';
+  }
+}
+
+function renderPartTabs(parts) {
+  const wrap = document.getElementById('part-tabs');
+  if (!wrap) return;
+  wrap.innerHTML = parts.map((p, i) => {
+    const start = i * getSplitSize() + 1;
+    const end = start + p.length - 1;
+    const active = i === currentPartIndex;
+    return `<button onclick="selectPart(${i})" style="
+      padding:5px 12px;font-size:11.5px;font-weight:${active ? '600' : '500'};
+      border-radius:6px;cursor:pointer;border:1px solid ${active ? '#d97706' : '#fcd34d'};
+      background:${active ? '#d97706' : '#fffbeb'};color:${active ? 'white' : '#92400e'};
+      font-family:inherit;transition:all .12s;">
+      Część ${i + 1} <span style="opacity:.75;font-weight:400">(Q${start}–${end})</span>
+    </button>`;
+  }).join('');
+}
+
+function selectPart(i) {
+  currentPartIndex = i;
+  refreshCode();
+}
+
+function showCodeTab(tab, btn) {
+  currentCodeTab = tab;
+  document.querySelectorAll('.code-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  refreshCode();
+}
+
+function copyCode() {
+  const text = document.getElementById('code-pre').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const fb = document.getElementById('copy-feedback');
+    fb.classList.add('show');
+    setTimeout(() => fb.classList.remove('show'), 2000);
+  });
+}
+
+function buildStandaloneHtml(partItems, partNum, totalParts, groupName) {
+  const savedItems = items;
+  items = partItems;
+  const body = generateHtml(true);
+  items = savedItems;
+  const pageTitle = groupName ? `FAQ — ${groupName}` : (totalParts > 1 ? `FAQ — część ${partNum} z ${totalParts}` : 'FAQ');
+  return `<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${pageTitle}</title>
+</head>
+<body style="margin:2rem auto;max-width:900px;padding:0 1rem;">
+${body}
+</body>
+</html>`;
+}
+
+function downloadCurrentPart() {
+  if (aiGroups) { downloadAiGroup(currentPartIndex); return; }
+  const parts = getParts();
+  const full = buildStandaloneHtml(parts[currentPartIndex], currentPartIndex + 1, parts.length);
+  const suffix = parts.length > 1 ? `-czesc-${currentPartIndex + 1}` : '';
+  triggerDownload(full, `faq${suffix}.html`);
+}
+
+function downloadAllParts() {
+  if (aiGroups) { downloadAllAiGroups(); return; }
+  const parts = getParts();
+  parts.forEach((partItems, i) => {
+    setTimeout(() => {
+      const full = buildStandaloneHtml(partItems, i + 1, parts.length);
+      triggerDownload(full, `faq-czesc-${i + 1}.html`);
+    }, i * 300);
+  });
+}
+
+function triggerDownload(content, filename) {
+  const blob = new Blob([content], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// keep old name working
+function downloadStandaloneHtml() { downloadCurrentPart(); }
+
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function xmlEsc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+
+// ─── localStorage persistence ──────────────────────────────────────────────
+const LS_ITEMS   = 'faqgen_items_v1';
+const LS_SEO_KEY = 'faqgen_key_seo';
+const LS_CODE_KEY= 'faqgen_key_code';
+const LS_SEO_PRV = 'faqgen_prov_seo';
+const LS_CODE_PRV= 'faqgen_prov_code';
+
+let saveTimer = null;
+function debounceSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveItems, 600); }
+
+function saveItems() {
+  try { localStorage.setItem(LS_ITEMS, JSON.stringify(items)); } catch(e) {}
+  updateStorageBar();
+}
+
+function lsLoadItems() {
+  try {
+    const raw = localStorage.getItem(LS_ITEMS);
+    if (raw) { const parsed = JSON.parse(raw); if (Array.isArray(parsed) && parsed.length) return parsed; }
+  } catch(e) {}
+  return [...SAMPLE_ITEMS];
+}
+
+function lsSaveKey(slot, val) {
+  try { localStorage.setItem(slot === 'seo' ? LS_SEO_KEY : LS_CODE_KEY, val); } catch(e) {}
+}
+
+function lsSaveProvider(slot, val) {
+  try { localStorage.setItem(slot === 'seo' ? LS_SEO_PRV : LS_CODE_PRV, val); } catch(e) {}
+}
+
+function lsLoadKeys() {
+  try {
+    const seoKey  = localStorage.getItem(LS_SEO_KEY);
+    const codeKey = localStorage.getItem(LS_CODE_KEY);
+    const seoPrv  = localStorage.getItem(LS_SEO_PRV);
+    const codePrv = localStorage.getItem(LS_CODE_PRV);
+    if (seoKey)  { const el = document.getElementById('ext-api-key');  if (el) el.value = seoKey; }
+    if (codeKey) { const el = document.getElementById('code-api-key'); if (el) el.value = codeKey; }
+    if (seoPrv && seoPrv !== 'claude')  setProvider(seoPrv);
+    if (codePrv && codePrv !== 'claude') setCodeProvider(codePrv);
+  } catch(e) {}
+  updateStorageBar();
+}
+
+function lsClearAll() {
+  if (!confirm('Usunąć wszystkie zapisane dane (pytania i klucze API)?')) return;
+  try {
+    [LS_ITEMS, LS_SEO_KEY, LS_CODE_KEY, LS_SEO_PRV, LS_CODE_PRV].forEach(k => localStorage.removeItem(k));
+  } catch(e) {}
+  items = [...SAMPLE_ITEMS];
+  saveItems();
+  renderEditor();
+  updateStorageBar();
+}
+
+function updateStorageBar() {
+  const bar = document.getElementById('storage-bar');
+  if (!bar) return;
+  try {
+    const hasItems = !!localStorage.getItem(LS_ITEMS);
+    const hasKeys  = !!(localStorage.getItem(LS_SEO_KEY) || localStorage.getItem(LS_CODE_KEY));
+    const count = items.length;
+    const savedAt = localStorage.getItem('faqgen_saved_at');
+    const time = savedAt ? new Date(parseInt(savedAt)).toLocaleTimeString('pl', {hour:'2-digit',minute:'2-digit'}) : '';
+    localStorage.setItem('faqgen_saved_at', Date.now());
+    bar.innerHTML = `
+      <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:var(--success);fill:none;flex-shrink:0;">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+      </svg>
+      <span style="flex:1;">
+        Zapisano lokalnie: <strong>${count} pytań</strong>${hasKeys ? ' · klucze API ✓' : ''}${time ? ' · ' + time : ''}
+      </span>
+      <button onclick="lsClearAll()" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:11px;font-family:inherit;padding:2px 6px;border-radius:4px;" title="Wyczyść localStorage">Wyczyść</button>`;
+    bar.style.display = 'flex';
+  } catch(e) { bar.style.display = 'none'; }
+}
+
+renderEditor();
+
+// ─── SEO Analysis ─────────────────────────────────────────────────────────────
+
+// Rule-based checks
+function analyzeItem(item) {
+  const q = item.q.trim(); const a = item.a.trim();
+  const qWords = q.split(/\s+/).filter(Boolean).length;
+  const aWords = a.split(/\s+/).filter(Boolean).length;
+  const qChars = q.length; const aChars = a.length;
+  const checks = [];
+  let score = 100;
+
+  // Q checks
+  const hasQmark = q.endsWith('?');
+  checks.push({ ok: hasQmark, level: hasQmark ? 'ok' : 'warn', text: hasQmark ? 'Pytanie kończy się znakiem "?"' : 'Pytanie nie kończy się "?" – Google preferuje formę pytającą' });
+  if (!hasQmark) score -= 8;
+
+  const questionWords = /^(jak|co|czy|gdzie|kiedy|dlaczego|kto|ile|czym|czego|komu|po co|na co|z czego|w jaki|jakie|jaki|jaka|która|który|które)/i;
+  const hasQWord = questionWords.test(q);
+  checks.push({ ok: hasQWord, level: hasQWord ? 'ok' : 'warn', text: hasQWord ? 'Pytanie zaczyna się od słowa pytającego (Jak/Co/Czy…)' : 'Brak słowa pytającego na początku – dodaj "Jak", "Co", "Czy" itp.' });
+  if (!hasQWord) score -= 10;
+
+  const qOk = qChars >= 20 && qChars <= 150;
+  checks.push({ ok: qOk, level: qOk ? 'ok' : (qChars < 20 ? 'bad' : 'warn'),
+    text: qOk ? `Długość pytania OK (${qChars} zn. / ${qWords} słów)`
+      : qChars < 20 ? `Pytanie zbyt krótkie (${qChars} zn.) – min. 20 znaków`
+      : `Pytanie zbyt długie (${qChars} zn.) – max ~150 znaków dla rich snippets` });
+  if (!qOk) score -= (qChars < 20 ? 15 : 8);
+
+  // A checks
+  const aOk = aWords >= 30 && aWords <= 300;
+  checks.push({ ok: aOk, level: aOk ? 'ok' : (aWords < 30 ? 'bad' : 'warn'),
+    text: aOk ? `Długość odpowiedzi dobra (${aWords} słów)`
+      : aWords < 30 ? `Odpowiedź za krótka (${aWords} słów) – min. 30 słów dla wartości SEO`
+      : `Odpowiedź bardzo długa (${aWords} słów) – Google wyróżnia fragmenty 40–60 słów` });
+  if (!aOk) score -= (aWords < 30 ? 20 : 5);
+
+  const snippetIdeal = aWords >= 40 && aWords <= 60;
+  checks.push({ ok: snippetIdeal, level: snippetIdeal ? 'ok' : 'warn',
+    text: snippetIdeal ? `Idealna długość dla featured snippet (${aWords} słów, opt. 40–60)`
+      : `Długość ${aWords} słów – dla featured snippet optymalne 40–60 słów` });
+  if (!snippetIdeal) score -= 5;
+
+  // Q keywords in A
+  const qKeywords = q.toLowerCase().replace(/[?!.,;]/g,'').split(/\s+/).filter(w => w.length > 3 && !/^(jest|nie|jak|czy|ale|dla|się|tego|przez|przy|które|który|jaki)$/.test(w));
+  const aLower = a.toLowerCase();
+  const keywordsInA = qKeywords.filter(k => aLower.includes(k));
+  const kwRatio = qKeywords.length ? keywordsInA.length / qKeywords.length : 1;
+  const kwOk = kwRatio >= 0.5;
+  checks.push({ ok: kwOk, level: kwOk ? 'ok' : 'warn',
+    text: kwOk ? `Słowa kluczowe z pytania obecne w odpowiedzi (${keywordsInA.length}/${qKeywords.length})`
+      : `Odpowiedź nie zawiera słów kluczowych z pytania – dodaj: ${qKeywords.filter(k => !aLower.includes(k)).slice(0,3).join(', ')}` });
+  if (!kwOk) score -= 12;
+
+  // Direct answer start
+  const directStarters = /^(tak|nie|to|jest|są|można|warto|należy|polecamy|oferujemy|czas|koszt|cena|wymagane|dostępne|standardowo)/i;
+  const isDirect = directStarters.test(a.split(/\s+/).slice(0,2).join(' '));
+  checks.push({ ok: isDirect, level: isDirect ? 'ok' : 'warn',
+    text: isDirect ? 'Odpowiedź zaczyna się bezpośrednio (dobrze dla snippets)' : 'Zacznij odpowiedź bezpośrednio (np. "Tak,…" lub od sedna tematu)' });
+  if (!isDirect) score -= 7;
+
+  // Duplicate detection
+  const others = items.filter((it, idx) => it !== item);
+  const similar = others.some(other => {
+    const ow = other.q.toLowerCase().split(/\s+/);
+    const tw = q.toLowerCase().split(/\s+/);
+    const common = tw.filter(w => ow.includes(w) && w.length > 4);
+    return common.length / Math.max(tw.length, 1) > 0.6;
+  });
+  checks.push({ ok: !similar, level: similar ? 'warn' : 'ok',
+    text: similar ? 'Podobne pytanie już istnieje – możliwa duplikacja treści' : 'Brak duplikatów – pytanie unikalne' });
+  if (similar) score -= 10;
+
+  score = Math.max(0, Math.min(100, score));
+  return { score, checks, qWords, aWords, qChars, aChars, kwRatio: Math.round(kwRatio * 100) };
+}
+
+function runRuleAnalysis() {
+  if (!items.length) { alert('Dodaj najpierw pytania i odpowiedzi.'); return; }
+  const results = items.map(analyzeItem);
+  renderSeoResults(results, null);
+}
+
+function renderSeoResults(results, aiGlobal, providerLabel) {
+  const body = document.getElementById('seo-body');
+  const emptyEl = document.getElementById('seo-empty');
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  const avgScore = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
+  const avgQWords = Math.round(results.reduce((s, r) => s + r.qWords, 0) / results.length);
+  const avgAWords = Math.round(results.reduce((s, r) => s + r.aWords, 0) / results.length);
+  const snippetReady = results.filter(r => r.aWords >= 40 && r.aWords <= 60).length;
+
+  // Score color
+  const scoreColor = avgScore >= 80 ? '#059669' : avgScore >= 60 ? '#d97706' : '#dc2626';
+  const circumference = 2 * Math.PI * 28;
+  const dashOffset = circumference * (1 - avgScore / 100);
+
+  // Global issues
+  const globalIssues = [];
+  if (items.length < 5) globalIssues.push('Za mało pytań – dodaj min. 5–10 dla efektywnej sekcji FAQ');
+  if (items.length > 20) globalIssues.push('Powyżej 20 pytań – rozważ podział na kategorie lub osobne strony FAQ');
+  const noQmark = results.filter(r => !r.checks[0].ok).length;
+  if (noQmark) globalIssues.push(`${noQmark} pytań bez znaku "?" – uzupełnij formatowanie`);
+  const tooShortA = results.filter(r => r.aWords < 30).length;
+  if (tooShortA) globalIssues.push(`${tooShortA} odpowiedzi za krótkich – rozbuduj do min. 30 słów`);
+  const tooLongA = results.filter(r => r.aWords > 300).length;
+  if (tooLongA) globalIssues.push(`${tooLongA} odpowiedzi bardzo długich (>300 słów) – skróć lub podziel`);
+
+  // Build HTML
+  let html = `
+  <div class="seo-overview">
+    <div style="text-align:center;flex-shrink:0;">
+      <div class="score-ring">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="28" fill="none" stroke="#e5e7eb" stroke-width="7"/>
+          <circle cx="36" cy="36" r="28" fill="none" stroke="${scoreColor}" stroke-width="7"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+            stroke-linecap="round"/>
+          <text x="36" y="36" text-anchor="middle" dominant-baseline="central"
+            style="font-size:17px;font-weight:700;fill:${scoreColor};font-family:inherit;transform:rotate(90deg) translate(0,-72px);transform-box:fill-box"
+            transform="rotate(90, 36, 36) translate(0,-72)">${avgScore}</text>
+        </svg>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">Wynik SEO</div>
+      </div>
+    </div>
+    <div class="seo-overview-details" style="flex:1;">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">
+        Wynik ogólny: <span style="color:${scoreColor}">${avgScore}/100</span>
+        &nbsp;·&nbsp; ${items.length} pytań &nbsp;·&nbsp; ${snippetReady} gotowych na featured snippet
+      </div>
+      <div class="seo-bars">
+        ${bar('Wynik SEO', avgScore, scoreColor)}
+        ${bar('Pokrycie słów kluczowych', Math.round(results.reduce((s,r)=>s+r.kwRatio,0)/results.length), '#6366f1')}
+        ${bar('Pytania z "?"', Math.round(results.filter(r=>r.checks[0].ok).length/results.length*100), '#059669')}
+        ${bar('Featured snippet ready', Math.round(snippetReady/results.length*100), '#0ea5e9')}
+      </div>
+    </div>
+  </div>
+
+  <div class="seo-grid">
+    ${metricCard('Pytań łącznie', items.length, items.length >= 5 && items.length <= 20 ? '✓ optymalna liczba' : items.length < 5 ? '↑ dodaj więcej' : '↓ rozważ podział')}
+    ${metricCard('Śr. dł. pytania', avgQWords + ' słów', avgQWords >= 5 && avgQWords <= 15 ? '✓ OK' : avgQWords < 5 ? '↑ za krótkie' : '↓ za długie')}
+    ${metricCard('Śr. dł. odpowiedzi', avgAWords + ' słów', avgAWords >= 40 && avgAWords <= 150 ? '✓ dobre' : avgAWords < 40 ? '↑ za krótkie' : '↓ skróć część')}
+    ${metricCard('Snippet-ready', snippetReady + '/' + items.length, snippetReady === items.length ? '✓ wszystkie' : 'optymalne 40–60 słów')}
+  </div>`;
+
+  if (globalIssues.length) {
+    html += `<div class="seo-global-issues">
+      <div class="seo-global-title">
+        <svg viewBox="0 0 24 24" stroke-width="2" style="width:15px;height:15px;flex-shrink:0;stroke:#d97706;fill:none;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Zalecenia ogólne
+      </div>
+      <div class="issue-list">${globalIssues.map(i => `<div class="issue-row">${i}</div>`).join('')}</div>
+    </div>`;
+  }
+
+  if (aiGlobal) {
+    html += `<div class="ai-global-section">
+      <div class="ai-global-title"><span class="ai-spinner" style="display:none" id="ai-glob-spin"></span>${providerLabel || '✦ Analiza AI'}</div>
+      <div class="ai-global-body">${esc(aiGlobal)}</div>
+    </div>`;
+  }
+
+  html += `<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Szczegóły na pytanie</div>`;
+  html += `<div class="seo-items">` + results.map((r, i) => {
+    const sc = r.score >= 80 ? 'great' : r.score >= 65 ? 'good' : r.score >= 45 ? 'ok' : 'bad';
+    const chips = [];
+    if (!r.checks[0].ok) chips.push('<span class="chip chip-warn">Brak ?</span>');
+    if (r.aWords < 30) chips.push('<span class="chip chip-red">Krótka odp.</span>');
+    if (r.aWords >= 40 && r.aWords <= 60) chips.push('<span class="chip chip-green">Snippet ✓</span>');
+    if (r.checks[6] && !r.checks[6].ok) chips.push('<span class="chip chip-warn">Duplikat?</span>');
+    return `
+    <div class="seo-item-card">
+      <div class="seo-item-head" onclick="toggleSeoItem(${i})">
+        <div class="seo-item-score score-${sc}">${r.score}</div>
+        <div class="seo-item-q">Q${i+1}: ${esc(items[i].q)}</div>
+        <div class="seo-item-chips">${chips.join('')}</div>
+        <svg style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0;transition:transform .2s" id="seo-chevron-${i}" viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="seo-item-body" id="seo-body-${i}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:12px;color:var(--text2);">
+          <span>📝 Pytanie: <b>${r.qWords} słów</b>, ${r.qChars} zn.</span>
+          <span>💬 Odpowiedź: <b>${r.aWords} słów</b>, ${r.aChars} zn.</span>
+          <span>🔑 Słowa kluczowe: <b>${r.kwRatio}%</b> pokrycia</span>
+          <span>⭐ Snippet-ready: <b>${r.aWords >= 40 && r.aWords <= 60 ? 'Tak ✓' : 'Nie (' + r.aWords + ' słów)'}</b></span>
+        </div>
+        <div class="seo-checks">
+          ${r.checks.map(c => `<div class="seo-check"><div class="seo-check-icon check-${c.level}">${c.level==='ok'?'✓':c.level==='warn'?'!':'✗'}</div><span>${c.text}</span></div>`).join('')}
+        </div>
+        <div class="seo-ai-box" id="seo-ai-${i}">
+          <div class="seo-ai-label"><span class="ai-spinner" id="ai-spin-${i}" style="display:none"></span>✦ Analiza AI</div>
+          <div id="seo-ai-text-${i}" style="color:var(--text3);font-size:12px;">Kliknij „Analiza AI (Claude)" aby uzyskać szczegółowe wskazówki od Claude.</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('') + `</div>`;
+
+  body.innerHTML = html;
+  const badge = document.getElementById('seo-status-badge');
+  if (badge) badge.textContent = `Wynik: ${avgScore}/100`;
+}
+
+function bar(label, val, color) {
+  return `<div class="seo-bar-row">
+    <span class="seo-bar-label">${label}</span>
+    <div class="seo-bar-track"><div class="seo-bar-fill" style="width:${Math.min(100,val)}%;background:${color}"></div></div>
+    <span class="seo-bar-val">${val}%</span>
+  </div>`;
+}
+
+function metricCard(label, value, sub) {
+  return `<div class="seo-metric"><div class="seo-metric-label">${label}</div><div class="seo-metric-value">${value}</div><div class="seo-metric-sub">${sub}</div></div>`;
+}
+
+function toggleSeoItem(i) {
+  const body = document.getElementById('seo-body-' + i);
+  const chev = document.getElementById('seo-chevron-' + i);
+  const open = body.classList.toggle('open');
+  if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+}
+
+// ─── Provider selection ───────────────────────────────────────────────────────
+let aiProvider = 'claude';
+let codeProvider = 'claude';
+
+function setProvider(p) {
+  aiProvider = p;
+  ['claude','grok','openai'].forEach(id => {
+    const el = document.getElementById('prov-' + id);
+    if (el) el.classList.toggle('active', id === p);
+  });
+  const keyWrap = document.getElementById('ext-key-wrap');
+  const keyInput = document.getElementById('ext-api-key');
+  keyWrap.style.display = p !== 'claude' ? 'block' : 'none';
+  if (p === 'grok') keyInput.placeholder = 'xai-… klucz API';
+  if (p === 'openai') keyInput.placeholder = 'sk-… klucz API';
+  lsSaveProvider('seo', p);
+}
+
+function setCodeProvider(p) {
+  codeProvider = p;
+  ['claude','grok','openai'].forEach(id => {
+    const el = document.getElementById('code-prov-' + id);
+    if (el) el.classList.toggle('active', id === p);
+  });
+  const keyWrap = document.getElementById('code-key-wrap');
+  const keyInput = document.getElementById('code-api-key');
+  keyWrap.style.display = p !== 'claude' ? 'block' : 'none';
+  if (p === 'grok') keyInput.placeholder = 'xai-… klucz API';
+  if (p === 'openai') keyInput.placeholder = 'sk-… klucz API';
+  lsSaveProvider('code', p);
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('ext-api-key');
+  const icon = document.getElementById('eye-icon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+function toggleCodeKeyVis() {
+  const inp = document.getElementById('code-api-key');
+  const icon = document.getElementById('code-eye-icon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+// ─── AI Grouping ─────────────────────────────────────────────────────────────
+let aiGroups = null; // null = use auto-split, array = AI groups
+
+async function runAiGrouping() {
+  if (!items.length) { alert('Dodaj najpierw pytania i odpowiedzi.'); return; }
+  if (codeProvider !== 'claude' && !document.getElementById('code-api-key').value.trim()) {
+    alert('Wpisz klucz API w polu obok.'); return;
+  }
+
+  const btn = document.getElementById('ai-group-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="ai-spinner"></span> Grupuję…';
+
+  // Build section hints from last import if available
+  const sectionHints = window._lastImportSections
+    ? '\n\nSekcje tematyczne wykryte z dokumentu (użyj jako podstawy grup):\n' +
+      window._lastImportSections.map((s,i) => `  Sekcja ${i+1} "${s.name}": pytania [${s.indices.join(', ')}]`).join('\n')
+    : '';
+
+  const faqList = items.map((it, i) => `[${i}] ${it.q}`).join('\n');
+  const prompt = `Jesteś ekspertem SEO i architektury informacji. Masz do pogrupowania ${items.length} pytań FAQ.
+
+Pytania (format [indeks] treść):
+${faqList}${sectionHints}
+
+Zadanie: Pogrupuj pytania w logiczne zestawy do osobnych podstron FAQ, kierując się:
+1. Tematycznym podobieństwem (np. płatności, dostawa, zwroty, bezpieczeństwo)
+2. Intencją SEO (informacyjna, transakcyjna, nawigacyjna)
+3. Geografią/lokalizacją jeśli pytania dotyczą krajów, miast, regionów — utwórz osobne grupy geo
+4. Każda grupa 4–8 pytań (SEO optimum dla featured snippets i PAA), max 10, min 3
+5. Nie pomijaj żadnego pytania — każde musi trafić do dokładnie jednej grupy
+
+Odpowiedz TYLKO w JSON (zero markdown):
+{
+  "groups": [
+    {
+      "name": "Nazwa grupy (po polsku, krótka)",
+      "slug": "url-slug-po-angielsku",
+      "description": "Jedno zdanie czego dotyczy ta podstrona (dla meta description)",
+      "seo_intent": "informational|transactional|navigational|mixed",
+      "geo": "nazwa regionu/kraju albo null",
+      "indices": [0, 3, 7, 12]
+    }
+  ]
+}`;
+
+  try {
+    const raw = await callAI(codeProvider, document.getElementById('code-api-key')?.value?.trim() || '', prompt);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch(e) {
+      // recover partial
+      const gMatch = raw.match(/"groups"\s*:\s*(\[[\s\S]*)/);
+      if (gMatch) {
+        try {
+          // try to close truncated array
+          let arr = gMatch[1];
+          const depth = (arr.match(/\{/g)||[]).length - (arr.match(/\}/g)||[]).length;
+          arr += '}'.repeat(Math.max(0,depth)) + ']';
+          parsed = { groups: JSON.parse(arr) };
+        } catch(e2) { parsed = null; }
+      }
+    }
+
+    if (!parsed?.groups?.length) throw new Error('AI nie zwróciło poprawnych grup. Spróbuj ponownie.');
+
+    // Validate: every item index used exactly once
+    const used = new Set();
+    parsed.groups.forEach(g => (g.indices || []).forEach(i => used.add(i)));
+    // Assign missed items to last group
+    items.forEach((_, i) => { if (!used.has(i)) parsed.groups[parsed.groups.length - 1].indices.push(i); });
+
+    aiGroups = parsed.groups;
+    splitDismissed = true; // switch off auto-split banner
+    currentPartIndex = 0;
+    renderAiGroupsBanner();
+    refreshCode();
+
+  } catch(err) {
+    alert('Błąd grupowania AI: ' + String(err));
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><path d="M5 9v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><line x1="12" y1="13" x2="12" y2="17"/><rect x="7" y="17" width="10" height="4" rx="1"/></svg> AI: Dobierz grupy';
+  }
+}
+
+function renderAiGroupsBanner() {
+  if (!aiGroups) return;
+  const banner = document.getElementById('split-banner');
+  banner.style.display = 'block';
+
+  const intentColors = { informational:'#3b82f6', transactional:'#059669', navigational:'#7c3aed', mixed:'#d97706' };
+  const intentLabels = { informational:'Informacyjna', transactional:'Transakcyjna', navigational:'Nawigacyjna', mixed:'Mieszana' };
+
+  banner.innerHTML = `
+  <div style="margin-top:16px; background:#f0f4ff; border:1px solid #c7d2fe; border-radius:var(--radius-lg); padding:16px 18px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#3730a3;display:flex;align-items:center;gap:6px;">
+          <svg viewBox="0 0 24 24" stroke-width="2" style="width:15px;height:15px;stroke:#6366f1;fill:none;"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><path d="M5 9v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><line x1="12" y1="13" x2="12" y2="17"/><rect x="7" y="17" width="10" height="4" rx="1"/></svg>
+          AI dobrała ${aiGroups.length} grup podstron FAQ
+        </div>
+        <div style="font-size:11.5px;color:#4338ca;margin-top:2px;">Kliknij grupę, aby zobaczyć kod i pobrać plik.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-sm" style="background:#6366f1;color:white;border-color:#6366f1;font-size:12px;" onclick="downloadAllAiGroups()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Pobierz wszystkie
+        </button>
+        <button class="btn btn-ghost btn-sm" style="font-size:12px;" onclick="clearAiGroups()">✕ Usuń grupowanie</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;" id="ai-group-cards">
+      ${aiGroups.map((g, i) => {
+        const ic = intentColors[g.seo_intent] || '#6366f1';
+        const il = intentLabels[g.seo_intent] || g.seo_intent;
+        const active = i === currentPartIndex;
+        return `<div onclick="selectAiGroup(${i})" style="
+          display:flex;align-items:center;gap:10px;padding:10px 14px;
+          border-radius:var(--radius);cursor:pointer;transition:all .12s;
+          border:1.5px solid ${active ? '#6366f1' : '#c7d2fe'};
+          background:${active ? '#e0e7ff' : 'white'};">
+          <div style="width:28px;height:28px;border-radius:50%;background:${ic}22;color:${ic};
+            display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">${i+1}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:#1e1b4b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(g.name)}</div>
+            <div style="font-size:11px;color:#6366f1;margin-top:1px;">/${esc(g.slug)}${g.geo ? ' · 📍 '+esc(g.geo) : ''}</div>
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
+            <span style="font-size:10.5px;padding:2px 8px;border-radius:20px;background:${ic}18;color:${ic};font-weight:500;">${il}</span>
+            <span style="font-size:10.5px;padding:2px 8px;border-radius:20px;background:#e0e7ff;color:#4338ca;font-weight:500;">${g.indices.length} pytań</span>
+          </div>
+          <button onclick="event.stopPropagation();downloadAiGroup(${i})" style="background:none;border:1px solid #c7d2fe;border-radius:6px;padding:4px 8px;cursor:pointer;color:#6366f1;font-size:11px;font-family:inherit;flex-shrink:0;" title="Pobierz tę grupę">↓</button>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function selectAiGroup(i) {
+  currentPartIndex = i;
+  renderAiGroupsBanner();
+  refreshCode();
+}
+
+function clearAiGroups() {
+  aiGroups = null;
+  splitDismissed = false;
+  currentPartIndex = 0;
+  document.getElementById('split-banner').style.display = 'none';
+  refreshCode();
+}
+
+function downloadAiGroup(i) {
+  const g = aiGroups[i];
+  const groupItems = g.indices.map(idx => items[idx]).filter(Boolean);
+  const full = buildStandaloneHtml(groupItems, i + 1, aiGroups.length, g.name);
+  triggerDownload(full, `faq-${g.slug}.html`);
+}
+
+function downloadAllAiGroups() {
+  aiGroups.forEach((g, i) => {
+    setTimeout(() => downloadAiGroup(i), i * 350);
+  });
+}
+
+// ─── unified AI call helper ───────────────────────────────────────────────────
+async function callAI(provider, key, prompt) {
+  if (provider === 'claude') {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    return data.content?.find(b => b.type === 'text')?.text || '';
+  }
+  // OpenAI-compatible (Grok + OpenAI)
+  const endpoints = { grok: 'https://api.x.ai/v1/chat/completions', openai: 'https://api.openai.com/v1/chat/completions' };
+  const models    = { grok: 'grok-3', openai: 'gpt-4o' };
+  const resp = await fetch(endpoints[provider], {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({
+      model: models[provider], max_tokens: 4000,
+      messages: [
+        { role: 'system', content: 'Odpowiadasz wyłącznie poprawnym JSON bez żadnego dodatkowego tekstu ani markdown.' },
+        { role: 'user', content: prompt }
+      ]
+    })
+  });
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return data.choices?.[0]?.message?.content || '';
+}
+
+
+
+// ─── AI analysis ─────────────────────────────────────────────────────────────
+async function runAiAnalysis() {
+  if (!items.length) { alert('Dodaj najpierw pytania i odpowiedzi.'); return; }
+  const extKey = document.getElementById('ext-api-key')?.value?.trim() || '';
+  if (aiProvider !== 'claude' && !extKey) {
+    alert('Wpisz klucz API xAI (Grok) w polu obok przycisku.'); return;
+  }
+
+  const results = items.map(analyzeItem);
+  renderSeoResults(results, null);
+
+  items.forEach((_, i) => {
+    const el = document.getElementById('seo-ai-text-' + i);
+    if (el) el.textContent = 'Analizuję…';
+    const spin = document.getElementById('ai-spin-' + i);
+    if (spin) spin.style.display = 'inline-block';
+  });
+
+  const btn = document.getElementById('seo-ai-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="ai-spinner"></span> Analizuję…';
+
+  const faqText = items.map((it, i) => `Q${i+1}: ${it.q}\nA${i+1}: ${it.a}`).join('\n\n');
+  const prompt = `Jesteś ekspertem SEO specjalizującym się w optymalizacji treści FAQ dla Google Search.
+Przeanalizuj poniższe pytania i odpowiedzi FAQ pod kątem SEO (featured snippets, rich results, PAA boxes).
+
+FAQ:
+${faqText}
+
+Odpowiedz TYLKO w JSON (bez markdown, bez komentarzy), w formacie:
+{
+  "overall": "2-3 zdania ogólnej oceny całego FAQ",
+  "items": [
+    { "index": 0, "score": 85, "tip": "Konkretna wskazówka (max 2 zdania, po polsku)" }
+  ]
+}
+
+Skup się na: intencji wyszukiwania, potencjale na featured snippet, jakości odpowiedzi, słowach kluczowych, strukturze.`;
+
+  try {
+    let raw = '';
+
+    raw = await callAI(aiProvider, extKey, prompt);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch(e) {
+      parsed = { overall: "", items: [] };
+      try {
+        const s = raw.indexOf('"'); const e2 = raw.lastIndexOf('"');
+        const oStart = raw.indexOf('"overall":');
+        if (oStart !== -1) {
+          const q1 = raw.indexOf('"', oStart + 10);
+          const q2 = raw.indexOf('"', q1 + 1);
+          if (q1 !== -1 && q2 !== -1) parsed.overall = raw.slice(q1 + 1, q2);
+        }
+        const itemRe = /"index"\s*:\s*(\d+)[\s\S]*?"tip"\s*:\s*"([^"]*)"/g;
+        let m; while ((m = itemRe.exec(raw)) !== null) {
+          parsed.items.push({ index: parseInt(m[1]), tip: m[2] });
+        }
+      } catch(e3) {}
+      if (!parsed.overall && !parsed.items.length) parsed.overall = raw.slice(0, 400);
+    }
+
+    const labels2 = { claude: '✶ Claude (Anthropic)', grok: '✶ Grok (xAI)', openai: '✶ OpenAI GPT-4o' };
+    renderSeoResults(results, parsed.overall || '', labels2[aiProvider] || '✶ AI');
+
+    (parsed.items || []).forEach(item => {
+      const idx = typeof item.index === 'number' ? item.index : null;
+      if (idx === null) return;
+      const el = document.getElementById('seo-ai-text-' + idx);
+      if (el) el.textContent = item.tip || '';
+      const spin = document.getElementById('ai-spin-' + idx);
+      if (spin) spin.style.display = 'none';
+    });
+
+  } catch(err) {
+    const bodyEl = document.getElementById('seo-body');
+    if (bodyEl) bodyEl.innerHTML += `<div class="warn-box" style="margin-top:12px;">
+      <svg viewBox="0 0 24 24" stroke-width="2" style="width:15px;height:15px;stroke:currentColor;fill:none;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <span>Błąd API (${aiProvider}): ${esc(String(err))}</span>
+    </div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" stroke-width="2" style="width:14px;height:14px;stroke:currentColor;fill:none;"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg> Analiza AI';
+  }
+}
+// ─── Guidelines ───────────────────────────────────────────────────────────────
+function renderGuide() {
+  const body = document.getElementById('guide-body');
+  if (!body || body.dataset.rendered) return;
+  body.dataset.rendered = '1';
+
+  body.innerHTML = `
+  <div class="guide-hero">
+    <div style="flex:1;min-width:220px;">
+      <div style="font-size:15px;font-weight:700;color:#3730a3;margin-bottom:6px;">Złote zasady FAQ SEO w 2025</div>
+      <div style="font-size:12.5px;color:#4338ca;line-height:1.65;">
+        Sekcja FAQ to jeden z najskuteczniejszych formatów treści dla Google Search — pod warunkiem poprawnej struktury, tematycznego skupienia i wdrożenia schema.org. Poniżej kompletny zbiór wytycznych.
+      </div>
+    </div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+      ${heroStat('4–8','pytań na stronę<br>(SEO optimum)')}
+      ${heroStat('40–60','słów na odpowiedź<br>(featured snippet)')}
+      ${heroStat('≥20','znaków pytania<br>(min. długość)')}
+      ${heroStat('100%','schema.org<br>FAQPage')}
+    </div>
+  </div>
+
+  <div class="guide-divider">Struktura i liczba pytań</div>
+  <div class="guide-grid">
+    ${card('blue','M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2','Liczba pytań na stronę','Google PAA & featured snippets',
+      [
+        ['ok','<strong>4–8 pytań</strong> na podstronę — idealne dla featured snippets i pudełek PAA (People Also Ask)'],
+        ['ok','<strong>Max 10 pytań</strong> przy szerokim temacie — zachowaj spójność tematyczną'],
+        ['bad','<strong>Unikaj 15+</strong> pytań na jednej stronie — rozmywa temat, niższy CTR w rich results'],
+        ['tip','Jeśli masz 20+ pytań, podziel na tematyczne podstrony: <code>/faq/dostawa</code>, <code>/faq/zwroty</code>'],
+        ['tip','Każda podstrona = jedna wyraźna intencja wyszukiwania (informacyjna / transakcyjna)'],
+      ]
+    )}
+    ${card('green','M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z','Tematyczne grupowanie','Jeden temat = jedna strona FAQ',
+      [
+        ['ok','Grupuj pytania według <strong>tematyki</strong>: płatności, dostawa, produkt, bezpieczeństwo'],
+        ['ok','Grupuj według <strong>lokalizacji/geo</strong>: osobna strona FAQ dla każdego kraju/regionu'],
+        ['tip','Nagłówki H2/H3 w dokumencie Word to naturalne granice grup — generator je wykrywa automatycznie'],
+        ['warn','Nie mieszaj tematów niezwiązanych ze sobą w jednej sekcji FAQ'],
+        ['tip','Struktura URL: <code>/faq/[temat-slug]</code> — wzmacnia sygnał tematyczny dla Google'],
+      ]
+    )}
+  </div>
+
+  <div class="guide-divider">Formułowanie pytań</div>
+  <div class="guide-grid">
+    ${card('purple','M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z','Optymalne pytania','Jak formułować, żeby Google polubił',
+      [
+        ['ok','Zacznij od <strong>słowa pytającego</strong>: Jak, Co, Czy, Gdzie, Kiedy, Ile, Dlaczego, Kto'],
+        ['ok','Zakończ znakiem <strong>„?"</strong> — Google traktuje to jako sygnał pytania w strukturze'],
+        ['ok','Długość: <strong>20–150 znaków</strong> — wystarczająco szczegółowe, nie za długie'],
+        ['warn','Nie używaj pytań zbyt ogólnych: ❌ <em>„Co to jest?"</em> — brak kontekstu'],
+        ['tip','Wzoruj się na <strong>autouzupełnianiu Google</strong> i pudełkach PAA dla swojej branży'],
+        ['tip','Pytania w języku naturalnym konwertują lepiej niż keyword-stuffed frazy'],
+      ]
+    )}
+    ${card('amber','M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z','Słowa kluczowe w pytaniach','Naturalne vs. wymuszone',
+      [
+        ['ok','Główne słowo kluczowe strony <strong>obecne w co najmniej 2–3 pytaniach</strong>'],
+        ['ok','Słowa kluczowe <strong>długiego ogona</strong> (long-tail) w pytaniach — łatwiej rankować'],
+        ['warn','Nie upychaj słów kluczowych sztucznie — Google rozpoznaje to jako spam'],
+        ['tip','Synonim i warianty słownikowe są w porządku — Google rozumie semantykę'],
+        ['bad','❌ <em>„Jak kupić tanie wycieczki last minute wycieczki do Turcji?"</em> — podwójne kw.'],
+        ['ok','✓ <em>„Jak znaleźć tanie last minute do Turcji?"</em> — naturalnie, raz'],
+      ]
+    )}
+  </div>
+
+  <div class="guide-divider">Jakość odpowiedzi</div>
+  <div class="guide-grid">
+    ${card('green','M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z','Długość i struktura odpowiedzi','Featured snippet sweet spot',
+      [
+        ['ok','<strong>40–60 słów</strong> = ideał dla wyróżnionego fragmentu (featured snippet)'],
+        ['ok','<strong>Min. 30 słów</strong> — poniżej tej granicy odpowiedź jest zbyt mała dla Google'],
+        ['warn','<strong>Powyżej 300 słów</strong> — rozważ przeniesienie treści na osobną stronę z linkiem z FAQ'],
+        ['ok','Zacznij <strong>bezpośrednio od odpowiedzi</strong>: „Tak, można…" / „Czas realizacji wynosi…"'],
+        ['tip','Unikaj wstępów: ❌ <em>„Świetne pytanie! W naszej firmie…"</em>'],
+        ['tip','Możesz użyć listy punktowej wewnątrz odpowiedzi — Google renderuje ją w snippecie'],
+      ]
+    )}
+    ${card('blue','M13 10V3L4 14h7v7l9-11h-7z','Słowa kluczowe w odpowiedziach','Pokrycie semantyczne',
+      [
+        ['ok','Powtórz <strong>kluczowe słowa z pytania</strong> w pierwszym zdaniu odpowiedzi'],
+        ['ok','Dodaj <strong>semantycznie powiązane terminy</strong> (LSI) — wzbogaca kontekst dla AI i Google'],
+        ['warn','Nie wklejaj całego pytania jako pierwszego zdania odpowiedzi — wygląda sztucznie'],
+        ['tip','<strong>Density</strong>: główne kw. 1–2x w odpowiedzi max — więcej to keyword stuffing'],
+        ['ok','Dla pytań geo: uwzględnij nazwę miejsca w odpowiedzi (<em>„W Turcji wymagane jest…"</em>)'],
+      ]
+    )}
+    ${card('purple','M13.828 10.172a4 4 0 0 0-5.656 0l-4 4a4 4 0 1 0 5.656 5.656l1.102-1.101m-.758-4.899a4 4 0 0 0 5.656 0l4-4a4 4 0 1 0-5.656-5.656l-1.1 1.1','Linki w odpowiedziach','Tak, ale z zasadami',
+      [
+        ['ok','<strong>Max 1–2 linki</strong> na odpowiedź — jeden link wewnętrzny na końcu'],
+        ['ok','Linki wewnętrzne do powiązanych stron: <em>→ strona produktu, artykuł, poradnik</em>'],
+        ['ok','Anchor text opisowy: <em>„Sprawdź szczegóły dostawy"</em> zamiast „kliknij tutaj"'],
+        ['bad','Linki zewnętrzne w FAQ — ryzyko odprowadzenia ruchu poza serwis'],
+        ['tip','Link zachowany jest w <code>acceptedAnswer</code> schema.org — Google go indeksuje'],
+        ['warn','Nie linkuj do tej samej strony wielokrotnie w jednej sekcji FAQ'],
+      ]
+    )}
+  </div>
+
+  <div class="guide-divider">Schema.org i dane strukturalne</div>
+  <div class="guide-grid">
+    ${card('blue','M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4','FAQPage schema.org','Obowiązkowe dla rich results',
+      [
+        ['ok','Użyj <code>itemscope itemtype="…/FAQPage"</code> na elemencie <code>&lt;section&gt;</code>'],
+        ['ok','Każde pytanie: <code>itemtype="…/Question"</code>, treść: <code>itemprop="name"</code>'],
+        ['ok','Każda odpowiedź: <code>itemtype="…/Answer"</code>, treść: <code>itemprop="text"</code>'],
+        ['tip','Alternatywnie użyj <strong>JSON-LD</strong> w <code>&lt;head&gt;</code> — czyściej, Google preferuje'],
+        ['warn','Tekst w schema.org musi być <strong>identyczny</strong> z widocznym tekstem na stronie'],
+        ['bad','Nie ukrywaj pytań/odpowiedzi przez CSS <code>display:none</code> — Google nie zaindeksuje'],
+      ]
+    )}
+    ${card('green','M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2v14a2 2 0 0 0-2 2h-2a2 2 0 0 0-2-2z','Rich Results & SERP Features','Co zyskujesz w Google',
+      [
+        ['ok','<strong>FAQ Rich Result</strong> — rozwinięte pytania bezpośrednio w SERP (organiczne)'],
+        ['ok','<strong>PAA (People Also Ask)</strong> — FAQ z właściwą strukturą zasila te pudełka'],
+        ['ok','<strong>Featured Snippet</strong> — odpowiedź 40–60 słów może zostać wyróżnionym fragmentem'],
+        ['tip','Testuj przez <em>Google Rich Results Test</em> (search.google.com/test/rich-results)'],
+        ['warn','Rich Results FAQ wymagają treści niepowtarzalnej — nie kopiuj Q&A z innych stron'],
+      ]
+    )}
+  </div>
+
+  <div class="guide-divider">AI SEO — nowy wymiar (2024–2025)</div>
+  <div class="guide-grid">
+    ${card('purple','M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z','ChatGPT / Gemini / Perplexity','Jak AI cytuje Twoje FAQ',
+      [
+        ['ai','FAQ w formacie Q&A jest <strong>idealnym formatem dla LLM</strong> — modele AI lubią jasną strukturę'],
+        ['ai','Odpowiedzi zaczynające się od <strong>bezpośredniej odpowiedzi</strong> są częściej cytowane przez AI'],
+        ['ai','<strong>Krótkie, precyzyjne odpowiedzi</strong> (40–80 słów) są preferowane przez AI jako źródło'],
+        ['tip','Uwzględnij <strong>kontekst semantyczny</strong> — AI rozumie synonimy i pojęcia pokrewne'],
+        ['ok','Wyraźna <strong>autorytarność treści</strong>: podaj źródło, datę, ekspertyzę — AI to docenia'],
+        ['ai','Używaj <strong>list i definicji</strong> wewnątrz odpowiedzi — LLM ekstraktują je lepiej niż ciągły tekst'],
+      ]
+    )}
+    ${card('blue','M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9','GEO — Generative Engine Optimization','Optymalizacja pod AI Overview',
+      [
+        ['ai','<strong>Google AI Overview</strong> (dawniej SGE) aktywnie cytuje FAQ z bogatą strukturą'],
+        ['ai','Używaj <strong>pełnych zdań</strong> w odpowiedziach — AI Overview nie skraca, cytuje dosłownie'],
+        ['tip','Dodaj <strong>daty</strong> i <strong>liczby</strong> do odpowiedzi — AI preferuje precyzyjne, weryfikowalne dane'],
+        ['ai','<strong>E-E-A-T</strong>: Doświadczenie, Ekspertyza, Autorytatywność, Zaufanie — sygnały dla AI Overview'],
+        ['ok','Struktura <code>details/summary</code> jest <strong>neutralna dla AI crawlerów</strong> — czytają treść, nie UI'],
+        ['tip','<strong>Cytuj fakty</strong>, nie opinie — AI Overview preferuje treści merytoryczne'],
+      ]
+    )}
+    ${card('green','M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z','Voice Search & Asystenci głosowi','FAQ = naturalne odpowiedzi głosowe',
+      [
+        ['ok','Pytania w formie naturalnej (<em>„Czy mogę…"</em>, <em>„Jak długo…"</em>) = frazy głosowe'],
+        ['ok','Krótkie odpowiedzi (1–2 zdania) są czytane przez Google Assistant / Alexa / Siri'],
+        ['tip','Użyj <strong>języka konwersacyjnego</strong> — unikaj technicznego żargonu w prostych pytaniach'],
+        ['ai','Pytania głosowe są dłuższe niż tekstowe — uwzględnij long-tail warianty'],
+      ]
+    )}
+  </div>
+
+  <div class="guide-divider">Techniczne SEO</div>
+  <div class="guide-grid">
+    ${card('amber','M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4','Implementacja HTML','details/summary vs. JS accordion',
+      [
+        ['ok','Użyj <code>&lt;details&gt;/&lt;summary&gt;</code> — natywny HTML, indeksowalny przez Googlebot'],
+        ['ok','Googlebot indeksuje zawartość zamkniętych <code>&lt;details&gt;</code> — bez ryzyka'],
+        ['bad','Unikaj accordion opartego wyłącznie na JS bez SSR — treść może być nieindeksowana'],
+        ['tip','Klasa <code>.faq-section</code> z <code>aria-labelledby</code> poprawia dostępność i sygnały UX'],
+        ['ok','<code>display:none</code> przez CSS jest OK dla animacji, ale użyj <code>&lt;details&gt;</code> jako bazę'],
+      ]
+    )}
+    ${card('blue','M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 0 0 1.946-.806 3.42 3.42 0 0 1 4.438 0 3.42 3.42 0 0 0 1.946.806 3.42 3.42 0 0 1 3.138 3.138 3.42 3.42 0 0 0 .806 1.946 3.42 3.42 0 0 1 0 4.438 3.42 3.42 0 0 0-.806 1.946 3.42 3.42 0 0 1-3.138 3.138 3.42 3.42 0 0 0-1.946.806 3.42 3.42 0 0 1-4.438 0 3.42 3.42 0 0 0-1.946-.806 3.42 3.42 0 0 1-3.138-3.138 3.42 3.42 0 0 0-.806-1.946 3.42 3.42 0 0 1 0-4.438 3.42 3.42 0 0 0 .806-1.946 3.42 3.42 0 0 1 3.138-3.138z','Crawlability & Indexing','Czy Google widzi Twoje FAQ',
+      [
+        ['ok','<strong>Canonical URL</strong> na każdej podstronie FAQ — unikaj duplikatów treści'],
+        ['ok','<strong>Sitemap.xml</strong> — uwzględnij podstrony FAQ z sekcji tematycznych'],
+        ['warn','Nie ładuj FAQ przez AJAX/fetch bez SSR lub prerendering — crawlery mogą nie czekać'],
+        ['tip','Dodaj FAQ do <strong>breadcrumbs schema</strong>: Strona główna → FAQ → Dostawa'],
+        ['ok','<strong>Hreflang</strong> dla FAQ w wielu językach — szczególnie ważne dla stron turystycznych'],
+        ['tip','Użyj <strong>InternalLinkingSchema</strong> jeśli FAQ linkuje do produktów/usług'],
+      ]
+    )}
+  </div>
+
+  <div class="guide-divider">Szybki checklist przed publikacją</div>
+  <div class="card" style="overflow:hidden;margin-bottom:8px;">
+    <table class="guide-table">
+      <thead><tr><th style="width:60px;">Status</th><th>Punkt kontrolny</th><th>Priorytet</th></tr></thead>
+      <tbody>
+        ${row('✓','Sekcja ma 4–8 tematycznie spójnych pytań','tag-green','Krytyczny')}
+        ${row('✓','Każde pytanie zaczyna się od słowa pytającego i kończy "?"','tag-green','Wysoki')}
+        ${row('✓','Odpowiedzi mają 40–60 słów (featured snippet)','tag-green','Wysoki')}
+        ${row('✓','Schema.org FAQPage zaimplementowane (microdata lub JSON-LD)','tag-green','Krytyczny')}
+        ${row('✓','Tekst w schema.org = tekst widoczny na stronie','tag-green','Krytyczny')}
+        ${row('✓','Użyto <details>/<summary> lub odpowiednika SSR','tag-blue','Wysoki')}
+        ${row('✓','Słowa kluczowe z pytania powtórzone w pierwszym zdaniu odpowiedzi','tag-blue','Wysoki')}
+        ${row('✓','Max 1 link wewnętrzny na odpowiedź (jeśli dotyczy)','tag-blue','Średni')}
+        ${row('✓','URL podstrony zawiera slug tematyczny (/faq/dostawa)','tag-blue','Średni')}
+        ${row('✓','Canonical URL ustawione na podstronie FAQ','tag-amber','Średni')}
+        ${row('✓','Przetestowane w Google Rich Results Test','tag-amber','Wysoki')}
+        ${row('✓','FAQ dodane do sitemap.xml','tag-amber','Średni')}
+        ${row('✓','Odpowiedzi zaczynają się bezpośrednio od meritum','tag-green','Wysoki')}
+        ${row('✓','Brak duplikatów pytań w obrębie sekcji','tag-green','Wysoki')}
+      </tbody>
+    </table>
+  </div>`;
+
+  function heroStat(num, label) {
+    return `<div class="guide-hero-stat"><div class="guide-hero-num">${num}</div><div class="guide-hero-label">${label}</div></div>`;
+  }
+
+  function card(color, iconPath, title, sub, rules) {
+    const colors = { blue:'#eff4ff', green:'#ecfdf5', purple:'#f5f3ff', amber:'#fffbeb', red:'#fef2f2' };
+    const textColors = { blue:'var(--accent)', green:'#059669', purple:'#7c3aed', amber:'#d97706', red:'#dc2626' };
+    const bg = colors[color] || colors.blue;
+    const tc = textColors[color] || textColors.blue;
+    const rulesHtml = rules.map(([type, text]) => {
+      const dotClass = type === 'ok' ? 'dot-ok' : type === 'bad' ? 'dot-bad' : type === 'warn' ? 'dot-warn' : type === 'ai' ? 'dot-ai' : 'dot-tip';
+      const sym = type === 'ok' ? '✓' : type === 'bad' ? '✗' : type === 'warn' ? '!' : type === 'ai' ? '✦' : '→';
+      return `<div class="guide-rule"><div class="guide-rule-dot ${dotClass}">${sym}</div><div class="guide-rule-text">${text}</div></div>`;
+    }).join('');
+    return `<div class="guide-card">
+      <div class="guide-card-head">
+        <div class="guide-card-icon" style="background:${bg};color:${tc};">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="${iconPath}"/></svg>
+        </div>
+        <div><div class="guide-card-title">${title}</div><div class="guide-card-sub">${sub}</div></div>
+      </div>
+      <div class="guide-card-body">${rulesHtml}</div>
+    </div>`;
+  }
+
+  function row(status, text, tagClass, priority) {
+    return `<tr><td style="text-align:center;font-size:14px;color:#059669;">${status}</td><td>${text}</td><td><span class="guide-tag ${tagClass}">${priority}</span></td></tr>`;
+  }
+}
+
+
+</script>
+</body>
+</html>

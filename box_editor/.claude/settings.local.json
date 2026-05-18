@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(TMPDIR=/tmp sed -i:*)",
+      "Bash(TEMP=/tmp powershell.exe -Command \"$f=''C:\\\\Users\\\\michal.redecki\\\\OneDrive - Coral Travel Group\\\\Dokumenty 1\\\\GitHub\\\\coraltravelpoland.github.io\\\\box_editor\\\\editor.html''; $c=Get-Content $f -Raw; $c=$c.Replace\\(''<div class=\"\"swiper\"\" id=\"\"boxesSwiper\"\">'',''<div class=\"\"swiper boxesSwiper\"\">''\\); $c=$c.Replace\\(''<div class=\"\"boxes-wrapper container\"\">'',''<div class=\"\"boxes-wrapper\"\">''\\); Set-Content $f $c -NoNewline\")",
+      "Bash(export TMPDIR=/tmp:*)",
+      "Bash(export TEMP=/tmp)",
+      "Bash(export TMP=/tmp)",
+      "Bash(powershell.exe:*)",
+      "Bash(cmd.exe /c \"powershell.exe -NoProfile -Command \"\"[IO.File]::WriteAllText\\(''C:\\\\Users\\\\michal.redecki\\\\OneDrive - Coral Travel Group\\\\Dokumenty 1\\\\GitHub\\\\coraltravelpoland.github.io\\\\box_editor\\\\editor.html'', [IO.File]::ReadAllText\\(''C:\\\\Users\\\\michal.redecki\\\\OneDrive - Coral Travel Group\\\\Dokumenty 1\\\\GitHub\\\\coraltravelpoland.github.io\\\\box_editor\\\\editor.html''\\).Replace\\(''<div class=\\\\\"\"swiper\\\\\"\" id=\\\\\"\"boxesSwiper\\\\\"\">'',''<div class=\\\\\"\"swiper boxesSwiper\\\\\"\">''\\).Replace\\(''<div class=\\\\\"\"boxes-wrapper container\\\\\"\">'',''<div class=\\\\\"\"boxes-wrapper\\\\\"\">''\\)\\)\"\"\")"
+    ]
+  }
+}
