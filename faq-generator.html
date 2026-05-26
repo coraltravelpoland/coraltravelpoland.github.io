@@ -23,9 +23,9 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
 
   /* Layout */
-  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; overflow: hidden; }
   .sidebar { background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .main { display: flex; flex-direction: column; min-height: 100vh; }
+  .main { display: flex; flex-direction: column; min-height: 100vh; min-width: 0; overflow: hidden; }
 
   /* Sidebar */
   .sidebar-header { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
@@ -49,9 +49,14 @@
   .mammoth-status svg { width: 13px; height: 13px; stroke: currentColor; fill: none; flex-shrink: 0; }
 
   /* Topbar */
-  .topbar { background: var(--bg); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
-  .topbar-actions { display: flex; gap: 8px; }
+  .topbar { background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; min-width: 0; max-width: 100%; }
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .topbar-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-width: 0; }
+
+  /* Sections */
+  .section { display: none; flex: 1; flex-direction: column; min-width: 0; overflow: hidden; }
+  .section.active { display: flex; }
+  .section-body { padding: 24px; flex: 1; overflow-y: auto; min-width: 0; }
 
   /* Buttons */
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius); font-size: 12.5px; font-weight: 500; cursor: pointer; transition: all 0.12s; border: 1px solid transparent; white-space: nowrap; font-family: inherit; }
@@ -67,10 +72,115 @@
   .btn-sm { padding: 5px 10px; font-size: 11.5px; }
   .btn-icon { padding: 6px; width: 30px; height: 30px; justify-content: center; }
 
-  /* Sections */
-  .section { display: none; flex: 1; flex-direction: column; }
-  .section.active { display: flex; }
-  .section-body { padding: 24px; flex: 1; }
+  /* Saves section */
+  .saves-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .saves-toolbar input[type=text] { flex: 1; min-width: 180px; }
+  .saves-search { margin-bottom: 16px; }
+  .saves-search input { width: 100%; }
+  .saves-empty { text-align: center; padding: 48px 24px; color: var(--text3); }
+  .saves-empty svg { width: 40px; height: 40px; stroke: var(--border2); fill: none; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
+  .project-group { margin-bottom: 20px; }
+  .project-group-header { display: flex; align-items: center; gap: 8px; padding: 8px 0 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+  .project-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+  .project-count { font-size: 11px; color: var(--text3); background: var(--bg3); padding: 2px 7px; border-radius: 10px; }
+  .save-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg); margin-bottom: 6px; transition: border-color 0.12s; }
+  .save-item:hover { border-color: var(--border2); }
+  .save-item.is-latest { border-left: 3px solid var(--accent); }
+  .save-meta { flex: 1; min-width: 0; }
+  .save-version { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-bg); padding: 1px 6px; border-radius: 4px; margin-right: 6px; }
+  .save-date { font-size: 11.5px; color: var(--text2); }
+  .save-stats { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .save-note { font-size: 11px; color: var(--text2); font-style: italic; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+  .save-actions { display: flex; gap: 5px; flex-shrink: 0; }
+  .save-badge-new { font-size: 10px; font-weight: 700; background: var(--success); color: white; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+  .save-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 100; display: flex; align-items: center; justify-content: center; }
+  .save-modal { background: var(--bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 24px; width: 380px; max-width: 90vw; }
+  .save-modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+  .save-modal label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 4px; margin-top: 12px; }
+  .save-modal label:first-of-type { margin-top: 0; }
+  .save-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* Link rules UI */
+  .link-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .link-tab { padding: 8px 14px; font-size: 12.5px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--text2); border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit; transition: color .12s; }
+  .link-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .link-tab-panel { display: none; }
+  .link-tab-panel.active { display: block; }
+  .link-rules-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 12px; }
+  .link-rules-table th { text-align: left; padding: 6px 8px; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border); }
+  .link-rules-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .link-rules-table tr:last-child td { border-bottom: none; }
+  .link-rules-table tr.rule-disabled td { opacity: .45; }
+  .link-rule-phrase { font-weight: 600; color: var(--text); }
+  .link-rule-url { color: var(--accent); font-size: 11.5px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+  .link-rule-tag { font-size: 10px; padding: 1px 5px; border-radius: 4px; background: var(--bg3); color: var(--text3); margin-right: 2px; }
+  .link-rule-tag.on { background: var(--success-bg); color: var(--success); }
+  .link-add-form { background: var(--bg2); border-radius: var(--radius); padding: 14px; margin-top: 8px; }
+  .link-add-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .link-add-form-grid .field { margin: 0; }
+  .link-add-toggles { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+  .link-add-toggle { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); cursor: pointer; user-select: none; }
+  .link-add-toggle input { cursor: pointer; }
+  .link-config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .link-config-grid .field { margin: 0; }
+  .link-config-note { font-size: 11.5px; color: var(--text3); line-height: 1.5; margin-top: 10px; padding: 10px 12px; background: var(--warn-bg); border-radius: var(--radius); border-left: 3px solid var(--warn); }
+  .link-stat-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .link-stat { font-size: 11.5px; color: var(--text2); background: var(--bg2); padding: 4px 10px; border-radius: var(--radius); }
+  .link-stat strong { color: var(--text); }
+
+  /* ── Pack Planner ─────────────────────────────────────── */
+  .planner-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; display: flex; align-items: stretch; justify-content: flex-end; }
+  .planner-panel { background: var(--bg2); width: min(980px, 100vw); display: flex; flex-direction: column; box-shadow: -4px 0 24px rgba(0,0,0,.15); overflow: hidden; animation: slideIn .2s ease; }
+  @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .planner-header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; flex-wrap: wrap; }
+  .planner-title { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; min-width: 120px; }
+  .planner-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .planner-body { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .planner-hint { font-size: 12px; color: var(--text3); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+  .planner-hint svg { width: 14px; height: 14px; stroke: var(--text3); fill: none; flex-shrink: 0; }
+  .planner-footer { background: var(--bg); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; gap: 8px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+  .planner-footer-info { font-size: 12px; color: var(--text3); flex: 1; }
+  .pack-card { background: var(--bg); border: 2px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: border-color .15s; }
+  .pack-card.drag-target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+  .pack-card-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .pack-card-num { font-size: 10.5px; font-weight: 700; color: var(--text3); background: var(--bg3); padding: 2px 7px; border-radius: 4px; flex-shrink: 0; }
+  .pack-name-input { border: none; background: none; font-size: 13px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; font-family: inherit; padding: 2px 6px; border-radius: 4px; outline: none; }
+  .pack-name-input:hover { background: var(--bg2); }
+  .pack-name-input:focus { background: var(--accent-bg); }
+  .pack-seo-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; white-space: nowrap; cursor: help; }
+  .pack-seo-badge.ok   { background: var(--success-bg); color: var(--success); }
+  .pack-seo-badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .pack-seo-badge.bad  { background: var(--danger-bg); color: var(--danger); }
+  .pack-card-actions { display: flex; gap: 3px; flex-shrink: 0; }
+  .pack-preview-strip { display: none; border-bottom: 1px solid var(--border); }
+  .pack-preview-strip.open { display: block; }
+  .pack-preview-frame { padding: 12px 20px; background: var(--bg2); max-height: 320px; overflow-y: auto; }
+  .pack-questions { padding: 4px 0; min-height: 42px; }
+  .pack-q-row { display: flex; align-items: center; gap: 8px; padding: 7px 14px; transition: background .1s; cursor: grab; user-select: none; }
+  .pack-q-row:hover { background: var(--bg2); }
+  .pack-q-row.dragging-q { opacity: .35; background: var(--accent-bg); }
+  .pack-q-row.drag-over-q { border-top: 2px solid var(--accent); }
+  .pack-q-num { font-size: 10.5px; font-weight: 700; color: var(--text3); min-width: 24px; flex-shrink: 0; }
+  .pack-q-text { font-size: 12.5px; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pack-q-move { display: flex; gap: 4px; flex-shrink: 0; opacity: 0; transition: opacity .1s; }
+  .pack-q-row:hover .pack-q-move { opacity: 1; }
+  .pack-q-move select { font-size: 11px; padding: 2px 5px; border: 1px solid var(--border2); border-radius: 4px; background: var(--bg); color: var(--text2); font-family: inherit; cursor: pointer; max-width: 130px; }
+  .pack-empty-drop { padding: 14px; text-align: center; font-size: 12px; color: var(--text3); border: 2px dashed var(--border); border-radius: var(--radius); margin: 8px 14px; transition: border-color .15s, color .15s; }
+  .pack-empty-drop.drag-target { border-color: var(--accent); color: var(--accent); }
+  .pack-seo-legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--text3); align-items: center; }
+
+  /* Per-item links in editor */
+  .qa-links-row { padding: 6px 14px 10px; border-top: 1px dashed var(--border); }
+  .qa-links-header { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text3); margin-bottom: 6px; cursor: pointer; user-select: none; }
+  .qa-links-header svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
+  .qa-links-header:hover { color: var(--text2); }
+  .qa-link-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; background: var(--accent-bg); color: var(--accent); border-radius: 4px; padding: 2px 7px 2px 8px; margin: 2px; }
+  .qa-link-chip button { background: none; border: none; cursor: pointer; color: var(--accent); padding: 0; line-height: 1; font-size: 13px; opacity: .7; }
+  .qa-link-chip button:hover { opacity: 1; }
+  .qa-add-link-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+  .qa-add-link-row input[type=text] { min-width: 0; flex: 1; font-size: 11.5px; padding: 5px 8px; }
+  .qa-add-link-row input[type=text]:first-child { flex: 1.4; }
+  .qa-links-global-hint { font-size: 11px; color: var(--text3); font-style: italic; margin-top: 5px; }
 
   /* Cards */
   .card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); }
@@ -213,10 +323,11 @@
   .seo-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
   .seo-bar-val { font-size: 12px; color: var(--text2); width: 28px; text-align: right; flex-shrink: 0; font-weight: 600; }
   .seo-items { display: flex; flex-direction: column; gap: 10px; }
-  .seo-item-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .seo-item-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: border-color .15s; }
+  .seo-item-card.seo-edited { border-color: var(--accent); }
   .seo-item-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; user-select: none; }
   .seo-item-head:hover { background: var(--bg2); }
-  .seo-item-score { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .seo-item-score { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; transition: all .25s; }
   .score-great { background: #d1fae5; color: #065f46; }
   .score-good  { background: #bbf7d0; color: #065f46; }
   .score-ok    { background: var(--warn-bg); color: #92400e; }
@@ -228,8 +339,25 @@
   .chip-warn  { background: var(--warn-bg); color: #92400e; }
   .chip-red   { background: var(--danger-bg); color: #991b1b; }
   .chip-blue  { background: var(--accent-bg); color: var(--accent); }
-  .seo-item-body { border-top: 1px solid var(--border); padding: 14px 16px; display: none; }
+  .seo-item-body { border-top: 1px solid var(--border); display: none; }
   .seo-item-body.open { display: block; }
+
+  /* Inline editor inside SEO card */
+  .seo-edit-zone { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+  .seo-edit-label { font-size: 10.5px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
+  .seo-edit-live-stats { display: flex; gap: 10px; font-size: 11px; }
+  .seo-edit-stat { color: var(--text3); }
+  .seo-edit-stat.ok   { color: var(--success); font-weight: 600; }
+  .seo-edit-stat.warn { color: var(--warn);    font-weight: 600; }
+  .seo-edit-stat.bad  { color: var(--danger);  font-weight: 600; }
+  .seo-edit-q-input { width: 100%; margin-bottom: 10px; font-size: 13px; font-weight: 500; color: var(--text); }
+  .seo-edit-a-input { width: 100%; min-height: 90px; resize: vertical; font-size: 13px; line-height: 1.65; color: var(--text); }
+  .seo-edit-actions { display: flex; align-items: center; gap: 8px; padding: 8px 16px 10px; background: var(--bg2); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .seo-edit-saved-badge { font-size: 11px; color: var(--success); display: none; align-items: center; gap: 4px; }
+  .seo-edit-saved-badge.show { display: flex; }
+
+  /* Analysis details */
+  .seo-analysis-zone { padding: 14px 16px; }
   .seo-checks { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
   .seo-check { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.45; }
   .seo-check-icon { width: 17px; height: 17px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
@@ -249,6 +377,8 @@
   .ai-global-section { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 20px; }
   .ai-global-title { font-size: 11px; font-weight: 700; color: #7c3aed; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
   .ai-global-body { font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+  .seo-reanalyze-bar { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .seo-reanalyze-bar span { font-size: 12.5px; color: var(--text2); flex: 1; }
   .provider-btn { display:inline-flex;align-items:center;gap:5px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text3);font-family:inherit;transition:all .12s; }
   .provider-btn.active { background:var(--accent);color:white; }
   .provider-btn:not(.active):hover { background:var(--bg2);color:var(--text); }
@@ -336,6 +466,11 @@
         <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         Generuj kod
       </button>
+      <button class="nav-item" onclick="showSection('saves')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Zapisane wersje
+        <span id="saves-nav-badge" style="display:none;margin-left:auto;font-size:10px;font-weight:700;background:var(--accent);color:white;padding:1px 6px;border-radius:8px;"></span>
+      </button>
       <div class="nav-sep"></div>
       <button class="nav-item" onclick="showSection('guide')">
         <svg viewBox="0 0 24 24" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -362,6 +497,10 @@
           <span class="qa-count" id="qa-count">0 pytań</span>
         </div>
         <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openSaveModal()" title="Zapisz wersję (Ctrl+S)">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Zapisz wersję
+          </button>
           <button class="btn btn-ghost btn-sm" onclick="clearAll()">
             <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
             Wyczyść
@@ -548,9 +687,10 @@
                 <div class="field-label">Font (rodzina)</div>
                 <select id="cfg-font" onchange="schedulePreviewRefresh()">
                   <option value="system">System UI (domyślny)</option>
-                  <option value="serif">Serif (Georgia)</option>
+                  <option value="manrope">Manrope (Google Fonts)</option>
                   <option value="inter">Inter (Google Fonts)</option>
                   <option value="lato">Lato (Google Fonts)</option>
+                  <option value="serif">Serif (Georgia)</option>
                 </select>
               </div>
             </div>
@@ -577,7 +717,7 @@
             <div class="toggle-row">
               <div class="toggle-label">
                 JavaScript – zamykanie innych elementów
-                <span>Opcjonalny; &lt;details&gt; działa też bez JS</span>
+                <span>Opcjonalny; zamknięcie innych elementów akordeonu (accordion)</span>
               </div>
               <label class="toggle"><input type="checkbox" id="cfg-js" checked onchange="schedulePreviewRefresh()"><span class="toggle-track"></span></label>
             </div>
@@ -590,6 +730,99 @@
             </div>
           </div>
         </div>
+
+        <!-- LINKS CARD -->
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header">
+            <span class="card-title">
+              <svg viewBox="0 0 24 24" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              Linki w odpowiedziach
+            </span>
+            <div id="link-stats-bar" class="link-stat-bar" style="margin:0;"></div>
+          </div>
+          <div class="card-body">
+            <div class="link-tabs">
+              <button class="link-tab active" onclick="switchLinkTab('library',this)">Biblioteka fraz</button>
+              <button class="link-tab" onclick="switchLinkTab('config',this)">Konfiguracja SEO</button>
+            </div>
+
+            <!-- LIBRARY TAB -->
+            <div class="link-tab-panel active" id="link-tab-library">
+              <div id="link-rules-table-wrap"><!-- rendered by JS --></div>
+              <div class="link-add-form">
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;">Dodaj regułę linkowania</div>
+                <div class="link-add-form-grid">
+                  <div class="field">
+                    <div class="field-label">Fraza do zlinkowania</div>
+                    <input type="text" id="lr-phrase" placeholder="np. oferty last minute" oninput="updateLinkAddBtn()">
+                  </div>
+                  <div class="field">
+                    <div class="field-label">URL docelowy</div>
+                    <input type="text" id="lr-url" placeholder="https://example.com/strona" oninput="updateLinkAddBtn()">
+                  </div>
+                  <div class="field">
+                    <div class="field-label">Tekst tytułu (opcjonalny)</div>
+                    <input type="text" id="lr-title" placeholder="np. Sprawdź oferty last minute">
+                  </div>
+                </div>
+                <div class="link-add-toggles">
+                  <label class="link-add-toggle"><input type="checkbox" id="lr-nofollow" checked> rel="nofollow"</label>
+                  <label class="link-add-toggle"><input type="checkbox" id="lr-newtab" checked> target="_blank"</label>
+                  <label class="link-add-toggle"><input type="checkbox" id="lr-enabled" checked> Aktywna</label>
+                </div>
+                <button class="btn btn-primary btn-sm" id="lr-add-btn" onclick="addLinkRule()" disabled>
+                  <svg viewBox="0 0 24 24" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Dodaj regułę
+                </button>
+              </div>
+            </div>
+
+            <!-- CONFIG TAB -->
+            <div class="link-tab-panel" id="link-tab-config">
+              <div class="link-config-grid">
+                <div class="field">
+                  <div class="field-label">Max linków na odpowiedź</div>
+                  <select id="lc-max-per-answer" onchange="saveLinkConfig()">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <div class="field-label">Min. słów między linkami</div>
+                  <input type="number" id="lc-min-words" value="15" min="5" max="60" onchange="saveLinkConfig()">
+                </div>
+                <div class="field">
+                  <div class="field-label">Max linków w całym FAQ</div>
+                  <input type="number" id="lc-max-total" value="0" min="0" onchange="saveLinkConfig()" placeholder="0 = bez limitu">
+                  <div style="font-size:11px;color:var(--text3);margin-top:3px;">0 = bez limitu globalnego</div>
+                </div>
+                <div class="field">
+                  <div class="field-label">Priorytet linkowania</div>
+                  <select id="lc-priority" onchange="saveLinkConfig()">
+                    <option value="first">Pierwsze odpowiedzi (góra → dół)</option>
+                    <option value="spread">Równomierne (rozkład)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                <div class="toggle-row">
+                  <div class="toggle-label">Tylko pierwsze wystąpienie frazy w odpowiedzi<span>Nie linkuje tej samej frazy wielokrotnie w jednej odpowiedzi</span></div>
+                  <label class="toggle"><input type="checkbox" id="lc-first-only" checked onchange="saveLinkConfig()"><span class="toggle-track"></span></label>
+                </div>
+                <div class="toggle-row">
+                  <div class="toggle-label">Nie linkuj frazy w pytaniu<span>Frazy z biblioteki nie będą szukane w treści pytań</span></div>
+                  <label class="toggle"><input type="checkbox" id="lc-skip-question" checked onchange="saveLinkConfig()"><span class="toggle-track"></span></label>
+                </div>
+              </div>
+              <div class="link-config-note">
+                <strong>Zalecenia SEO:</strong> max 1–2 linki na odpowiedź, min. 15 słów między linkami. Zbyt wiele linków w FAQ może być odebrane przez Google jako sztuczne linkowanie i negatywnie wpłynąć na ranking. Linki per-item (dodane bezpośrednio do pytania) nie wliczają się do globalnych limitów.
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -654,7 +887,7 @@
           </div>
           <button class="btn btn-ghost btn-sm" id="seo-run-rules-btn" onclick="runRuleAnalysis()">
             <svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            Odśwież
+            Analizuj ponownie
           </button>
           <button class="btn btn-primary btn-sm" id="seo-ai-btn" onclick="runAiAnalysis()">
             <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><circle cx="18" cy="6" r="4" fill="none"/><path d="M18 4v2l1.5 1.5" stroke-width="1.5"/></svg>
@@ -676,24 +909,34 @@
       <div class="topbar">
         <div class="topbar-left"><span class="topbar-title">Gotowy kod HTML</span></div>
         <div class="topbar-actions">
-          <button class="btn btn-ghost btn-sm" onclick="showSection('settings')">
+          <button class="btn btn-ghost btn-sm" onclick="showSection('settings')" title="Ustawienia wyglądu">
             <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Ustawienia
           </button>
-          <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;" title="Wybierz model AI do grupowania">
-            <button class="provider-btn active" id="code-prov-claude" onclick="setCodeProvider('claude')" style="font-size:11px;padding:5px 10px;">Claude</button>
-            <button class="provider-btn" id="code-prov-grok" onclick="setCodeProvider('grok')" style="font-size:11px;padding:5px 10px;">Grok</button>
-            <button class="provider-btn" id="code-prov-openai" onclick="setCodeProvider('openai')" style="font-size:11px;padding:5px 10px;">OpenAI</button>
-          </div>
-          <div id="code-key-wrap" style="display:none;position:relative;">
-            <input type="password" id="code-api-key" placeholder="klucz API…" oninput="lsSaveKey('code',this.value)" style="width:180px;padding:5px 28px 5px 9px;font-size:12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;outline:none;">
-            <button onclick="toggleCodeKeyVis()" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;">
-              <svg id="code-eye-icon" viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
+          <button class="btn btn-ghost btn-sm" id="planer-btn" onclick="openPackPlanner()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Planer
+            <span id="planer-packs-badge" style="display:none;background:var(--accent);color:white;font-size:10px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:2px;"></span>
+          </button>
           <button class="btn btn-primary btn-sm" id="ai-group-btn" onclick="runAiGrouping()">
             <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><path d="M5 9v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><line x1="12" y1="13" x2="12" y2="17"/><rect x="7" y="17" width="10" height="4" rx="1"/></svg>
-            AI: Dobierz grupy
+            AI: Grupy
+          </button>
+        </div>
+      </div>
+
+      <!-- AI provider subbar (compact, below topbar) -->
+      <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:var(--text3);font-weight:500;">Model AI do grupowania:</span>
+        <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;">
+          <button class="provider-btn active" id="code-prov-claude" onclick="setCodeProvider('claude')" style="font-size:11px;padding:4px 9px;">Claude</button>
+          <button class="provider-btn" id="code-prov-grok"   onclick="setCodeProvider('grok')"   style="font-size:11px;padding:4px 9px;">Grok</button>
+          <button class="provider-btn" id="code-prov-openai" onclick="setCodeProvider('openai')" style="font-size:11px;padding:4px 9px;">OpenAI</button>
+        </div>
+        <div id="code-key-wrap" style="display:none;position:relative;">
+          <input type="password" id="code-api-key" placeholder="klucz API…" oninput="lsSaveKey('code',this.value)" style="width:160px;padding:4px 26px 4px 8px;font-size:11.5px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;outline:none;">
+          <button onclick="toggleCodeKeyVis()" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:0;">
+            <svg id="code-eye-icon" viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:currentColor;fill:none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
       </div>
@@ -703,24 +946,28 @@
         <div style="margin-top:16px; background:#fffbeb; border:1px solid #fcd34d; border-radius:var(--radius-lg); padding:16px 18px;">
           <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
             <div style="flex:1;min-width:240px;">
-              <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:4px;">
+              <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:4px;" id="split-banner-title">
                 <svg viewBox="0 0 24 24" stroke-width="2" style="width:15px;height:15px;stroke:#d97706;fill:none;vertical-align:-2px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 Masz <span id="split-count"></span> pytań — zalecany podział na podstrony
               </div>
-              <div style="font-size:12px;color:#92400e;line-height:1.55;">
-                Optymalnie 4–8 pytań na podstronę (featured snippets, PAA). Możesz podzielić automatycznie lub użyć AI uwzględniającego tematykę z dokumentu.
+              <div style="font-size:12px;color:#92400e;line-height:1.55;" id="split-banner-sub">
+                Optymalnie 4–8 pytań na podstronę (featured snippets, PAA). Wybierz rozmiar lub otwórz Planer paczek po ręczny podział.
               </div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap;">
+            <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap;" id="split-auto-controls">
               <label style="font-size:12px;color:#92400e;font-weight:500;">Pytań na stronę:</label>
-              <select id="split-size" onchange="refreshCode()" style="width:70px;font-size:12px;padding:5px 8px;border:1px solid #fcd34d;border-radius:6px;background:#fffbeb;color:#92400e;">
-                <option value="10">10</option>
+              <select id="split-size" onchange="manualPacks=null;splitDismissed=false;refreshCode()" style="width:70px;font-size:12px;padding:5px 8px;border:1px solid #fcd34d;border-radius:6px;background:#fffbeb;color:#92400e;">
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
                 <option value="8" selected>8</option>
-                <option value="20">20</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
               </select>
               <button class="btn btn-sm" style="background:#d97706;color:white;border-color:#d97706;" onclick="downloadAllParts()">
                 <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Pobierz wszystkie części
+                Pobierz wszystkie
               </button>
               <button class="btn btn-ghost btn-sm" style="font-size:12px;" onclick="dismissSplit()">Ignoruj</button>
             </div>
@@ -728,7 +975,7 @@
 
           <!-- Part tabs -->
           <div id="part-tabs-wrap" style="margin-top:14px;border-top:1px solid #fcd34d;padding-top:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-            <span style="font-size:11px;color:#92400e;font-weight:600;margin-right:4px;">Część:</span>
+            <span style="font-size:11px;color:#92400e;font-weight:600;margin-right:4px;">Paczka:</span>
             <div id="part-tabs" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
           </div>
         </div>
@@ -791,22 +1038,108 @@
       </div>
     </section>
 
+    <!-- SAVES -->
+    <section class="section" id="section-saves">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-title">Zapisane wersje</span>
+          <span class="qa-count" id="saves-count-label"></span>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="openSaveModal()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Zapisz bieżący stan
+          </button>
+        </div>
+      </div>
+      <div class="section-body" style="max-width:780px;">
+        <div class="saves-search">
+          <input type="text" id="saves-search-input" placeholder="Szukaj po nazwie projektu…" oninput="renderSavesList()">
+        </div>
+        <div id="saves-list-container"></div>
+      </div>
+    </section>
+
+    <!-- SAVE MODAL -->
+    <div id="save-modal" style="display:none;" class="save-modal-overlay" onclick="if(event.target===this)closeSaveModal()">
+      <div class="save-modal">
+        <h3>Zapisz wersję FAQ</h3>
+        <label>Nazwa projektu (grupuje wersje razem)</label>
+        <input type="text" id="save-modal-name" placeholder="np. FAQ – strona główna" style="width:100%;">
+        <label>Notatka do tej wersji <span style="font-weight:400;color:var(--text3)">(opcjonalna)</span></label>
+        <input type="text" id="save-modal-note" placeholder="np. po korekcie SEO, wersja do akceptacji…" style="width:100%;">
+        <div class="save-modal-actions">
+          <button class="btn btn-ghost" onclick="closeSaveModal()">Anuluj</button>
+          <button class="btn btn-primary" onclick="confirmSave()">
+            <svg viewBox="0 0 24 24" stroke-width="2" style="width:14px;height:14px;stroke:currentColor;fill:none;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Zapisz
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PACK PLANNER MODAL -->
+    <div id="pack-planner" style="display:none;" class="planner-overlay" onclick="if(event.target===this)closePackPlanner()">
+      <div class="planner-panel">
+        <div class="planner-header">
+          <span class="planner-title">
+            <svg viewBox="0 0 24 24" stroke-width="2" style="width:16px;height:16px;stroke:var(--accent);fill:none;vertical-align:-3px;margin-right:6px;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Planer podziału FAQ na paczki
+          </span>
+          <div class="planner-actions">
+            <button class="btn btn-primary btn-sm" onclick="suggestAndApplySeoPacks()">
+              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Zaproponuj podział SEO
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="addEmptyPack()">
+              <svg viewBox="0 0 24 24" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Dodaj paczkę
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="closePackPlanner()">✕ Zamknij</button>
+          </div>
+        </div>
+        <div class="planner-body">
+          <div class="planner-hint">
+            <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>
+              Przeciągaj pytania między paczkami lub użyj strzałek →. SEO optimum: <strong>4–8 pytań na podstronę</strong>.
+              <span class="pack-seo-legend" style="display:inline-flex;margin-left:10px;">
+                <span><span class="pack-seo-badge ok" style="pointer-events:none;">✓ 4–8</span> OK</span>
+                <span><span class="pack-seo-badge warn" style="pointer-events:none;">⚠ 1–3</span> mało</span>
+                <span><span class="pack-seo-badge bad" style="pointer-events:none;">✗ 9+</span> dużo</span>
+              </span>
+            </span>
+          </div>
+          <div id="planner-packs-container"></div>
+        </div>
+        <div class="planner-footer">
+          <span class="planner-footer-info" id="planner-footer-info"></span>
+          <button class="btn btn-ghost btn-sm" onclick="resetManualPacks()">Resetuj do auto-podziału</button>
+          <button class="btn btn-success btn-sm" onclick="applyAndClosePlanner()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Zastosuj podział
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /main -->
 </div><!-- /layout -->
 
 <script>
 // ─── State ───────────────────────────────────────────────────────────────────
-const SAMPLE_ITEMS = [
-  { q: 'Jak długo trwa realizacja zamówienia?', a: 'Standardowy czas realizacji to 2–3 dni robocze. Zamówienia złożone przed godz. 12:00 wysyłamy tego samego dnia.' },
-  { q: 'Czy możliwy jest zwrot towaru?', a: 'Tak, masz 30 dni na zwrot od daty otrzymania przesyłki. Towar musi być nieużywany i w oryginalnym opakowaniu.' },
-  { q: 'Jakie metody płatności są dostępne?', a: 'Akceptujemy karty Visa, Mastercard, AmEx, płatności BLIK, przelew bankowy oraz PayPal.' }
-];
+const SAMPLE_ITEMS = [];
 let items = lsLoadItems();
 
 let currentCodeTab = 'html';
 let pendingImport = [];
 let parseMode = 'auto';
 let previewTimer = null;
+
+// Link rules & config — declared early so renderEditor can reference them
+// (actual values loaded from localStorage after lsLoad* functions are defined)
+let linkRules = [];
+let linkConfig = { maxPerAnswer: 2, minWordsBetween: 15, maxTotal: 0, firstOccOnly: true, skipQuestion: true, priority: 'first' };
 
 // ─── Mammoth check ────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
@@ -826,13 +1159,14 @@ function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById('section-' + id).classList.add('active');
-  const map = { editor: 0, import: 1, settings: 3, preview: 4, seo: 5, code: 6, guide: 7 };
+  const map = { editor: 0, import: 1, settings: 3, preview: 4, seo: 5, code: 6, saves: 7, guide: 8 };
   const navItems = document.querySelectorAll('.nav-item');
   if (map[id] !== undefined) navItems[map[id]]?.classList.add('active');
   if (id === 'preview') refreshPreview();
   if (id === 'code') refreshCode();
   if (id === 'seo') runRuleAnalysis();
   if (id === 'guide') renderGuide();
+  if (id === 'saves') renderSavesList();
 }
 
 // ─── Editor ───────────────────────────────────────────────────────────────────
@@ -843,7 +1177,13 @@ function renderEditor() {
     list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p>Brak pytań. Dodaj pierwsze lub zaimportuj z pliku.</p></div>`;
     return;
   }
-  list.innerHTML = items.map((it, i) => `
+  list.innerHTML = items.map((it, i) => {
+    const itemLinks = it.links || [];
+    const chipsHtml = itemLinks.map((lk, li) =>
+      `<span class="qa-link-chip" title="${esc(lk.url)}">🔗 ${esc(lk.phrase)} <button onclick="removeItemLink(${i},${li})" title="Usuń">×</button></span>`
+    ).join('');
+    const globalCount = linkRules.filter(r => r.enabled).length;
+    return `
     <div class="qa-item" draggable="true" data-i="${i}"
          ondragstart="dStart(event,${i})" ondragover="dOver(event,${i})" ondrop="dDrop(event,${i})" ondragend="dEnd()">
       <div class="qa-item-head">
@@ -867,7 +1207,24 @@ function renderEditor() {
           <textarea placeholder="Wpisz odpowiedź…" oninput="items[${i}].a=this.value; debounceSave();">${esc(it.a)}</textarea>
         </div>
       </div>
-    </div>`).join('');
+      <div class="qa-links-row">
+        <div class="qa-links-header" onclick="toggleItemLinks(${i})">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Linki tej odpowiedzi${itemLinks.length ? ' (' + itemLinks.length + ')' : ''}
+          ${globalCount ? `<span style="margin-left:auto;font-size:10.5px;color:var(--text3);">${globalCount} globaln.</span>` : ''}
+        </div>
+        <div id="item-links-${i}" style="display:none;">
+          <div id="item-chips-${i}">${chipsHtml}</div>
+          <div class="qa-add-link-row">
+            <input type="text" id="il-phrase-${i}" placeholder="Fraza do zlinkowania…">
+            <input type="text" id="il-url-${i}" placeholder="https://…">
+            <button class="btn btn-ghost btn-sm" onclick="addItemLink(${i})">+ Link</button>
+          </div>
+          ${globalCount ? `<div class="qa-links-global-hint">+ ${globalCount} aktywnych reguł globalnych z biblioteki fraz</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function addItem() {
@@ -1178,10 +1535,9 @@ function refreshPreview() {
   const code = generateHtml(false);
   const shadow = document.getElementById('preview-content');
   shadow.innerHTML = code;
-  // re-run any inline scripts
+  // re-run any inline scripts (accordion JS etc.)
   shadow.querySelectorAll('script').forEach(s => {
-    const ns = document.createElement('script');
-    ns.textContent = s.textContent;
+    const ns = document.createElement('script'); ns.textContent = s.textContent;
     s.parentNode.replaceChild(ns, s);
   });
 }
@@ -1198,81 +1554,143 @@ function generateHtml(forExport = false) {
   const withSchema = cfg('cfg-schema');
   const withCss  = cfg('cfg-inline-css') || forExport;
   const withJs   = cfg('cfg-js');
-  const withAnim = cfg('cfg-anim') && withJs;
+  const withAnim = cfg('cfg-anim');
 
+  // Font
   const fontStack = fontVal === 'serif' ? "Georgia, 'Times New Roman', serif"
     : fontVal === 'inter' ? "'Inter', -apple-system, sans-serif"
     : fontVal === 'lato' ? "'Lato', -apple-system, sans-serif"
+    : fontVal === 'manrope' ? "'Manrope', -apple-system, sans-serif"
     : "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 
-  const fontImport = (fontVal === 'inter' || fontVal === 'lato') && withCss
-    ? `@import url('https://fonts.googleapis.com/css2?family=${fontVal === 'inter' ? 'Inter:wght@400;600' : 'Lato:wght@400;700'}&display=swap');\n` : '';
+  const fontImport = withCss ? (
+    fontVal === 'inter' ? `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');\n`
+    : fontVal === 'lato' ? `@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');\n`
+    : fontVal === 'manrope' ? `@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&display=swap');\n`
+    : '') : '';
 
-  const borderStyle = style === 'bordered'
-    ? `.faq-item{border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden}.faq-question{padding:14px 18px}.faq-answer p{padding:0 18px 14px;margin:0}`
-    : style === 'card'
-    ? `.faq-item{background:#f9fafb;border-radius:10px;margin-bottom:10px;overflow:hidden}.faq-question{padding:14px 18px}.faq-answer p{padding:0 18px 14px;margin:0}`
+  // Style variants (affect .faq-item border/bg)
+  const borderStyle = style === 'card'
+    ? `.faq-item{background:#f9fafb;border:none;border-radius:10px;margin-bottom:10px}`
     : style === 'flush'
-    ? `.faq-question{padding:14px 0}.faq-answer p{padding:0 0 14px;margin:0}`
-    : `.faq-list{border-top:1px solid #e5e7eb}.faq-item{border-bottom:1px solid #e5e7eb}.faq-question{padding:14px 0}.faq-answer p{padding:0 0 14px;margin:0}`;
+    ? `.faq-item{background:transparent;border:none;border-radius:0;border-bottom:1px solid rgba(51,51,51,.15)}`
+    : style === 'bordered'
+    ? `.faq-item{border-color:rgba(51,51,51,.4)}`
+    : ''; // minimal = default (uses base styles below)
 
-  const iconCss = iconType === 'chevron'
-    ? `.faq-icon{display:inline-block;transition:transform .25s;flex-shrink:0;margin-left:auto;padding-left:12px}details[open]>.faq-question .faq-icon{transform:rotate(180deg)}`
-    : iconType === 'plus'
-    ? `.faq-icon{margin-left:auto;padding-left:12px;font-size:1.3rem;font-weight:300;line-height:1;flex-shrink:0}.faq-question .faq-icon::before{content:'+';}details[open]>.faq-question .faq-icon::before{content:'−';}`
+  // Icon open-state CSS — uses details[open] since structure is details/summary
+  const iconOpenCss = iconType === 'none' ? '.faq-item__icon{display:none}'
+    : iconType === 'chevron'
+    ? `details[open] .faq-item__icon{transform:rotate(180deg)}details[open] .faq-item__icon-bar--v{opacity:0}`
     : iconType === 'arrow'
-    ? `.faq-icon{display:inline-block;transition:transform .25s;flex-shrink:0;margin-left:auto;padding-left:12px}details[open]>.faq-question .faq-icon{transform:rotate(90deg)}`
-    : '';
+    ? `details[open] .faq-item__icon{transform:rotate(90deg)}`
+    : `details[open] .faq-item__icon-bar--v{transform:rotate(90deg);opacity:0}`; // plus → minus
 
-  const animCss = withAnim ? `details>.faq-answer{overflow:hidden;max-height:0;transition:max-height .3s ease}details[open]>.faq-answer{max-height:800px}` : '';
+  // Animation (max-height transition on .faq-item__answer)
+  const animTransition = withAnim
+    ? `max-height .35s ease,padding .35s ease`
+    : `none`;
 
   const css = withCss ? `<style>
-${fontImport}.faq-section{max-width:${maxW};margin:0 auto;font-family:${fontStack}}
-.faq-title{font-size:1.6rem;font-weight:700;margin:0 0 1.25rem;color:${color}}
-.faq-question{display:flex;align-items:center;width:100%;cursor:pointer;font-size:1rem;font-weight:600;color:${color};background:none;border:none;text-align:left;list-style:none}
-.faq-question::marker,.faq-question::-webkit-details-marker{display:none}
-.faq-answer p{font-size:.95rem;line-height:1.75;color:${aColor};margin:0}
+${fontImport}.faq-section *,.faq-section *::before,.faq-section *::after{box-sizing:border-box;margin:0;padding:0}
+.faq-section{width:100%;padding:80px ${maxW === '100%' ? '24px' : '80px'};display:flex;flex-direction:column;align-items:center;gap:48px;font-family:${fontStack}}
+.faq-section__title{font-weight:600;font-size:28px;line-height:1.35;color:${color};letter-spacing:-.28px;text-align:center}
+.faq-list{width:100%;max-width:${maxW};display:flex;flex-direction:column;gap:16px}
+.faq-item{background:#fff;border:1px solid rgba(51,51,51,.64);border-radius:12px;overflow:hidden;transition:border-color .2s}
+.faq-item:hover{border-color:rgba(51,51,51,.9)}
 ${borderStyle}
-${iconCss}
-${animCss}
+.faq-item__header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;gap:12px;background:none;border:none;width:100%;text-align:left;font-family:${fontStack};list-style:none}
+.faq-item__header::marker,.faq-item__header::-webkit-details-marker{display:none}
+details[open] .faq-item__header{padding-bottom:0}
+.faq-item__question{flex:1;font-weight:400;font-size:16px;line-height:24px;color:${color};margin:0}
+.faq-item__icon{width:24px;height:24px;flex-shrink:0;position:relative;transition:transform .3s ease}
+.faq-item__icon-bar{position:absolute;background:${color};border-radius:1px}
+.faq-item__icon-bar--h{width:14px;height:2px;top:11px;left:5px}
+.faq-item__icon-bar--v{width:2px;height:14px;top:5px;left:11px;transition:transform .3s ease,opacity .3s ease}
+${iconOpenCss}
+.faq-item__answer{max-height:0;overflow:hidden;transition:${animTransition};padding:0 16px}
+details[open] .faq-item__answer{max-height:600px;padding:12px 16px}
+.faq-item__answer p{font-size:14px;line-height:22px;color:${aColor};margin:0}
+@media (max-width:768px){.faq-section{padding:64px 16px;gap:32px}.faq-section__title{font-size:22px}.faq-list{gap:12px}}
 </style>
 ` : '';
 
-  const iconSvgChevron = `<svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>`;
-  const iconSvgArrow   = `<svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>`;
-  const iconHtml = iconType === 'chevron' ? iconSvgChevron : iconType === 'arrow' ? iconSvgArrow : iconType === 'plus' ? `<span class="faq-icon" aria-hidden="true"></span>` : '';
+  // Icon HTML — two bars inside .faq-item__icon
+  const iconHtml = iconType !== 'none' ? `
+                <div class="faq-item__icon" aria-hidden="true">
+                    <div class="faq-item__icon-bar faq-item__icon-bar--h"></div>
+                    <div class="faq-item__icon-bar faq-item__icon-bar--v"></div>
+                </div>` : '';
 
   const schemaSection = withSchema ? ` itemscope itemtype="https://schema.org/FAQPage"` : '';
 
-  const itemsHtml = items.map(it => {
-    const qE = xmlEsc(it.q); const aE = xmlEsc(it.a);
+  // Build per-item link rules merged with global (item-specific first = higher priority)
+  // Apply global total-link budget across items
+  const lc = linkConfig;
+  const maxTotal = parseInt(lc.maxTotal) || 0;
+  let totalLinksUsed = 0;
+
+  // Prioritise items for global budget: 'first' = top down, 'spread' = one per item first
+  const orderedIndices = lc.priority === 'spread'
+    ? [...items.keys()].reduce((acc, i) => { /* interleave */ return acc; }, [...items.keys()])
+    : [...items.keys()];
+
+  const itemsHtml = items.map((it, idx) => {
+    const qE = xmlEsc(it.q); 
     const si = withSchema ? ` itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"` : '';
     const sq = withSchema ? ` itemprop="name"` : '';
     const sa = withSchema ? ` itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"` : '';
     const sp = withSchema ? ` itemprop="text"` : '';
-    return `  <div class="faq-item"${si}>
-    <details>
-      <summary class="faq-question"${sq}>${qE}${iconHtml}</summary>
-      <div class="faq-answer"${sa}><p${sp}>${aE}</p></div>
-    </details>
-  </div>`;
+
+    // Merge item-specific links (priority) + enabled global rules
+    const itemSpecific = (it.links || []).map(l => ({ ...l, enabled: true, _itemLevel: true }));
+    const globals = linkRules.filter(r => r.enabled);
+    const mergedRules = [...itemSpecific, ...globals];
+
+    // Remaining global budget for this item
+    const remainingBudget = maxTotal > 0 ? Math.max(0, maxTotal - totalLinksUsed) : Infinity;
+    const effectiveMax = Math.min(parseInt(lc.maxPerAnswer) || 2, remainingBudget);
+
+    const { html: aHtml, linksUsed } = applyLinksToText(it.a, mergedRules, {
+      maxLinks: effectiveMax,
+      minWordsBetween: parseInt(lc.minWordsBetween) || 15,
+      firstOccOnly: lc.firstOccOnly !== false
+    });
+    totalLinksUsed += linksUsed;
+
+    return `        <div class="faq-item"${si}>
+            <details>
+                <summary class="faq-item__header">
+                    <h3 class="faq-item__question"${sq}>${qE}</h3>${iconHtml}
+                </summary>
+                <div class="faq-item__answer"${sa}>
+                    <p${sp}>${aHtml}</p>
+                </div>
+            </details>
+        </div>`;
   }).join('\n');
 
+  // JS: close other items when one opens (accordion behaviour)
   const jsPart = withJs ? `
 \x3cscript\x3e
 (function(){
-  var ds=document.querySelectorAll('.faq-section details');
-  ds.forEach(function(d){d.addEventListener('toggle',function(){
-    if(d.open){ds.forEach(function(o){if(o!==d)o.removeAttribute('open');})}
-  });});
+  document.querySelectorAll('.faq-list').forEach(function(list){
+    list.querySelectorAll('details').forEach(function(d){
+      d.addEventListener('toggle',function(){
+        if(d.open){
+          list.querySelectorAll('details').forEach(function(o){if(o!==d)o.removeAttribute('open');});
+        }
+      });
+    });
+  });
 })();
 \x3c/script>` : '';
 
   return `${css}<section class="faq-section"${schemaSection} aria-labelledby="faq-h">
-  <h2 class="faq-title" id="faq-h">${xmlEsc(title)}</h2>
-  <div class="faq-list">
+    <h2 class="faq-section__title" id="faq-h">${xmlEsc(title)}</h2>
+    <div class="faq-list">
 ${itemsHtml}
-  </div>
+    </div>
 </section>${jsPart}`;
 }
 
@@ -1306,15 +1724,6 @@ function getSplitSize() {
   return parseInt(document.getElementById('split-size')?.value || '8');
 }
 
-function getParts() {
-  if (aiGroups) return aiGroups.map(g => g.indices.map(i => items[i]).filter(Boolean));
-  const size = getSplitSize();
-  if (splitDismissed || items.length <= size) return [items];
-  const parts = [];
-  for (let i = 0; i < items.length; i += size) parts.push(items.slice(i, i + size));
-  return parts;
-}
-
 function dismissSplit() {
   splitDismissed = true;
   document.getElementById('split-banner').style.display = 'none';
@@ -1326,12 +1735,37 @@ function refreshCode() {
   const parts = getParts();
   const isSplit = parts.length > 1;
   const banner = document.getElementById('split-banner');
+  const autoControls = document.getElementById('split-auto-controls');
+  const bannerTitle = document.getElementById('split-banner-title');
+  const bannerSub   = document.getElementById('split-banner-sub');
+
+  // Update topbar badge
+  const planerBadge = document.getElementById('planer-packs-badge');
+  if (planerBadge) {
+    if (manualPacks) {
+      planerBadge.textContent = manualPacks.length;
+      planerBadge.style.display = 'inline';
+    } else {
+      planerBadge.style.display = 'none';
+    }
+  }
 
   // Show/hide split banner
   if (aiGroups) {
     renderAiGroupsBanner();
+  } else if (manualPacks) {
+    // Manual packs always show banner
+    banner.style.display = 'block';
+    if (bannerTitle) bannerTitle.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" style="width:15px;height:15px;stroke:#1a6ef5;fill:none;vertical-align:-2px;margin-right:4px;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Podział ręczny: <strong>${manualPacks.length} paczek</strong>`;
+    if (bannerSub) bannerSub.innerHTML = `${items.length} pytań w ${manualPacks.length} paczkach. <a href="#" onclick="resetManualPacks(true);return false;" style="color:#1a6ef5;text-decoration:underline;">Resetuj do auto-podziału</a>`;
+    if (autoControls) autoControls.style.display = 'none';
+    document.getElementById('split-count').textContent = items.length;
+    renderPartTabs(parts);
   } else if (items.length > getSplitSize() && !splitDismissed) {
     banner.style.display = 'block';
+    if (bannerTitle) bannerTitle.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2" style="width:15px;height:15px;stroke:#d97706;fill:none;vertical-align:-2px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Masz <span id="split-count">${items.length}</span> pytań — zalecany podział na podstrony`;
+    if (bannerSub)  bannerSub.textContent = 'Optymalnie 4–8 pytań na podstronę (featured snippets, PAA). Wybierz rozmiar lub otwórz Planer paczek po ręczny podział.';
+    if (autoControls) autoControls.style.display = 'flex';
     document.getElementById('split-count').textContent = items.length;
     renderPartTabs(parts);
   } else {
@@ -1342,12 +1776,20 @@ function refreshCode() {
   if (currentPartIndex >= parts.length) currentPartIndex = 0;
 
   const partItems = parts[currentPartIndex];
-  const groupName = aiGroups ? aiGroups[currentPartIndex]?.name : null;
-  const partLabel = isSplit
-    ? (groupName
-        ? ` — ${groupName} (${partItems.length} pytań)`
-        : ` — część ${currentPartIndex + 1} z ${parts.length} (pytania ${currentPartIndex * getSplitSize() + 1}–${currentPartIndex * getSplitSize() + partItems.length})`)
-    : '';
+
+  // Build part label
+  let partLabel = '';
+  if (isSplit) {
+    if (aiGroups && aiGroups[currentPartIndex]) {
+      partLabel = ` — ${aiGroups[currentPartIndex].name} (${partItems.length} pyt.)`;
+    } else if (manualPacks && manualPacks[currentPartIndex]) {
+      partLabel = ` — ${manualPacks[currentPartIndex].name} (${partItems.length} pyt.)`;
+    } else {
+      const start = currentPartIndex * getSplitSize() + 1;
+      const end   = start + partItems.length - 1;
+      partLabel = ` — część ${currentPartIndex + 1} z ${parts.length} (Q${start}–${end})`;
+    }
+  }
 
   let code = '';
   const savedItems = items;
@@ -1361,12 +1803,18 @@ function refreshCode() {
   document.getElementById('code-info').textContent =
     `${code.length.toLocaleString('pl')} znaków · ${partItems.length} pytań${partLabel}`;
 
-  const dlBtn = document.getElementById('download-btn');
+  const dlBtn   = document.getElementById('download-btn');
   const dlLabel = document.getElementById('download-bar-label');
+
   if (aiGroups && aiGroups[currentPartIndex]) {
     const g = aiGroups[currentPartIndex];
     dlBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz faq-${esc(g.slug)}.html`;
     dlLabel.textContent = `Pobierz grupę „${g.name}" (${g.indices.length} pytań):`;
+  } else if (manualPacks && manualPacks[currentPartIndex]) {
+    const p = manualPacks[currentPartIndex];
+    const slug = p.name.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || ('paczka-' + (currentPartIndex + 1));
+    dlBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz faq-${esc(slug)}.html`;
+    dlLabel.textContent = `Pobierz paczkę „${p.name}" (${p.indices.length} pytań):`;
   } else if (isSplit) {
     dlBtn.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Pobierz część ${currentPartIndex + 1}`;
     dlLabel.textContent = `Pobierz jako plik HTML (część ${currentPartIndex + 1} z ${parts.length}):`;
@@ -1376,26 +1824,369 @@ function refreshCode() {
   }
 }
 
+// ─── Pack Planner ─────────────────────────────────────────────────────────────
+function selectPart(i) {
+  currentPartIndex = i;
+  refreshCode();
+}
+let manualPacks = null; // null = use auto-split; array = user-edited packs
+let plannerDragSrc = null; // { packIdx, qIdx }
+
+// Override getParts to support manualPacks
+function getParts() {
+  if (manualPacks) return manualPacks.map(p => p.indices.map(i => items[i]).filter(it => it != null));
+  if (aiGroups)    return aiGroups.map(g => g.indices.map(i => items[i]).filter(Boolean));
+  const size = getSplitSize();
+  if (splitDismissed || items.length <= size) return [items];
+  const parts = [];
+  for (let i = 0; i < items.length; i += size) parts.push(items.slice(i, i + size));
+  return parts;
+}
+
+// Patch renderPartTabs to show pack names when manualPacks active
 function renderPartTabs(parts) {
   const wrap = document.getElementById('part-tabs');
   if (!wrap) return;
   wrap.innerHTML = parts.map((p, i) => {
-    const start = i * getSplitSize() + 1;
-    const end = start + p.length - 1;
     const active = i === currentPartIndex;
+    const name = manualPacks ? esc(manualPacks[i]?.name || ('Paczka ' + (i+1))) : `Część ${i+1}`;
+    const range = manualPacks ? '' : ` (Q${i * getSplitSize() + 1}–${i * getSplitSize() + p.length})`;
+    const { cls } = packSeoScore(p.length);
     return `<button onclick="selectPart(${i})" style="
       padding:5px 12px;font-size:11.5px;font-weight:${active ? '600' : '500'};
       border-radius:6px;cursor:pointer;border:1px solid ${active ? '#d97706' : '#fcd34d'};
       background:${active ? '#d97706' : '#fffbeb'};color:${active ? 'white' : '#92400e'};
       font-family:inherit;transition:all .12s;">
-      Część ${i + 1} <span style="opacity:.75;font-weight:400">(Q${start}–${end})</span>
+      ${name}<span style="opacity:.75;font-weight:400">${range ? ' '+range : ' ('+p.length+' pyt.)'}</span>
     </button>`;
   }).join('');
 }
 
-function selectPart(i) {
-  currentPartIndex = i;
+// SEO score helper
+function packSeoScore(n) {
+  if (n >= 4 && n <= 8) return { cls: 'ok',   label: `✓ ${n} pytań`,  tip: 'Optymalna liczba pytań (4–8)' };
+  if (n >= 1 && n <= 3) return { cls: 'warn',  label: `⚠ ${n} pytań`,  tip: 'Za mało pytań – dodaj więcej (min. 4)' };
+  if (n === 0)          return { cls: 'bad',   label: `✗ pusta`,       tip: 'Paczka pusta – usuń lub dodaj pytania' };
+  return                       { cls: 'bad',   label: `✗ ${n} pytań`,  tip: 'Za dużo pytań – ogranicz do max. 8' };
+}
+
+// Rule-based SEO split suggestion using Jaccard similarity
+function suggestSeoPacks() {
+  const n = items.length;
+  if (n === 0) return [];
+  const TARGET = 6, MIN = 4, MAX = 8;
+
+  const STOPS = new Set(['jak','czy','co','ile','gdzie','kiedy','kto','jest','są','był',
+    'być','ma','mam','masz','się','na','do','w','z','i','a','ale','lub','nie','tak',
+    'to','tego','tej','ten','dla','po','od','przez','przy','za','ze','we','go','mu',
+    'jej','jego','ich','tym','tej','tych','tego','można','należy']);
+
+  function keywords(item) {
+    return new Set((item.q + ' ' + item.a).toLowerCase()
+      .replace(/[?!.,;:()\[\]"']/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 3 && !STOPS.has(w) && !/^\d+$/.test(w)));
+  }
+
+  const kw = items.map(keywords);
+
+  function jaccard(a, b) {
+    let inter = 0;
+    for (const w of a) if (b.has(w)) inter++;
+    return (a.size + b.size - inter) === 0 ? 0 : inter / (a.size + b.size - inter);
+  }
+
+  // Build similarity matrix (upper triangle)
+  const sim = Array.from({length: n}, (_, i) =>
+    Array.from({length: n}, (_, j) => i >= j ? 0 : jaccard(kw[i], kw[j]))
+  );
+  const getSim = (i, j) => i < j ? sim[i][j] : i > j ? sim[j][i] : 1;
+
+  // Greedy clustering: seed from most isolated question, grow by avg similarity
+  const assigned = new Array(n).fill(false);
+  const packs = [];
+
+  const unassigned = () => items.map((_, i) => i).filter(i => !assigned[i]);
+
+  while (unassigned().length > 0) {
+    const remaining = unassigned();
+    if (packs.length > 0 && remaining.length <= Math.floor(MAX / 2)) {
+      // Merge remaining into previous pack if it won't exceed MAX
+      const last = packs[packs.length - 1];
+      if (last.length + remaining.length <= MAX) {
+        last.push(...remaining);
+        remaining.forEach(i => { assigned[i] = true; });
+        break;
+      }
+    }
+    // Seed: most isolated item (lowest avg similarity to all others)
+    let seed = remaining[0];
+    let minAvgSim = Infinity;
+    for (const i of remaining) {
+      const avgS = remaining.reduce((s, j) => i !== j ? s + getSim(i, j) : s, 0) / Math.max(1, remaining.length - 1);
+      if (avgS < minAvgSim) { minAvgSim = avgS; seed = i; }
+    }
+
+    const pack = [seed];
+    assigned[seed] = true;
+
+    while (pack.length < TARGET) {
+      const rem2 = unassigned();
+      if (!rem2.length) break;
+      let bestJ = -1, bestS = -1;
+      for (const j of rem2) {
+        const avgS = pack.reduce((s, k) => s + getSim(k, j), 0) / pack.length;
+        if (avgS > bestS) { bestS = avgS; bestJ = j; }
+      }
+      if (bestJ === -1 || (bestS < 0.05 && pack.length >= MIN)) break; // low similarity — stop
+      pack.push(bestJ);
+      assigned[bestJ] = true;
+    }
+
+    packs.push(pack);
+  }
+
+  // Convert to pack objects, sort indices to preserve doc order
+  return packs.map((indices, i) => ({
+    id: 'pack_' + Date.now() + '_' + i,
+    name: autoPackName(indices, i),
+    indices: indices.sort((a, b) => a - b)
+  }));
+}
+
+// Auto-generate pack name from dominant keywords
+function autoPackName(indices, fallbackNum) {
+  const STOPS = new Set(['jak','czy','co','ile','gdzie','kiedy','kto','jest','są','był',
+    'być','ma','się','na','do','w','z','i','a','ale','lub','nie','tak','to','dla']);
+  const freq = {};
+  indices.forEach(i => {
+    const words = (items[i]?.q || '').toLowerCase().replace(/[?!.,;:]/g, '').split(/\s+/);
+    words.forEach(w => { if (w.length > 4 && !STOPS.has(w)) freq[w] = (freq[w] || 0) + 1; });
+  });
+  const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([w]) => w);
+  if (top.length) {
+    const name = top.map(w => w[0].toUpperCase() + w.slice(1)).join(' / ');
+    return name.length > 32 ? name.slice(0, 32) + '…' : name;
+  }
+  return `Paczka ${fallbackNum + 1}`;
+}
+
+function suggestAndApplySeoPacks() {
+  const suggested = suggestSeoPacks();
+  if (!suggested.length) return;
+  manualPacks = suggested;
+  renderPackPlanner();
+  showToast(`✓ Zaproponowano ${suggested.length} paczek SEO`);
+}
+
+function openPackPlanner() {
+  // Init manualPacks from current state if not set
+  if (!manualPacks) {
+    const parts = (() => {
+      if (aiGroups) return aiGroups.map((g, i) => ({ id: 'pack_'+i, name: g.name || ('Paczka '+(i+1)), indices: g.indices }));
+      const size = getSplitSize();
+      const ps = [];
+      for (let i = 0; i < items.length; i += size) {
+        const slice = items.slice(i, i + size);
+        ps.push({ id: 'pack_'+i, name: 'Paczka ' + (ps.length + 1), indices: Array.from({length: slice.length}, (_, j) => i + j) });
+      }
+      return ps;
+    })();
+    manualPacks = parts;
+  }
+  document.getElementById('pack-planner').style.display = 'flex';
+  renderPackPlanner();
+}
+
+function closePackPlanner() {
+  document.getElementById('pack-planner').style.display = 'none';
+}
+
+function applyAndClosePlanner() {
+  closePackPlanner();
+  splitDismissed = false;
+  currentPartIndex = 0;
   refreshCode();
+  showToast(`✓ Zastosowano podział: ${manualPacks.length} paczek`);
+}
+
+function resetManualPacks(skipConfirm) {
+  if (!skipConfirm && !confirm('Zresetować ręczny podział? Paczki wrócą do automatycznego podziału.')) return;
+  manualPacks = null;
+  closePackPlanner();
+  splitDismissed = false;
+  refreshCode();
+}
+
+function addEmptyPack() {
+  if (!manualPacks) manualPacks = [];
+  manualPacks.push({ id: 'pack_' + Date.now(), name: 'Nowa paczka ' + (manualPacks.length + 1), indices: [] });
+  renderPackPlanner();
+}
+
+function deletePack(pi) {
+  if (!manualPacks || manualPacks.length <= 1) { showToast('Musi pozostać przynajmniej 1 paczka'); return; }
+  const freed = manualPacks[pi].indices;
+  manualPacks.splice(pi, 1);
+  // Return freed questions to first pack
+  if (freed.length && manualPacks.length) manualPacks[0].indices.push(...freed);
+  renderPackPlanner();
+}
+
+function renamePackLive(pi, val) {
+  if (manualPacks?.[pi]) manualPacks[pi].name = val;
+}
+
+function moveQuestion(qGlobalIdx, fromPack, toPack) {
+  if (!manualPacks || fromPack === toPack) return;
+  manualPacks[fromPack].indices = manualPacks[fromPack].indices.filter(i => i !== qGlobalIdx);
+  if (manualPacks[toPack]) manualPacks[toPack].indices.push(qGlobalIdx);
+  renderPackPlanner();
+}
+
+function togglePackPreview(pi) {
+  const strip = document.getElementById('pack-preview-' + pi);
+  if (!strip) return;
+  const isOpen = strip.classList.toggle('open');
+  if (isOpen) {
+    const packItems = manualPacks[pi].indices.map(i => items[i]).filter(Boolean);
+    const savedItems = items;
+    items = packItems;
+    const html = generateHtml(false);
+    items = savedItems;
+    const frame = document.getElementById('pack-preview-frame-' + pi);
+    if (frame) {
+      frame.innerHTML = html;
+      frame.querySelectorAll('script').forEach(s => {
+        const ns = document.createElement('script'); ns.textContent = s.textContent;
+        s.parentNode.replaceChild(ns, s);
+      });
+    }
+  }
+}
+
+function downloadPackHtml(pi) {
+  if (!manualPacks?.[pi]) return;
+  const packItems = manualPacks[pi].indices.map(i => items[i]).filter(Boolean);
+  const savedItems = items;
+  items = packItems;
+  const html = buildStandaloneHtml(packItems, pi + 1, manualPacks.length, manualPacks[pi].name);
+  items = savedItems;
+  const slug = manualPacks[pi].name.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || ('paczka-' + (pi+1));
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `faq-${slug}.html`; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function renderPackPlanner() {
+  const container = document.getElementById('planner-packs-container');
+  if (!container || !manualPacks) return;
+
+  const totalQ = new Set(manualPacks.flatMap(p => p.indices)).size;
+  const allQ = items.length;
+  const unassigned = allQ - totalQ;
+  const footer = document.getElementById('planner-footer-info');
+  if (footer) footer.textContent = `${manualPacks.length} paczek · ${totalQ} z ${allQ} pytań${unassigned > 0 ? ` · ⚠ ${unassigned} bez paczki` : ''}`;
+
+  container.innerHTML = manualPacks.map((pack, pi) => {
+    const { cls, label, tip } = packSeoScore(pack.indices.length);
+    const moveOptions = manualPacks.map((p, ti) =>
+      ti !== pi ? `<option value="${ti}">${esc(p.name || ('Paczka '+(ti+1)))}</option>` : ''
+    ).join('');
+
+    const questionsHtml = pack.indices.length === 0
+      ? `<div class="pack-empty-drop" id="pack-drop-zone-${pi}" 
+             ondragover="event.preventDefault();this.classList.add('drag-target')"
+             ondragleave="this.classList.remove('drag-target')"
+             ondrop="plannerDrop(event,${pi},0)">
+           Przeciągnij pytanie tutaj
+         </div>`
+      : pack.indices.map((qIdx, qi) => {
+          const item = items[qIdx];
+          if (!item) return '';
+          return `<div class="pack-q-row" draggable="true"
+                       ondragstart="plannerDragStart(event,${pi},${qIdx})"
+                       ondragover="event.preventDefault();this.classList.add('drag-over-q')"
+                       ondragleave="this.classList.remove('drag-over-q')"
+                       ondrop="plannerDrop(event,${pi},${qIdx});this.classList.remove('drag-over-q')"
+                       ondragend="document.querySelectorAll('.pack-q-row').forEach(r=>r.classList.remove('dragging-q','drag-over-q'))">
+            <span class="pack-q-num">Q${qIdx + 1}</span>
+            <span class="pack-q-text" title="${esc(item.q)}">${esc(item.q)}</span>
+            <span class="pack-q-move">
+              <select onchange="moveQuestion(${qIdx},${pi},parseInt(this.value));this.value=''" title="Przenieś do paczki">
+                <option value="">→ przenieś…</option>
+                ${moveOptions}
+              </select>
+            </span>
+          </div>`;
+        }).join('');
+
+    return `<div class="pack-card" id="pack-card-${pi}"
+                 ondragover="event.preventDefault();document.getElementById('pack-card-${pi}').classList.add('drag-target')"
+                 ondragleave="document.getElementById('pack-card-${pi}').classList.remove('drag-target')"
+                 ondrop="plannerDrop(event,${pi},null);document.getElementById('pack-card-${pi}').classList.remove('drag-target')">
+      <div class="pack-card-head">
+        <span class="pack-card-num">#${pi + 1}</span>
+        <input class="pack-name-input" value="${esc(pack.name)}" oninput="renamePackLive(${pi},this.value)" placeholder="Nazwa paczki…">
+        <span class="pack-seo-badge ${cls}" title="${tip}">${label}</span>
+        <div class="pack-card-actions">
+          <button class="btn btn-ghost btn-sm btn-icon" title="Podgląd tej paczki" onclick="togglePackPreview(${pi})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm btn-icon" title="Pobierz HTML tej paczki" onclick="downloadPackHtml(${pi})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="btn btn-danger-ghost btn-sm btn-icon" title="Usuń paczkę (pytania trafiają do Paczka 1)" onclick="deletePack(${pi})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="pack-preview-strip" id="pack-preview-${pi}">
+        <div class="pack-preview-frame" id="pack-preview-frame-${pi}"></div>
+      </div>
+      <div class="pack-questions">${questionsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+// Drag-and-drop between packs
+function plannerDragStart(e, fromPackIdx, qGlobalIdx) {
+  plannerDragSrc = { fromPackIdx, qGlobalIdx };
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', String(qGlobalIdx));
+  setTimeout(() => {
+    document.querySelectorAll('.pack-q-row').forEach(r => {
+      if (r.getAttribute('ondragstart')?.includes(`,${qGlobalIdx})`)) r.classList.add('dragging-q');
+    });
+  }, 0);
+}
+
+function plannerDrop(e, toPackIdx, targetQIdx) {
+  e.preventDefault();
+  if (!plannerDragSrc) return;
+  const { fromPackIdx, qGlobalIdx } = plannerDragSrc;
+  plannerDragSrc = null;
+  document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('drag-target'));
+  document.querySelectorAll('.pack-q-row').forEach(r => r.classList.remove('dragging-q', 'drag-over-q'));
+  document.querySelectorAll('.pack-empty-drop').forEach(d => d.classList.remove('drag-target'));
+
+  if (fromPackIdx === toPackIdx && targetQIdx !== null) return;
+
+  // Remove from source
+  manualPacks[fromPackIdx].indices = manualPacks[fromPackIdx].indices.filter(i => i !== qGlobalIdx);
+
+  // Insert at target position in destination pack
+  const destIndices = manualPacks[toPackIdx].indices;
+  if (targetQIdx === null || targetQIdx === 0) {
+    destIndices.push(qGlobalIdx);
+  } else {
+    const insertAt = destIndices.indexOf(targetQIdx);
+    if (insertAt === -1) destIndices.push(qGlobalIdx);
+    else destIndices.splice(insertAt, 0, qGlobalIdx);
+  }
+
+  renderPackPlanner();
 }
 
 function showCodeTab(tab, btn) {
@@ -1547,9 +2338,538 @@ function updateStorageBar() {
   } catch(e) { bar.style.display = 'none'; }
 }
 
-renderEditor();
+// ─── Link Rules state & persistence ──────────────────────────────────────────
+const LS_LINK_RULES  = 'faqgen_link_rules_v1';
+const LS_LINK_CONFIG = 'faqgen_link_config_v1';
 
-// ─── SEO Analysis ─────────────────────────────────────────────────────────────
+// Reassign (declared early in state block above)
+linkRules  = lsLoadLinkRules();
+linkConfig = lsLoadLinkConfig();
+
+function lsLoadLinkRules() {
+  try {
+    const raw = localStorage.getItem(LS_LINK_RULES);
+    if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) return p; }
+  } catch(e) {}
+  return [];
+}
+
+function lsLoadLinkConfig() {
+  const defaults = { maxPerAnswer: 2, minWordsBetween: 15, maxTotal: 0, firstOccOnly: true, skipQuestion: true, priority: 'first' };
+  try {
+    const raw = localStorage.getItem(LS_LINK_CONFIG);
+    if (raw) return { ...defaults, ...JSON.parse(raw) };
+  } catch(e) {}
+  return defaults;
+}
+
+function saveLinkRules() {
+  try { localStorage.setItem(LS_LINK_RULES, JSON.stringify(linkRules)); } catch(e) {}
+  renderLinkRulesTable();
+  updateLinkStatsBar();
+  schedulePreviewRefresh();
+}
+
+function saveLinkConfig() {
+  const lc = {
+    maxPerAnswer: parseInt(document.getElementById('lc-max-per-answer')?.value) || 2,
+    minWordsBetween: parseInt(document.getElementById('lc-min-words')?.value) || 15,
+    maxTotal: parseInt(document.getElementById('lc-max-total')?.value) || 0,
+    firstOccOnly: !!document.getElementById('lc-first-only')?.checked,
+    skipQuestion: !!document.getElementById('lc-skip-question')?.checked,
+    priority: document.getElementById('lc-priority')?.value || 'first'
+  };
+  linkConfig = lc;
+  try { localStorage.setItem(LS_LINK_CONFIG, JSON.stringify(lc)); } catch(e) {}
+  schedulePreviewRefresh();
+}
+
+function lsLoadAndApplyLinkConfig() {
+  const el = (id) => document.getElementById(id);
+  const lc = linkConfig;
+  if (el('lc-max-per-answer')) el('lc-max-per-answer').value = lc.maxPerAnswer;
+  if (el('lc-min-words'))      el('lc-min-words').value      = lc.minWordsBetween;
+  if (el('lc-max-total'))      el('lc-max-total').value      = lc.maxTotal;
+  if (el('lc-first-only'))     el('lc-first-only').checked   = !!lc.firstOccOnly;
+  if (el('lc-skip-question'))  el('lc-skip-question').checked = !!lc.skipQuestion;
+  if (el('lc-priority'))       el('lc-priority').value       = lc.priority || 'first';
+}
+
+// ─── Link Rule CRUD ───────────────────────────────────────────────────────────
+function updateLinkAddBtn() {
+  const phrase = document.getElementById('lr-phrase')?.value.trim();
+  const url    = document.getElementById('lr-url')?.value.trim();
+  const btn    = document.getElementById('lr-add-btn');
+  if (btn) btn.disabled = !(phrase && url);
+}
+
+function addLinkRule() {
+  const phrase  = document.getElementById('lr-phrase').value.trim();
+  const url     = document.getElementById('lr-url').value.trim();
+  const title   = document.getElementById('lr-title').value.trim();
+  const nofollow = document.getElementById('lr-nofollow').checked;
+  const newTab  = document.getElementById('lr-newtab').checked;
+  const enabled = document.getElementById('lr-enabled').checked;
+  if (!phrase || !url) return;
+  linkRules.push({ id: Date.now(), phrase, url, title, nofollow, newTab, enabled });
+  document.getElementById('lr-phrase').value = '';
+  document.getElementById('lr-url').value = '';
+  document.getElementById('lr-title').value = '';
+  document.getElementById('lr-add-btn').disabled = true;
+  saveLinkRules();
+}
+
+function toggleLinkRule(id) {
+  const r = linkRules.find(r => r.id === id);
+  if (r) { r.enabled = !r.enabled; saveLinkRules(); }
+}
+
+function deleteLinkRule(id) {
+  if (!confirm('Usunąć tę regułę linkowania?')) return;
+  linkRules = linkRules.filter(r => r.id !== id);
+  saveLinkRules();
+}
+
+function switchLinkTab(tab, btn) {
+  document.querySelectorAll('.link-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.link-tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('link-tab-' + tab)?.classList.add('active');
+  if (tab === 'library') renderLinkRulesTable();
+}
+
+function renderLinkRulesTable() {
+  const wrap = document.getElementById('link-rules-table-wrap');
+  if (!wrap) return;
+  if (!linkRules.length) {
+    wrap.innerHTML = `<div style="font-size:12.5px;color:var(--text3);padding:12px 0;">Brak reguł. Dodaj frazę i URL poniżej.</div>`;
+    return;
+  }
+  let html = `<table class="link-rules-table">
+    <thead><tr><th>Fraza</th><th>URL</th><th>Atrybuty</th><th style="width:80px;"></th></tr></thead><tbody>`;
+  linkRules.forEach(r => {
+    const nf = r.nofollow ? `<span class="link-rule-tag on">nofollow</span>` : '';
+    const nb = r.newTab   ? `<span class="link-rule-tag on">_blank</span>` : '';
+    const st = r.enabled  ? '' : 'rule-disabled';
+    html += `<tr class="${st}">
+      <td><span class="link-rule-phrase">${esc(r.phrase)}</span></td>
+      <td><a class="link-rule-url" href="${esc(r.url)}" target="_blank" title="${esc(r.url)}">${esc(r.url)}</a></td>
+      <td>${nf}${nb}${r.title ? `<span class="link-rule-tag" title="${esc(r.title)}">title</span>` : ''}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="toggleLinkRule(${r.id})" title="${r.enabled ? 'Wyłącz' : 'Włącz'}">
+          ${r.enabled
+            ? '<svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+            : '<svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'}
+        </button>
+        <button class="btn btn-danger-ghost btn-sm btn-icon" onclick="deleteLinkRule(${r.id})" title="Usuń">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+        </button>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function updateLinkStatsBar() {
+  const bar = document.getElementById('link-stats-bar');
+  if (!bar) return;
+  const total = linkRules.length;
+  const active = linkRules.filter(r => r.enabled).length;
+  if (!total) { bar.innerHTML = ''; return; }
+  bar.innerHTML = `<span class="link-stat"><strong>${active}</strong> aktywnych</span><span class="link-stat"><strong>${total - active}</strong> wyłączonych</span>`;
+}
+
+// ─── Per-item link helpers ────────────────────────────────────────────────────
+function toggleItemLinks(i) {
+  const el = document.getElementById('item-links-' + i);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function addItemLink(i) {
+  const phrase = document.getElementById('il-phrase-' + i)?.value.trim();
+  const url    = document.getElementById('il-url-' + i)?.value.trim();
+  if (!phrase || !url) { showToast('Wpisz frazę i URL'); return; }
+  if (!items[i].links) items[i].links = [];
+  items[i].links.push({ phrase, url, nofollow: true, newTab: true });
+  document.getElementById('il-phrase-' + i).value = '';
+  document.getElementById('il-url-' + i).value = '';
+  saveItems();
+  renderEditor();
+  // re-open the links panel
+  const el = document.getElementById('item-links-' + i);
+  if (el) el.style.display = 'block';
+}
+
+function removeItemLink(i, li) {
+  if (items[i]?.links) { items[i].links.splice(li, 1); saveItems(); renderEditor(); }
+}
+
+// ─── Linking engine ───────────────────────────────────────────────────────────
+function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+/**
+ * Applies link rules to plain text, returns { html: string, linksUsed: number }
+ * - Longer phrases matched first (prevents partial overlap)
+ * - Overlapping matches removed (first/longer wins)
+ * - SEO limits enforced: maxLinks per answer, minWordsBetween
+ */
+function applyLinksToText(rawText, rules, opts) {
+  const { maxLinks = 2, minWordsBetween = 15, firstOccOnly = true } = opts || {};
+  if (!rules || !rules.length || !rawText) return { html: xmlEsc(rawText), linksUsed: 0 };
+
+  // Sort rules: longer phrases first (avoids sub-phrase clobbering)
+  const sorted = [...rules].sort((a, b) => b.phrase.length - a.phrase.length);
+
+  // Find all candidate matches
+  const candidates = [];
+  const seenPhrases = new Set();
+
+  sorted.forEach(rule => {
+    if (!rule.phrase || !rule.url) return;
+    const key = rule.phrase.toLowerCase();
+    if (firstOccOnly && seenPhrases.has(key)) return;
+    const regex = new RegExp(escapeRegex(rule.phrase), 'gi');
+    let match;
+    while ((match = regex.exec(rawText)) !== null) {
+      candidates.push({ start: match.index, end: match.index + match[0].length, matchedText: match[0], rule });
+      if (firstOccOnly) { seenPhrases.add(key); break; }
+    }
+  });
+
+  // Sort candidates by position
+  candidates.sort((a, b) => a.start - b.start || b.end - a.end);
+
+  // Remove overlapping candidates (earlier wins; longer phrase at same position wins)
+  const nonOverlapping = [];
+  let lastEnd = -1;
+  for (const c of candidates) {
+    if (c.start >= lastEnd) { nonOverlapping.push(c); lastEnd = c.end; }
+  }
+
+  // Apply SEO rules: max links, min word distance
+  const selected = [];
+  let lastLinkEndChar = -1;
+
+  for (const c of nonOverlapping) {
+    if (selected.length >= maxLinks) break;
+    if (lastLinkEndChar >= 0) {
+      const between = rawText.slice(lastLinkEndChar, c.start);
+      const words = between.trim().split(/\s+/).filter(w => w.length > 0).length;
+      if (words < minWordsBetween) continue;
+    }
+    selected.push(c);
+    lastLinkEndChar = c.end;
+  }
+
+  if (!selected.length) return { html: xmlEsc(rawText), linksUsed: 0 };
+
+  // Build HTML output: escape plain segments, wrap links
+  const segments = [];
+  let pos = 0;
+  for (const { start, end, matchedText, rule } of selected) {
+    if (pos < start) segments.push(xmlEsc(rawText.slice(pos, start)));
+    const relParts = [];
+    if (rule.nofollow) relParts.push('nofollow');
+    if (rule.newTab)   relParts.push('noopener', 'noreferrer');
+    const relAttr    = relParts.length ? ` rel="${relParts.join(' ')}"` : '';
+    const targetAttr = rule.newTab ? ' target="_blank"' : '';
+    const titleAttr  = rule.title  ? ` title="${esc(rule.title)}"` : '';
+    segments.push(`<a href="${esc(rule.url)}"${relAttr}${targetAttr}${titleAttr}>${xmlEsc(matchedText)}</a>`);
+    pos = end;
+  }
+  if (pos < rawText.length) segments.push(xmlEsc(rawText.slice(pos)));
+
+  return { html: segments.join(''), linksUsed: selected.length };
+}
+
+// Init link UI on load
+window.addEventListener('load', () => {
+  lsLoadAndApplyLinkConfig();
+  renderLinkRulesTable();
+  updateLinkStatsBar();
+});
+const IDB_NAME = 'faqgen_saves_db';
+const IDB_VER  = 1;
+const IDB_STORE = 'saves';
+let idb = null;
+
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    if (idb) return resolve(idb);
+    const req = indexedDB.open(IDB_NAME, IDB_VER);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        const store = db.createObjectStore(IDB_STORE, { keyPath: 'id', autoIncrement: true });
+        store.createIndex('name', 'name', { unique: false });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+      }
+    };
+    req.onsuccess = e => { idb = e.target.result; resolve(idb); };
+    req.onerror   = () => reject(req.error);
+  });
+}
+
+function idbGetAll() {
+  return idbOpen().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readonly');
+    const req = tx.objectStore(IDB_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror   = () => reject(req.error);
+  }));
+}
+
+function idbAdd(record) {
+  return idbOpen().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    const req = tx.objectStore(IDB_STORE).add(record);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror   = () => reject(req.error);
+  }));
+}
+
+function idbDelete(id) {
+  return idbOpen().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    const req = tx.objectStore(IDB_STORE).delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror   = () => reject(req.error);
+  }));
+}
+
+// Snapshot all cfg settings
+function captureSettings() {
+  const ids = ['cfg-title','cfg-style','cfg-icon','cfg-color','cfg-answer-color',
+               'cfg-maxwidth','cfg-font','cfg-schema','cfg-inline-css','cfg-js','cfg-anim'];
+  const s = {};
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    s[id] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+  return s;
+}
+
+// Restore cfg settings from snapshot
+function restoreSettings(s) {
+  if (!s) return;
+  Object.entries(s).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!val;
+    else el.value = val;
+  });
+  const c = document.getElementById('cfg-color');
+  const cp = document.getElementById('cfg-color-pick');
+  if (c && cp) cp.value = c.value;
+  const ac = document.getElementById('cfg-answer-color');
+  const acp = document.getElementById('cfg-answer-color-pick');
+  if (ac && acp) acp.value = ac.value;
+}
+
+function openSaveModal() {
+  const nameEl = document.getElementById('save-modal-name');
+  const noteEl = document.getElementById('save-modal-note');
+  if (!nameEl.value.trim()) nameEl.value = cfg('cfg-title') || 'FAQ';
+  noteEl.value = '';
+  document.getElementById('save-modal').style.display = 'flex';
+  setTimeout(() => nameEl.focus(), 60);
+}
+
+function closeSaveModal() {
+  document.getElementById('save-modal').style.display = 'none';
+}
+
+async function confirmSave() {
+  const nameEl = document.getElementById('save-modal-name');
+  const noteEl = document.getElementById('save-modal-note');
+  const name = nameEl.value.trim() || 'FAQ';
+
+  const record = {
+    name,
+    note: noteEl.value.trim(),
+    timestamp: Date.now(),
+    items: JSON.parse(JSON.stringify(items)),
+    settings: captureSettings(),
+    html: generateHtml(false),
+    itemCount: items.length
+  };
+
+  try {
+    await idbAdd(record);
+    closeSaveModal();
+    updateSavesNavBadge();
+    showToast('\u2713 Zapisano \u201e' + esc(name) + '\u201d \u2014 ' + items.length + ' pytań');
+  } catch(e) {
+    alert('Błąd zapisu: ' + e.message);
+  }
+}
+
+// Ctrl+S shortcut
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); openSaveModal(); }
+});
+
+async function updateSavesNavBadge() {
+  try {
+    const all = await idbGetAll();
+    const badge = document.getElementById('saves-nav-badge');
+    if (!badge) return;
+    if (all.length > 0) { badge.textContent = all.length; badge.style.display = 'inline'; }
+    else badge.style.display = 'none';
+  } catch(e) {}
+}
+
+async function renderSavesList() {
+  const container = document.getElementById('saves-list-container');
+  const label = document.getElementById('saves-count-label');
+  if (!container) return;
+  container.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:12px 0;">Ładowanie…</div>';
+
+  let all;
+  try { all = await idbGetAll(); }
+  catch(e) { container.innerHTML = '<div class="saves-empty"><p>Błąd odczytu bazy: ' + e.message + '</p></div>'; return; }
+
+  const query = (document.getElementById('saves-search-input')?.value || '').toLowerCase();
+  if (query) all = all.filter(r => r.name.toLowerCase().includes(query));
+  all.sort((a, b) => b.timestamp - a.timestamp);
+
+  const total = all.length;
+  if (label) label.textContent = total + ' wersj' + (total === 1 ? 'a' : total >= 5 ? 'i' : 'e');
+  updateSavesNavBadge();
+
+  if (!total) {
+    container.innerHTML = `<div class="saves-empty">
+      <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <p style="font-weight:600;color:var(--text2);margin-bottom:6px;">${query ? 'Brak wyników' : 'Brak zapisanych wersji'}</p>
+      <p>${query ? 'Spróbuj innej frazy.' : 'Użyj Ctrl+S lub przycisku "Zapisz wersję", aby zachować bieżący stan FAQ.'}</p>
+    </div>`;
+    return;
+  }
+
+  // Group by project name (preserving newest-first order)
+  const groupOrder = [];
+  const groups = {};
+  all.forEach(r => {
+    if (!groups[r.name]) { groups[r.name] = []; groupOrder.push(r.name); }
+    groups[r.name].push(r);
+  });
+
+  let html = '';
+  groupOrder.forEach(name => {
+    const versions = groups[name];
+    const vc = versions.length;
+    html += `<div class="project-group">
+      <div class="project-group-header">
+        <span class="project-name">${esc(name)}</span>
+        <span class="project-count">${vc} ${vc === 1 ? 'wersja' : vc >= 5 ? 'wersji' : 'wersje'}</span>
+      </div>`;
+
+    versions.forEach((r, vi) => {
+      const vNum = vc - vi;
+      const isLatest = vi === 0;
+      const date = new Date(r.timestamp);
+      const dateStr = date.toLocaleDateString('pl', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const timeStr = date.toLocaleTimeString('pl', { hour: '2-digit', minute: '2-digit' });
+      const ic = r.itemCount || (r.items && r.items.length) || 0;
+      html += `<div class="save-item${isLatest ? ' is-latest' : ''}">
+        <div class="save-meta">
+          <div><span class="save-version">v${vNum}</span><span class="save-date">${dateStr}, ${timeStr}</span>${isLatest ? '<span class="save-badge-new">LATEST</span>' : ''}</div>
+          <div class="save-stats">${ic} pytań</div>
+          ${r.note ? `<div class="save-note" title="${esc(r.note)}">${esc(r.note)}</div>` : ''}
+        </div>
+        <div class="save-actions">
+          <button class="btn btn-ghost btn-sm" title="Otwórz podgląd HTML w nowej karcie" onclick="previewSave(${r.id})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" title="Pobierz HTML tej wersji" onclick="downloadSave(${r.id})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="loadSave(${r.id})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.45"/></svg>
+            Wczytaj
+          </button>
+          <button class="btn btn-danger-ghost btn-sm btn-icon" title="Usuń tę wersję" onclick="deleteSave(${r.id})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+async function loadSave(id) {
+  let all;
+  try { all = await idbGetAll(); } catch(e) { return; }
+  const record = all.find(r => r.id === id);
+  if (!record) return;
+  const date = new Date(record.timestamp).toLocaleString('pl');
+  if (!confirm('Wczytać tę wersję?\n\n' + record.name + ' — ' + date + '\n\nBieżące pytania zostaną zastąpione. Zapisz je wcześniej jeśli potrzeba.')) return;
+  items = JSON.parse(JSON.stringify(record.items));
+  restoreSettings(record.settings);
+  saveItems();
+  renderEditor();
+  showSection('editor');
+  showToast('\u2713 Wczytano \u201e' + esc(record.name) + '\u201d \u2014 ' + items.length + ' pytań');
+}
+
+async function downloadSave(id) {
+  let all;
+  try { all = await idbGetAll(); } catch(e) { return; }
+  const record = all.find(r => r.id === id);
+  if (!record) return;
+  const html = record.html || '';
+  const slug = record.name.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+  const ts = new Date(record.timestamp).toISOString().slice(0, 10);
+  const filename = 'faq-' + slug + '-' + ts + '.html';
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function previewSave(id) {
+  let all;
+  try { all = await idbGetAll(); } catch(e) { return; }
+  const record = all.find(r => r.id === id);
+  if (!record) return;
+  const html = record.html || '<!-- brak podglądu -->';
+  const win = window.open('', '_blank');
+  if (!win) { alert('Zezwól na otwieranie nowych kart w przeglądarce.'); return; }
+  win.document.write('<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Podgląd: ' + esc(record.name) + '</title></head><body style="margin:0;padding:24px;">' + html + '</body></html>');
+  win.document.close();
+}
+
+async function deleteSave(id) {
+  let all;
+  try { all = await idbGetAll(); } catch(e) { return; }
+  const record = all.find(r => r.id === id);
+  if (!record) return;
+  if (!confirm('Usunąć wersję „' + record.name + '" z ' + new Date(record.timestamp).toLocaleString('pl') + '?\n\nTej operacji nie można cofnąć.')) return;
+  try { await idbDelete(id); renderSavesList(); showToast('Wersja usunięta'); }
+  catch(e) { alert('Błąd usuwania: ' + e.message); }
+}
+
+// Toast notification
+function showToast(msg) {
+  let toast = document.getElementById('toast-msg');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-msg';
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .3s;pointer-events:none;white-space:nowrap;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2800);
+}
+
+// Init badge on load
+idbOpen().then(updateSavesNavBadge).catch(() => {});
 
 // Rule-based checks
 function analyzeItem(item) {
@@ -1668,24 +2988,20 @@ function renderSeoResults(results, aiGlobal, providerLabel) {
   const avgQWords = Math.round(results.reduce((s, r) => s + r.qWords, 0) / results.length);
   const avgAWords = Math.round(results.reduce((s, r) => s + r.aWords, 0) / results.length);
   const snippetReady = results.filter(r => r.aWords >= 40 && r.aWords <= 60).length;
-
-  // Score color
   const scoreColor = avgScore >= 80 ? '#059669' : avgScore >= 60 ? '#d97706' : '#dc2626';
   const circumference = 2 * Math.PI * 28;
   const dashOffset = circumference * (1 - avgScore / 100);
 
-  // Global issues
   const globalIssues = [];
-  if (items.length < 5) globalIssues.push('Za mało pytań – dodaj min. 5–10 dla efektywnej sekcji FAQ');
+  if (items.length < 5)  globalIssues.push('Za mało pytań – dodaj min. 5–10 dla efektywnej sekcji FAQ');
   if (items.length > 20) globalIssues.push('Powyżej 20 pytań – rozważ podział na kategorie lub osobne strony FAQ');
-  const noQmark = results.filter(r => !r.checks[0].ok).length;
-  if (noQmark) globalIssues.push(`${noQmark} pytań bez znaku "?" – uzupełnij formatowanie`);
+  const noQmark   = results.filter(r => !r.checks[0].ok).length;
+  if (noQmark)  globalIssues.push(`${noQmark} pytań bez znaku "?" – uzupełnij formatowanie`);
   const tooShortA = results.filter(r => r.aWords < 30).length;
   if (tooShortA) globalIssues.push(`${tooShortA} odpowiedzi za krótkich – rozbuduj do min. 30 słów`);
-  const tooLongA = results.filter(r => r.aWords > 300).length;
-  if (tooLongA) globalIssues.push(`${tooLongA} odpowiedzi bardzo długich (>300 słów) – skróć lub podziel`);
+  const tooLongA  = results.filter(r => r.aWords > 300).length;
+  if (tooLongA)  globalIssues.push(`${tooLongA} odpowiedzi bardzo długich (>300 słów) – skróć lub podziel`);
 
-  // Build HTML
   let html = `
   <div class="seo-overview">
     <div style="text-align:center;flex-shrink:0;">
@@ -1694,10 +3010,8 @@ function renderSeoResults(results, aiGlobal, providerLabel) {
           <circle cx="36" cy="36" r="28" fill="none" stroke="#e5e7eb" stroke-width="7"/>
           <circle cx="36" cy="36" r="28" fill="none" stroke="${scoreColor}" stroke-width="7"
             stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
-            stroke-linecap="round"/>
-          <text x="36" y="36" text-anchor="middle" dominant-baseline="central"
-            style="font-size:17px;font-weight:700;fill:${scoreColor};font-family:inherit;transform:rotate(90deg) translate(0,-72px);transform-box:fill-box"
-            transform="rotate(90, 36, 36) translate(0,-72)">${avgScore}</text>
+            stroke-linecap="round" transform="rotate(-90 36 36)"/>
+          <text x="36" y="41" text-anchor="middle" style="font-size:17px;font-weight:700;fill:${scoreColor};font-family:inherit;">${avgScore}</text>
         </svg>
         <div style="font-size:11px;color:var(--text3);margin-top:4px;">Wynik SEO</div>
       </div>
@@ -1715,7 +3029,6 @@ function renderSeoResults(results, aiGlobal, providerLabel) {
       </div>
     </div>
   </div>
-
   <div class="seo-grid">
     ${metricCard('Pytań łącznie', items.length, items.length >= 5 && items.length <= 20 ? '✓ optymalna liczba' : items.length < 5 ? '↑ dodaj więcej' : '↓ rozważ podział')}
     ${metricCard('Śr. dł. pytania', avgQWords + ' słów', avgQWords >= 5 && avgQWords <= 15 ? '✓ OK' : avgQWords < 5 ? '↑ za krótkie' : '↓ za długie')}
@@ -1740,37 +3053,86 @@ function renderSeoResults(results, aiGlobal, providerLabel) {
     </div>`;
   }
 
+  // "Re-analyze" bar shown after first analysis
+  html += `<div class="seo-reanalyze-bar">
+    <span>✏️ Edytuj pytania i odpowiedzi bezpośrednio poniżej, a następnie przelicz wyniki.</span>
+    <button class="btn btn-primary btn-sm" onclick="runRuleAnalysis()">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      Analizuj ponownie
+    </button>
+  </div>`;
+
   html += `<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Szczegóły na pytanie</div>`;
   html += `<div class="seo-items">` + results.map((r, i) => {
     const sc = r.score >= 80 ? 'great' : r.score >= 65 ? 'good' : r.score >= 45 ? 'ok' : 'bad';
-    const chips = [];
-    if (!r.checks[0].ok) chips.push('<span class="chip chip-warn">Brak ?</span>');
-    if (r.aWords < 30) chips.push('<span class="chip chip-red">Krótka odp.</span>');
-    if (r.aWords >= 40 && r.aWords <= 60) chips.push('<span class="chip chip-green">Snippet ✓</span>');
-    if (r.dupLevel >= 3) chips.push('<span class="chip chip-red">Identyczny!</span>');
-    else if (r.dupLevel === 2) chips.push('<span class="chip chip-warn">B. podobne</span>');
-    else if (r.dupLevel === 1) chips.push('<span class="chip chip-warn">Podobne</span>');
+    const chips = seoChips(r);
+    const aWordsStat = seoWordStat(r.aWords);
     return `
-    <div class="seo-item-card">
+    <div class="seo-item-card" id="seo-card-${i}">
       <div class="seo-item-head" onclick="toggleSeoItem(${i})">
-        <div class="seo-item-score score-${sc}">${r.score}</div>
-        <div class="seo-item-q">Q${i+1}: ${esc(items[i].q)}</div>
-        <div class="seo-item-chips">${chips.join('')}</div>
+        <div class="seo-item-score score-${sc}" id="seo-score-badge-${i}">${r.score}</div>
+        <div class="seo-item-q" id="seo-item-q-label-${i}">Q${i+1}: ${esc(items[i].q)}</div>
+        <div class="seo-item-chips" id="seo-chips-${i}">${chips.join('')}</div>
         <svg style="width:14px;height:14px;stroke:var(--text3);fill:none;flex-shrink:0;transition:transform .2s" id="seo-chevron-${i}" viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="seo-item-body" id="seo-body-${i}">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:12px;color:var(--text2);">
-          <span>📝 Pytanie: <b>${r.qWords} słów</b>, ${r.qChars} zn.</span>
-          <span>💬 Odpowiedź: <b>${r.aWords} słów</b>, ${r.aChars} zn.</span>
-          <span>🔑 Słowa kluczowe: <b>${r.kwRatio}%</b> pokrycia</span>
-          <span>⭐ Snippet-ready: <b>${r.aWords >= 40 && r.aWords <= 60 ? 'Tak ✓' : 'Nie (' + r.aWords + ' słów)'}</b></span>
+
+        <!-- Inline Q/A editor -->
+        <div class="seo-edit-zone">
+          <div class="seo-edit-label">
+            Pytanie
+            <span class="seo-edit-live-stats" id="seo-q-stats-${i}">
+              <span id="seo-q-words-${i}" class="seo-edit-stat">${r.qWords} słów</span>
+              <span id="seo-q-chars-${i}" class="seo-edit-stat">${r.qChars} zn.</span>
+            </span>
+          </div>
+          <input class="seo-edit-q-input" id="seo-q-input-${i}"
+            value="${esc(items[i].q)}"
+            oninput="seoLiveQ(${i},this.value)"
+            placeholder="Wpisz pytanie…">
+          <div class="seo-edit-label" style="margin-top:8px;">
+            Odpowiedź
+            <span class="seo-edit-live-stats" id="seo-a-stats-${i}">
+              <span id="seo-a-words-${i}" class="seo-edit-stat ${aWordsStat.cls}">${r.aWords} słów</span>
+              <span id="seo-a-chars-${i}" class="seo-edit-stat">${r.aChars} zn.</span>
+              <span id="seo-snippet-${i}" class="seo-edit-stat ${r.aWords >= 40 && r.aWords <= 60 ? 'ok' : ''}">${r.aWords >= 40 && r.aWords <= 60 ? '✓ snippet' : 'cel: 40–60 słów'}</span>
+            </span>
+          </div>
+          <textarea class="seo-edit-a-input" id="seo-a-input-${i}"
+            oninput="seoLiveA(${i},this.value)"
+            placeholder="Wpisz odpowiedź…">${esc(items[i].a)}</textarea>
         </div>
-        <div class="seo-checks">
-          ${r.checks.map(c => `<div class="seo-check"><div class="seo-check-icon check-${c.level}">${c.level==='ok'?'✓':c.level==='warn'?'!':'✗'}</div><span>${c.text}</span></div>`).join('')}
+
+        <!-- Save / reanalyze actions -->
+        <div class="seo-edit-actions">
+          <button class="btn btn-primary btn-sm" onclick="seoSaveAndReanalyze(${i})">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Zapisz i przelicz
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="seoSaveItem(${i})">Tylko zapisz</button>
+          <span class="seo-edit-saved-badge" id="seo-saved-${i}">
+            <svg viewBox="0 0 24 24" stroke-width="2" style="width:13px;height:13px;stroke:var(--success);fill:none;"><polyline points="20 6 9 17 4 12"/></svg>
+            Zapisano
+          </span>
+          <span style="flex:1;"></span>
+          <button class="btn btn-ghost btn-sm" onclick="runAiAnalysisSingle(${i})" title="Analiza AI tego pytania">✦ AI</button>
         </div>
-        <div class="seo-ai-box" id="seo-ai-${i}">
-          <div class="seo-ai-label"><span class="ai-spinner" id="ai-spin-${i}" style="display:none"></span>✦ Analiza AI</div>
-          <div id="seo-ai-text-${i}" style="color:var(--text3);font-size:12px;">Kliknij „Analiza AI (Claude)" aby uzyskać szczegółowe wskazówki od Claude.</div>
+
+        <!-- Analysis details -->
+        <div class="seo-analysis-zone">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:12px;color:var(--text2);" id="seo-stats-grid-${i}">
+            <span>📝 Pytanie: <b id="seo-gs-qw-${i}">${r.qWords} słów</b>, <span id="seo-gs-qc-${i}">${r.qChars}</span> zn.</span>
+            <span>💬 Odpowiedź: <b id="seo-gs-aw-${i}">${r.aWords} słów</b>, <span id="seo-gs-ac-${i}">${r.aChars}</span> zn.</span>
+            <span>🔑 Słowa kluczowe: <b id="seo-gs-kw-${i}">${r.kwRatio}%</b> pokrycia</span>
+            <span>⭐ Snippet-ready: <b id="seo-gs-sn-${i}">${r.aWords >= 40 && r.aWords <= 60 ? 'Tak ✓' : 'Nie (' + r.aWords + ' słów)'}</b></span>
+          </div>
+          <div class="seo-checks" id="seo-checks-${i}">
+            ${r.checks.map(c => `<div class="seo-check"><div class="seo-check-icon check-${c.level}">${c.level==='ok'?'✓':c.level==='warn'?'!':'✗'}</div><span>${c.text}</span></div>`).join('')}
+          </div>
+          <div class="seo-ai-box" id="seo-ai-${i}">
+            <div class="seo-ai-label"><span class="ai-spinner" id="ai-spin-${i}" style="display:none"></span>✦ Analiza AI</div>
+            <div id="seo-ai-text-${i}" style="color:var(--text3);font-size:12px;">Kliknij „✦ AI" powyżej lub „Analiza AI" na górze, aby uzyskać szczegółowe wskazówki.</div>
+          </div>
         </div>
       </div>
     </div>`;
@@ -1779,6 +3141,97 @@ function renderSeoResults(results, aiGlobal, providerLabel) {
   body.innerHTML = html;
   const badge = document.getElementById('seo-status-badge');
   if (badge) badge.textContent = `Wynik: ${avgScore}/100`;
+}
+
+function seoChips(r) {
+  const chips = [];
+  if (!r.checks[0].ok) chips.push('<span class="chip chip-warn">Brak ?</span>');
+  if (r.aWords < 30) chips.push('<span class="chip chip-red">Krótka odp.</span>');
+  if (r.aWords >= 40 && r.aWords <= 60) chips.push('<span class="chip chip-green">Snippet ✓</span>');
+  if (r.dupLevel >= 3) chips.push('<span class="chip chip-red">Identyczny!</span>');
+  else if (r.dupLevel === 2) chips.push('<span class="chip chip-warn">B. podobne</span>');
+  else if (r.dupLevel === 1) chips.push('<span class="chip chip-warn">Podobne</span>');
+  return chips;
+}
+
+function seoWordStat(n) {
+  if (n >= 40 && n <= 60)  return { cls: 'ok' };
+  if (n >= 30 && n < 40)   return { cls: 'warn' };
+  if (n > 60  && n <= 150) return { cls: 'ok' };
+  if (n > 150)             return { cls: 'warn' };
+  return { cls: 'bad' };
+}
+
+// Live update while typing — no full re-render, just update counters
+function seoLiveQ(i, val) {
+  items[i].q = val;
+  debounceSave();
+  const words = val.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const chars = val.length;
+  const wEl = document.getElementById('seo-q-words-' + i);
+  const cEl = document.getElementById('seo-q-chars-' + i);
+  const lbl = document.getElementById('seo-item-q-label-' + i);
+  if (wEl) wEl.textContent = words + ' słów';
+  if (cEl) cEl.textContent = chars + ' zn.';
+  if (lbl) lbl.textContent = `Q${i+1}: ${val}`;
+  // Mark as dirty
+  document.getElementById('seo-card-' + i)?.classList.add('seo-edited');
+}
+
+function seoLiveA(i, val) {
+  items[i].a = val;
+  debounceSave();
+  const words = val.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const chars = val.length;
+  const wEl = document.getElementById('seo-a-words-' + i);
+  const cEl = document.getElementById('seo-a-chars-' + i);
+  const snEl = document.getElementById('seo-snippet-' + i);
+  const snGEl = document.getElementById('seo-gs-sn-' + i);
+  const wGEl  = document.getElementById('seo-gs-aw-' + i);
+  const cGEl  = document.getElementById('seo-gs-ac-' + i);
+  const isSnippet = words >= 40 && words <= 60;
+  const statCls = seoWordStat(words).cls;
+  if (wEl) { wEl.textContent = words + ' słów'; wEl.className = 'seo-edit-stat ' + statCls; }
+  if (cEl)  cEl.textContent = chars + ' zn.';
+  if (snEl) { snEl.textContent = isSnippet ? '✓ snippet' : 'cel: 40–60 słów'; snEl.className = 'seo-edit-stat ' + (isSnippet ? 'ok' : ''); }
+  if (wGEl) wGEl.textContent = words + ' słów';
+  if (cGEl) cGEl.textContent = chars;
+  if (snGEl) snGEl.textContent = isSnippet ? 'Tak ✓' : `Nie (${words} słów)`;
+  // Mark as dirty
+  document.getElementById('seo-card-' + i)?.classList.add('seo-edited');
+}
+
+function seoSaveItem(i) {
+  // Already saved by oninput debounce, just show badge
+  saveItems();
+  const badge = document.getElementById('seo-saved-' + i);
+  if (badge) { badge.classList.add('show'); setTimeout(() => badge.classList.remove('show'), 2000); }
+  document.getElementById('seo-card-' + i)?.classList.remove('seo-edited');
+}
+
+function seoSaveAndReanalyze(i) {
+  saveItems();
+  document.getElementById('seo-card-' + i)?.classList.remove('seo-edited');
+
+  // Re-analyze just this item and patch the card in-place
+  const r = analyzeItem(items[i]);
+  const sc = r.score >= 80 ? 'great' : r.score >= 65 ? 'good' : r.score >= 45 ? 'ok' : 'bad';
+
+  const scoreBadge = document.getElementById('seo-score-badge-' + i);
+  if (scoreBadge) { scoreBadge.textContent = r.score; scoreBadge.className = 'seo-item-score score-' + sc; }
+
+  const chipsEl = document.getElementById('seo-chips-' + i);
+  if (chipsEl) chipsEl.innerHTML = seoChips(r).join('');
+
+  const checksEl = document.getElementById('seo-checks-' + i);
+  if (checksEl) checksEl.innerHTML = r.checks.map(c =>
+    `<div class="seo-check"><div class="seo-check-icon check-${c.level}">${c.level==='ok'?'✓':c.level==='warn'?'!':'✗'}</div><span>${c.text}</span></div>`
+  ).join('');
+
+  const kwEl = document.getElementById('seo-gs-kw-' + i);
+  if (kwEl) kwEl.textContent = r.kwRatio + '%';
+
+  showToast(`Q${i+1} przeliczone: ${r.score}/100`);
 }
 
 function bar(label, val, color) {
@@ -1798,6 +3251,37 @@ function toggleSeoItem(i) {
   const chev = document.getElementById('seo-chevron-' + i);
   const open = body.classList.toggle('open');
   if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+  if (open) {
+    // Scroll card into view smoothly
+    const card = document.getElementById('seo-card-' + i);
+    if (card) setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+}
+
+// Run AI analysis for single item (reuses existing runAiAnalysis infrastructure)
+async function runAiAnalysisSingle(i) {
+  const spinEl = document.getElementById('ai-spin-' + i);
+  const textEl = document.getElementById('seo-ai-text-' + i);
+  if (!spinEl || !textEl) return;
+  spinEl.style.display = 'inline-block';
+  textEl.textContent = 'Analizuję…';
+  try {
+    const result = await callAiForItem(items[i]);
+    textEl.textContent = result;
+  } catch(e) {
+    textEl.textContent = 'Błąd: ' + e.message;
+  } finally {
+    spinEl.style.display = 'none';
+  }
+}
+
+async function callAiForItem(item) {
+  const prompt = `Oceń tę parę Q&A pod kątem SEO i featured snippet. Podaj 1-2 konkretne sugestie poprawy.
+Pytanie: ${item.q}
+Odpowiedź: ${item.a}
+Odpowiedz po polsku, max 3 zdania.`;
+  const apiKey = document.getElementById('ext-api-key')?.value?.trim();
+  return await callAI(prompt, aiProvider, apiKey);
 }
 
 // ─── Provider selection ───────────────────────────────────────────────────────
