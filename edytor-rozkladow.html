@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AirTables / Linie Lotnicze</title>
+<style>
+  :root{
+    --background:#ffffff;
+    --page:#fafafa;
+    --foreground:#09090b;
+    --card:#ffffff;
+    --muted:#f4f4f5;
+    --muted-2:#e4e4e7;
+    --muted-foreground:#71717a;
+    --border:#e4e4e7;
+    --primary:#18181b;
+    --primary-foreground:#fafafa;
+    --ring:#a1a1aa;
+    --code-bg:#18181b;
+    --code-fg:#e4e4e7;
+    --radius:8px;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+    --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--page);
+    color:var(--foreground);
+    line-height:1.5;
+    font-size:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+
+  header.app{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:20px;flex-wrap:wrap;
+    border-bottom:1px solid var(--border);padding-bottom:20px;margin-bottom:22px;
+  }
+  header.app h1{
+    font-size:24px;margin:0;letter-spacing:-.5px;color:var(--foreground);
+    font-weight:700;
+  }
+  header.app p{margin:6px 0 0;color:var(--muted-foreground);font-size:14px}
+  .badge-offline{
+    background:var(--muted);color:var(--foreground);font-size:12px;font-weight:600;
+    padding:5px 11px;border-radius:999px;border:1px solid var(--border);
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .badge-offline .dot{width:7px;height:7px;border-radius:999px;background:#22c55e;}
+
+  /* Tabs — segmented control (shadcn) */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .topbar .tabs{margin-bottom:0}
+  .tabs{
+    display:inline-flex;gap:4px;background:var(--muted);
+    padding:4px;border-radius:var(--radius);margin-bottom:18px;
+  }
+  .tab{
+    border:none;background:transparent;cursor:pointer;
+    font:inherit;font-weight:500;font-size:14px;color:var(--muted-foreground);
+    padding:7px 16px;border-radius:6px;transition:.12s ease;
+    display:inline-flex;align-items:center;
+  }
+  .tab:hover{color:var(--foreground)}
+  .tab.active{background:var(--card);color:var(--foreground);box-shadow:var(--shadow-sm)}
+  .tab .count{
+    display:inline-block;min-width:20px;margin-left:7px;
+    background:var(--muted-2);color:var(--muted-foreground);font-size:12px;
+    padding:1px 7px;border-radius:999px;font-weight:600;
+  }
+  .tab.active .count{background:var(--primary);color:var(--primary-foreground)}
+
+  .panel{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px;
+  }
+  .panel.hidden{display:none}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .toolbar .grow{flex:1 1 auto}
+  .search{
+    border:1px solid var(--border);border-radius:6px;padding:8px 12px;font:inherit;
+    width:min(280px,100%);background:var(--background);color:var(--foreground);
+  }
+  .search::placeholder{color:var(--muted-foreground)}
+  .search:focus{outline:none;border-color:var(--ring);box-shadow:0 0 0 2px rgba(161,161,170,.4)}
+
+  button.btn{
+    font:inherit;font-weight:500;font-size:14px;cursor:pointer;border-radius:6px;
+    padding:8px 14px;border:1px solid var(--border);background:var(--background);color:var(--foreground);
+    transition:.12s ease;line-height:1;
+  }
+  button.btn:hover{background:var(--muted)}
+  button.btn.primary{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
+  button.btn.primary:hover{background:#2a2a2e}
+  button.btn.ghost{background:transparent;border-color:transparent;color:var(--muted-foreground)}
+  button.btn.ghost:hover{color:var(--foreground);background:var(--muted)}
+  button.btn.danger{color:#b91c1c;border-color:transparent}
+  button.btn.danger:hover{background:#f4f4f5;color:#991b1b}
+
+  /* Editable table */
+  .grid-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+  table.grid{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+  table.grid thead th{
+    background:var(--muted);color:var(--muted-foreground);text-align:left;font-weight:600;
+    padding:10px;white-space:nowrap;font-size:12px;letter-spacing:.3px;text-transform:uppercase;
+    border-bottom:1px solid var(--border);position:sticky;top:0;
+  }
+  table.grid thead th.thidx{width:38px;text-align:center}
+  table.grid thead th.thact{width:120px}
+  table.grid tbody tr{border-top:1px solid var(--border)}
+  table.grid tbody tr:first-child{border-top:none}
+  table.grid tbody tr:hover{background:var(--muted)}
+  table.grid tbody tr.dragover{box-shadow:0 -2px 0 var(--primary) inset}
+  table.grid td{padding:4px 8px;vertical-align:middle}
+  td.idx{text-align:center;color:var(--muted-foreground);font-weight:600;cursor:grab;user-select:none}
+  td.idx:active{cursor:grabbing}
+  table.grid input.cell{
+    width:100%;min-width:90px;border:1px solid transparent;background:transparent;
+    font:inherit;font-size:14px;padding:6px 8px;border-radius:6px;color:var(--foreground);
+  }
+  table.grid input.cell:hover{border-color:var(--border);background:var(--background)}
+  table.grid input.cell:focus{outline:none;background:var(--background);border-color:var(--ring);box-shadow:0 0 0 2px rgba(161,161,170,.4)}
+  input.cell.url{font-size:12.5px;color:#3f3f46;min-width:200px}
+  input.cell.iata{text-transform:uppercase;width:78px;min-width:78px;font-weight:600;letter-spacing:.5px}
+  .rowact{display:flex;gap:3px;justify-content:flex-end;white-space:nowrap}
+  .iconbtn{
+    border:1px solid var(--border);background:var(--background);border-radius:6px;cursor:pointer;
+    width:30px;height:30px;font-size:14px;line-height:1;color:var(--muted-foreground);
+    display:inline-flex;align-items:center;justify-content:center;padding:0;transition:.12s ease;
+  }
+  .iconbtn:hover{color:var(--foreground);background:var(--muted)}
+  .iconbtn.del:hover{color:#b91c1c;border-color:#fecaca;background:#fef2f2}
+  .empty{padding:30px;text-align:center;color:var(--muted-foreground)}
+
+  /* Inline import box */
+  /* Import textarea (in modal) */
+  textarea.import-area{
+    width:100%;min-height:130px;resize:vertical;
+    font-family:ui-monospace,"SF Mono",Consolas,"Courier New",monospace;
+    font-size:12.5px;line-height:1.55;
+    border:1px solid var(--border);border-radius:6px;padding:12px;
+    background:var(--background);color:var(--foreground);tab-size:2;
+  }
+  textarea.import-area::placeholder{color:var(--muted-foreground)}
+  textarea.import-area:focus{outline:none;border-color:var(--ring);box-shadow:0 0 0 2px rgba(161,161,170,.4)}
+
+  /* Code modal */
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(9,9,11,.45);display:none;
+    align-items:flex-start;justify-content:center;padding:48px 20px;z-index:60;overflow:auto;
+  }
+  .modal-bg.show{display:flex}
+  .modal{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    max-width:840px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.25);
+  }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--border)}
+  .modal-head h2{margin:0;font-size:16px;font-weight:600;color:var(--foreground)}
+  .modal-body{padding:16px 18px}
+  .modal-note{margin:0 0 12px;font-size:13px;color:var(--muted-foreground)}
+  .modal-note code{background:var(--muted);padding:1px 5px;border-radius:4px;font-size:12px}
+  .modal-body .import-area + .opt{margin-top:12px;margin-bottom:0}
+  .opt{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--muted-foreground);margin-bottom:12px}
+  .opt .grow{flex:1 1 auto}
+  .opt label{display:inline-flex;gap:6px;align-items:center;cursor:pointer;user-select:none}
+  textarea.code{
+    width:100%;min-height:230px;resize:vertical;
+    font-family:ui-monospace,"SF Mono",Consolas,"Courier New",monospace;
+    font-size:12.5px;line-height:1.55;
+    border:1px solid var(--border);border-radius:var(--radius);padding:14px;
+    background:var(--code-bg);color:var(--code-fg);tab-size:2;
+  }
+  textarea.code:focus{outline:none;box-shadow:0 0 0 2px rgba(161,161,170,.4)}
+  .hint{font-size:12.5px;color:var(--muted-foreground);margin:8px 2px 0}
+  .hint code{background:var(--muted);padding:1px 5px;border-radius:4px;font-size:12px}
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:var(--primary);color:var(--primary-foreground);padding:11px 20px;border-radius:8px;
+    font-weight:500;font-size:14px;box-shadow:var(--shadow);opacity:0;
+    transition:.22s ease;pointer-events:none;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer.app{margin-top:28px;color:var(--muted-foreground);font-size:12.5px;text-align:center;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="app">
+    <div>
+      <h1>AirTables / Linie Lotnicze</h1>
+    </div>
+  </header>
+
+  <div class="topbar">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="airports" role="tab">Lotniska <span class="count" id="cnt-airports">0</span></button>
+      <button class="tab" data-tab="airlines" role="tab">Linie Lotnicze <span class="count" id="cnt-airlines">0</span></button>
+    </div>
+    <button class="btn primary" id="open-code">⧉ Generuj kod HTML</button>
+  </div>
+
+  <!-- AIRPORTS PANEL -->
+  <section class="panel" id="panel-airports" data-tab="airports">
+    <div class="toolbar">
+      <button class="btn primary" data-add="airports">＋ Dodaj wiersz</button>
+      <input class="search" type="search" placeholder="Filtruj wiersze…" data-search="airports">
+      <span class="grow"></span>
+      <button class="btn" data-importtoggle="airports">⤓ Wklej kod</button>
+      <button class="btn ghost danger" data-reset="airports">↺ Przywróć oryginał</button>
+    </div>
+    <div class="grid-scroll">
+      <table class="grid" data-table="airports">
+        <thead>
+          <tr>
+            <th class="thidx">#</th>
+            <th>Kraj</th>
+            <th>Miasto</th>
+            <th>Lotnisko</th>
+            <th>IATA</th>
+            <th>Link (href)</th>
+            <th class="thact"></th>
+          </tr>
+        </thead>
+        <tbody data-rows="airports"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- AIRLINES PANEL -->
+  <section class="panel hidden" id="panel-airlines" data-tab="airlines">
+    <div class="toolbar">
+      <button class="btn primary" data-add="airlines">＋ Dodaj wiersz</button>
+      <input class="search" type="search" placeholder="Filtruj wiersze…" data-search="airlines">
+      <span class="grow"></span>
+      <button class="btn" data-importtoggle="airlines">⤓ Wklej kod</button>
+      <button class="btn ghost danger" data-reset="airlines">↺ Przywróć oryginał</button>
+    </div>
+    <div class="grid-scroll">
+      <table class="grid" data-table="airlines">
+        <thead>
+          <tr>
+            <th class="thidx">#</th>
+            <th>Nazwa linii</th>
+            <th>Miasto</th>
+            <th>Lotnisko</th>
+            <th>IATA</th>
+            <th>Link (href)</th>
+            <th class="thact"></th>
+          </tr>
+        </thead>
+        <tbody data-rows="airlines"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- CODE MODAL -->
+<div class="modal-bg" id="code-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Wygenerowany kod HTML</h2>
+      <button class="iconbtn" id="code-close" title="Zamknij">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="opt">
+        <label>Zakres:&nbsp;
+          <select id="opt-mode">
+            <option value="field">Całe Pole 3 (wklej w CMS — ze stylami)</option>
+            <option value="table">Sama tabela — aktywnej zakładki</option>
+            <option value="tbody">Tylko wiersze &lt;tbody&gt; — aktywnej zakładki</option>
+          </select>
+        </label>
+        <span class="grow"></span>
+        <button class="btn primary" id="btn-copy">⧉ Kopiuj</button>
+        <button class="btn" id="btn-download">⤓ Pobierz .html</button>
+      </div>
+      <p class="modal-note">„Całe Pole 3" zawiera owijkę <code>tt-body</code>, zakładki i obie tabele — wklej je jako całe Pole 3 (style z Pola 1 działają tylko wewnątrz <code>.tt-body</code>). Pozostałe opcje wklejaj wyłącznie <strong>wewnątrz</strong> istniejącej struktury Pola 3.</p>
+      <textarea class="code" id="output" spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-bg" id="import-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Wklej kod HTML</h2>
+      <button class="iconbtn" id="import-close" title="Zamknij">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-note">Wklej zawartość <code>&lt;tbody&gt;</code> lub całą tabelę. Wiersze <strong>zastąpią</strong> bieżącą zawartość aktywnej zakładki.</p>
+      <textarea class="import-area" id="import-text" spellcheck="false" placeholder="&lt;tr&gt;&#10;    &lt;td&gt;Polska&lt;/td&gt;&#10;    &lt;td&gt;Gdańsk&lt;/td&gt; …"></textarea>
+      <div class="opt">
+        <span class="grow"></span>
+        <button class="btn ghost" id="import-cancel">Anuluj</button>
+        <button class="btn primary" id="import-do">Importuj wiersze</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ---------- ORIGINAL DATA ---------- */
+const ORIGINAL = {
+  airports: [
+    ["Polska","Gdańsk","Gdańsk Airport","GDN","https://www.airport.gdansk.pl/loty/tablica-odlotow-p2.html"],
+    ["Polska","Szczecin","Port lotniczy Szczecin Goleniów","SZZ","https://airport.com.pl/loty/rozklad-przylotow-odlotow/"],
+    ["Polska","Rzeszów","Rzeszów International Airport","RZE","https://www.rzeszowairport.pl/pl/pasazer/rozklad-lotow"],
+    ["Indie","Goa","Goa Airport","GOI","https://www.goanairport.com/dabolim-departures"],
+    ["Malediwy","Male","Velana International Airport","MLE","https://www.maleairport.com/flight-status-departures/"],
+    ["Mauritius","Mauritius","Atol Airport Terminal Operations","MRU","https://mauritius-airport.atol.aero/"],
+    ["Meksyk","Cancun","Cancun International Airport","CUN","https://www.cancun-airport.net/international-departures.php"],
+    ["Singapur","Singapur","Changi Airport Singapore","SIN","https://www.changiairport.com/en/flights/departures.html"],
+    ["Tajlandia","Bangkok","New Bangkok International Airport (Suvarnabhumi)","BKK","https://www.bangkokairportonline.com/flight-status-departures/"],
+    ["Tajlandia","Phuket","Phuket International Airport","HKT","https://www.phuketairportonline.com/flight-status-departures/"],
+    ["Zjednoczone Emiraty Arabskie","Dubaj","Dubai Airport","DXB","https://www.dubaiairports.ae/flight-status"],
+    ["Seszele","Seszele","Seychelles International Airport","SEZ","https://seychellesairports.sc/"],
+    ["Kuba","Varadero","Varadero International Airport","VRA","http://www.varadero-airport.com/departures.html"],
+    ["Tajlandia","Pattaya","Pattaya International Airport","UTP","https://www.utapao.com/th/passenger-guide/Immigration"],
+    ["Tajlandia","Krabi Airport","Krabi Airport","KBV","https://www.krabiairportonline.com/flight-status-departures/"],
+    ["Kuba","Havana","Havana International Airport","HAV","https://www.airportcuba.net/"],
+    ["Indonezja","Denpasar","Ngurah Rai International Airport (Denpasar)","DPS","https://www.baliairport.com/flight-status-departures/"],
+    ["Polska","Bydgoszcz","Bydgoszcz Airport","BZG","https://plb.pl/rozklad-lotow/"],
+    ["Dominikana","Santo Domingo Int","Santo Domingo Airport","SDQ","https://www.santo-domingo-airport.com/sdq-departures"],
+    ["Zjednoczone Emiraty Arabskie","Abu-dhabi","Abu Dhabi Airport","AUH","https://www.abudhabiairport.ae/en/flights/departures"],
+    ["Polska","Modlin","Modlin Airport","WMI","https://www.modlinairport.pl/pasazer/rozklad-lotow"],
+    ["Dominikana","Punta Cana","Punta Cana Internation Airport","PUJ","https://www.puntacanainternationalairport.com/#tm-top-c"],
+    ["Polska","Zielona Góra","Port lotniczy Zielona Góra","IEG","https://airport.lubuskie.pl/"],
+    ["Polska","Warszawa","Warsaw Chopin Airport","WAW","https://www.lotnisko-chopina.pl/pl/odloty.html#tab2"],
+    ["Polska","Wrocław","Wroclaw Airport","WRO","https://airport.wroclaw.pl/pasazer/odlatuje/sprawdz-status-lotu/#current"],
+    ["Polska","Katowice","Katowice Airport","KTW","https://www.katowice-airport.com/pl"],
+    ["Polska","Kraków","Kraków Airport","KRK","https://www.krakowairport.pl/pl/pasazer/loty/odloty"],
+    ["Polska","Poznań","Poznań Airport","POZ","https://poznanairport.pl/loty/rozklad-lotow/"]
+  ],
+  airlines: [
+    ["SWISS","Zurych","Zurich Airport","ZRH","https://www.zurich-airport.com/passengers-and-visitors/arrivals-and-departures/departures"],
+    ["SINGAPORE AIRLINES","Singapur","Changi Airport Singapore","SIN","http://www.changiairport.com/en/flights/departures.html"],
+    ["AIR CANADA","Toronto","Toronto Pearson","YYZ","https://www.torontopearson.com/en/departures"],
+    ["CONDOR","Frankfurt","Frankfurt Airport","FRA","https://www.frankfurt-airport.com/en/travel/transfer.overview.flights.html"],
+    ["EMIRATES","Dubaj","Dubai Airports","DXB","https://www.dubaiairports.ae/flight-status"],
+    ["AUSTRIAN","Wiedeń","Vienna International Airport","VIE","https://www.viennaairport.com/jart/prj3/va/main.jart?rel=en&reserve-mode=active&content-id=1249344074230"],
+    ["LOT","Warszawa","Warsaw Chopin Airport","WAW","https://www.lotnisko-chopina.pl/pl/odloty.html#tab2"],
+    ["QATAR AIRWAYS","Doha","Hamad International Airport","DOH","https://dohahamadairport.com/airlines/flight-status?type=departures&day=today&airline=all&locate=all"],
+    ["CONDOR","Monachium","Munich Airport","MUC","https://www.munich-airport.com/flight-search-260587#departures"],
+    ["LUFTHANSA","Monachium","Munich Airport","MUC","https://www.munich-airport.com/flight-search-260587#departures"],
+    ["KLM","Amsterdam","Schiphol Airport","AMS","https://www.schiphol.nl/en/departures/"],
+    ["LUFTHANSA","Frankfurt","Frankfurt Airport","FRA","https://www.frankfurt-airport.com/en/travel/transfer.overview.flights.html"],
+    ["BRITISH AIRWAYS","Londyn - Gatwick","Gatwick Airport","LHR","https://www.gatwickairport.com/flights/"],
+    ["FLYDUBAI","Dubaj","Dubai Airports","DXB","https://www.dubaiairports.ae/flight-status"],
+    ["SAS","Kopenhaga","Copenhagen Airports","CPH","https://www.cph.dk/en/flight-information/departures"],
+    ["TURKISH","Stambuł","Istanbul Airport","IST","https://www.istanbulhavalimani.com/en"],
+    ["CZECH AIRLINES","Praga","Prague Airport","PRG","https://www.prg.aero/en/flight-information#/odlety"],
+    ["BRITISH AIRWAYS","Londyn - Stansted","London Stansted Airport","STN","https://www.stanstedairport.com/flight-information/departures/"],
+    ["AIR FRANCE","Paryż","Paris Aeroport","CDG","https://www.parisaeroport.fr/en/passengers/flights/flight-departures/informations-flights-departures"],
+    ["AIR BALTIC","Ryga","Riga International Airport","RIX","https://www.riga-airport.com/lv"],
+    ["BRITISH AIRWAYS","London - City","London City Airport","LCY","https://www.londoncityairport.com/departures-and-arrivals"],
+    ["AIR MAURITIUS","Maurititus","Atol Airport Terminal Operations","MRU","https://mauritius-airport.atol.aero/"],
+    ["ALITALIA","Rzym - Fumiciono","Aeroporti di Roma","FCO","http://www.adr.it/web/aeroporti-di-roma-en-/pax-fco-realtime-flight?p_p_id=3_WAR_realtimeflightsportlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p__id=umn-2&p_p__pos=1&p_p__count=2&_3_WAR_realtimeflightsportlet_tab=departure"]
+  ]
+};
+
+const TABLE_META = {
+  airports: { id:"tablice_odlotow", cls:"table table-responsive table-striped", headers:["Kraj","Miasto","Lotnisko","IATA"] },
+  airlines: { id:"linie_lotnicze", cls:"table table-striped", headers:["Nazwa lini","Miasto","Lotnisko","IATA"] }
+};
+
+const STORAGE_KEY = "coral_timetable_editor_v1";
+
+/* ---------- STATE + PERSISTENCE ---------- */
+let state = loadState();
+function deepCopy(o){return JSON.parse(JSON.stringify(o));}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ const p = JSON.parse(raw); if(p && p.airports && p.airlines) return p; }
+  }catch(e){}
+  return deepCopy(ORIGINAL);
+}
+function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+
+/* ---------- ESCAPING ---------- */
+function escText(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escAttr(s){ return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* ---------- RENDER ---------- */
+function renderTable(tab){
+  const tbody = document.querySelector('tbody[data-rows="'+tab+'"]');
+  const filter = (document.querySelector('input[data-search="'+tab+'"]').value || "").toLowerCase();
+  tbody.innerHTML = "";
+  const rows = state[tab];
+  let shown = 0;
+  rows.forEach((row,i)=>{
+    if(filter && row.join(" ").toLowerCase().indexOf(filter)===-1) return;
+    shown++;
+    const tr = document.createElement("tr");
+    const idxTd = document.createElement("td");
+    idxTd.className="idx"; idxTd.textContent=i+1; idxTd.title="Przeciągnij, aby zmienić kolejność";
+    idxTd.draggable=!filter;
+    idxTd.addEventListener("dragstart", e=>onDragStart(e,tab,i));
+    tr.appendChild(idxTd);
+    const fields = [
+      {ph:TABLE_META[tab].headers[0]},{ph:TABLE_META[tab].headers[1]},{ph:TABLE_META[tab].headers[2]},
+      {ph:"IATA",cls:"iata"},{ph:"https://…",cls:"url"}
+    ];
+    fields.forEach((f,c)=>{
+      const td=document.createElement("td");
+      const inp=document.createElement("input");
+      inp.className="cell"+(f.cls?" "+f.cls:""); inp.value=row[c]||""; inp.placeholder=f.ph;
+      inp.addEventListener("input", ()=>{ state[tab][i][c]=inp.value; saveState(); });
+      td.appendChild(inp); tr.appendChild(td);
+    });
+    const actTd=document.createElement("td");
+    const act=document.createElement("div"); act.className="rowact";
+    act.innerHTML='<button class="iconbtn" title="W górę" data-act="up">↑</button>'+
+      '<button class="iconbtn" title="W dół" data-act="down">↓</button>'+
+      '<button class="iconbtn" title="Duplikuj" data-act="dup">⧉</button>'+
+      '<button class="iconbtn del" title="Usuń" data-act="del">✕</button>';
+    act.querySelector('[data-act="up"]').onclick=()=>move(tab,i,-1);
+    act.querySelector('[data-act="down"]').onclick=()=>move(tab,i,1);
+    act.querySelector('[data-act="dup"]').onclick=()=>dup(tab,i);
+    act.querySelector('[data-act="del"]').onclick=()=>del(tab,i);
+    actTd.appendChild(act); tr.appendChild(actTd);
+    tr.addEventListener("dragover", e=>{ e.preventDefault(); tr.classList.add("dragover"); });
+    tr.addEventListener("dragleave", ()=>tr.classList.remove("dragover"));
+    tr.addEventListener("drop", e=>onDrop(e,tab,i));
+    tbody.appendChild(tr);
+  });
+  if(shown===0){
+    const tr=document.createElement("tr");
+    tr.innerHTML='<td class="empty" colspan="7">'+(filter?"Brak wierszy pasujących do filtra.":"Brak wierszy.")+'</td>';
+    tbody.appendChild(tr);
+  }
+  document.getElementById("cnt-"+tab).textContent=rows.length;
+}
+
+/* ---------- ROW OPS ---------- */
+function move(tab,i,dir){ const j=i+dir,a=state[tab]; if(j<0||j>=a.length)return; [a[i],a[j]]=[a[j],a[i]]; saveState(); renderTable(tab); generate(); }
+function dup(tab,i){ state[tab].splice(i+1,0,state[tab][i].slice()); saveState(); renderTable(tab); generate(); }
+function del(tab,i){ state[tab].splice(i,1); saveState(); renderTable(tab); generate(); }
+function addRow(tab){
+  state[tab].push(["","","","",""]); saveState(); renderTable(tab); generate();
+  const last=document.querySelector('tbody[data-rows="'+tab+'"] tr:last-child input.cell');
+  if(last) last.focus();
+}
+
+/* ---------- DRAG ---------- */
+let dragSrc=null;
+function onDragStart(e,tab,i){ dragSrc={tab,i}; e.dataTransfer.effectAllowed="move"; }
+function onDrop(e,tab,i){
+  e.preventDefault();
+  document.querySelectorAll("tr.dragover").forEach(t=>t.classList.remove("dragover"));
+  if(!dragSrc||dragSrc.tab!==tab||dragSrc.i===i)return;
+  const a=state[tab]; const [it]=a.splice(dragSrc.i,1); a.splice(i,0,it); dragSrc=null;
+  saveState(); renderTable(tab); generate();
+}
+
+/* ---------- HTML GEN ---------- */
+const I="                            ", I2="                                ";
+/* Ikony jako wstawki SVG — zgodne z Polem 3 (bez bootstrap-icons) */
+const SVG_CIRCLE='<svg class="bi-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/></svg>';
+const SVG_BOX='<svg class="bi-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/></svg>';
+function rowHTML(row){
+  const [c1,c2,c3,c4,url]=row.map(x=>x==null?"":x);
+  return I+"<tr>\n"+
+    I2+"<td>"+escText(c1)+"</td>\n"+I2+"<td>"+escText(c2)+"</td>\n"+
+    I2+"<td>"+escText(c3)+"</td>\n"+I2+"<td>"+escText(c4)+"</td>\n"+
+    I2+'<td class="none"><a href="'+escAttr(url)+'" rel="nofollow" target="_BLANK">'+SVG_CIRCLE+'</a><br></td>\n'+
+    I+"</tr>";
+}
+function tbodyHTML(tab){ return state[tab].map(rowHTML).join("\n"); }
+function fullTableHTML(tab){
+  const m=TABLE_META[tab],h=m.headers;
+  return '<table class="'+m.cls+'" id="'+m.id+'" cellspaccing="0" cellpadding="0">\n'+
+'    <thead class="table-dark">\n        <tr>\n'+
+'            <th data-sort-default="" scope="col" role="columnheader">'+escText(h[0])+'</th>\n'+
+'            <th scope="col" role="columnheader">'+escText(h[1])+'</th>\n'+
+'            <th scope="col" role="columnheader">'+escText(h[2])+'</th>\n'+
+'            <th scope="col" role="columnheader" style="min-width:50px;">'+escText(h[3])+'</th>\n'+
+'            <th scope="col" data-sort-method="none" class="no-sort none"><span class="tt-img-link-th">'+SVG_BOX+'</span><br></th>\n'+
+'        </tr>\n    </thead>\n    <tbody>\n'+
+tbodyHTML(tab).replace(/^ {28}/gm,"        ").replace(/^ {32}/gm,"            ")+'\n'+
+'    </tbody>\n</table>';
+}
+/* Całe Pole 3 — owijka .tt-body + zakładki + obie tabele, identycznie jak wklejony oryginał */
+function fieldThead(h){
+  return '                        <thead class="table-dark">\n'+
+'                            <tr>\n'+
+'                                <th data-sort-default="" scope="col" role="columnheader">'+escText(h[0])+'</th>\n'+
+'                                <th scope="col" role="columnheader">'+escText(h[1])+'</th>\n'+
+'                                <th scope="col" role="columnheader">'+escText(h[2])+'</th>\n'+
+'                                <th scope="col" role="columnheader" style="min-width:50px;">'+escText(h[3])+'</th>\n'+
+'                                <th scope="col" data-sort-method="none" class="no-sort none"><span class="tt-img-link-th">'+SVG_BOX+'</span><br></th>\n'+
+'                            </tr>\n'+
+'                        </thead>';
+}
+function fullFieldHTML(){
+  const a=TABLE_META.airports, l=TABLE_META.airlines;
+  return '<div class="tt-body container my-5">\n'+
+'\n'+
+'    <div class="row justify-content-center align-items-center g-2 mb-2 mt-5">\n'+
+'        <div class="col-1 tt-ikona"><img src="https://b2ccdn.coraltravel.pl/content/TimeTable/Ikona_departures.svg" alt=""></div>\n'+
+'        <div class="col tt-title" id="tablice_odlotow_title">Tablice odlotów</div>\n'+
+'        <div class="col-12 col-md-4">\n'+
+'            <ul class="nav nav-tabs" role="tablist">\n'+
+'                <li class="nav-item" role="presentation">\n'+
+'                    <a class="nav-link active" id="tt-tab-0" data-bs-toggle="tab" href="#tt-tabpanel-0" role="tab" aria-controls="tt-tabpanel-0" aria-selected="true">Lotniska</a>\n'+
+'                </li>\n'+
+'                <li class="nav-item" role="presentation">\n'+
+'                    <a class="nav-link" id="tt-tab-1" data-bs-toggle="tab" href="#tt-tabpanel-1" role="tab" aria-controls="tt-tabpanel-1" aria-selected="false">Linie lotnicze</a>\n'+
+'                </li>\n'+
+'\n'+
+'            </ul>\n'+
+'\n'+
+'        </div>\n'+
+'    </div>\n'+
+'\n'+
+'\n'+
+'    <div class="tab-content" id="tab-content">\n'+
+'        <div class="tab-pane active" id="tt-tabpanel-0" role="tabpanel" aria-labelledby="tt-tab-0">\n'+
+'\n'+
+'            <div class="row justify-content-center align-items-center g-2">\n'+
+'                <div class="table-responsive-sm">\n'+
+'\n'+
+'                    <table class="'+a.cls+'" id="'+a.id+'" cellspaccing="0" cellpadding="0">\n'+
+fieldThead(a.headers)+'\n'+
+'                        <tbody>\n'+
+tbodyHTML("airports")+'\n'+
+'                        </tbody>\n'+
+'                    </table>\n'+
+'                </div>\n'+
+'            </div>\n'+
+'\n'+
+'\n'+
+'        </div>\n'+
+'        <div class="tab-pane" id="tt-tabpanel-1" role="tabpanel" aria-labelledby="tt-tab-1">\n'+
+'\n'+
+'\n'+
+'            <div class="row justify-content-center align-items-center g-2">\n'+
+'                <div class="table-responsive-sm">\n'+
+'\n'+
+'                    <table class="'+l.cls+'" id="'+l.id+'" cellspaccing="0" cellpadding="0">\n'+
+fieldThead(l.headers)+'\n'+
+'                        <tbody>\n'+
+tbodyHTML("airlines")+'\n'+
+'                        </tbody>\n'+
+'                    </table>\n'+
+'                </div>\n'+
+'            </div>\n'+
+'\n'+
+'\n'+
+'        </div>\n'+
+'\n'+
+'    </div>\n'+
+'\n'+
+'\n'+
+'</div>';
+}
+function currentTab(){ return document.querySelector(".tab.active").dataset.tab; }
+function generate(){
+  const mode=document.getElementById("opt-mode").value, tab=currentTab();
+  let out;
+  if(mode==="field") out=fullFieldHTML();
+  else if(mode==="table") out=fullTableHTML(tab);
+  else out=tbodyHTML(tab);
+  document.getElementById("output").value = out;
+}
+function openCode(){ generate(); document.getElementById("code-modal").classList.add("show"); }
+function closeCode(){ document.getElementById("code-modal").classList.remove("show"); }
+
+/* ---------- IMPORT (modal) ---------- */
+function openImport(){
+  const ta=document.getElementById("import-text"); ta.value="";
+  document.getElementById("import-modal").classList.add("show"); ta.focus();
+}
+function closeImport(){ document.getElementById("import-modal").classList.remove("show"); }
+function doImport(){
+  const tab=currentTab();
+  const ta=document.getElementById("import-text");
+  const html=ta.value;
+  if(!html.trim()){ toast("Wklej najpierw kod"); return; }
+  const tmp=document.createElement("table"); tmp.innerHTML="<tbody>"+html+"</tbody>";
+  const parsed=[];
+  tmp.querySelectorAll("tr").forEach(tr=>{
+    const tds=tr.querySelectorAll("td"); if(tds.length<4)return;
+    const a=tr.querySelector("a");
+    parsed.push([
+      (tds[0].textContent||"").trim(),(tds[1].textContent||"").trim(),
+      (tds[2].textContent||"").trim(),(tds[3].textContent||"").trim(),
+      a?(a.getAttribute("href")||"").trim():""
+    ]);
+  });
+  if(parsed.length===0){ toast("Nie znaleziono wierszy w podanym kodzie"); return; }
+  state[tab]=parsed; saveState(); renderTable(tab); generate();
+  ta.value=""; closeImport();
+  toast("Zaimportowano "+parsed.length+" wierszy");
+}
+
+/* ---------- COPY / DOWNLOAD / RESET ---------- */
+function toast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800);
+}
+function copyOut(){
+  const ta=document.getElementById("output"); if(!ta.value) generate();
+  ta.removeAttribute("readonly"); ta.select();
+  let ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+  ta.setAttribute("readonly","readonly");
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ta.value).then(()=>toast("Skopiowano do schowka"),()=>{ if(ok)toast("Skopiowano do schowka"); });
+  }else toast(ok?"Skopiowano do schowka":"Zaznacz i skopiuj ręcznie");
+}
+function downloadOut(){
+  const tab=currentTab(); generate();
+  const blob=new Blob([document.getElementById("output").value],{type:"text/html;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=(tab==="airports"?"tablice_odlotow":"linie_lotnicze")+".html";
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },100);
+}
+function resetTab(tab){
+  if(!confirm("Przywrócić oryginalne dane w zakładce \""+(tab==="airports"?"Lotniska":"Linie lotnicze")+"\"? Bieżące zmiany zostaną utracone.")) return;
+  state[tab]=deepCopy(ORIGINAL[tab]); saveState(); renderTable(tab); generate(); toast("Przywrócono oryginał");
+}
+
+/* ---------- TABS ---------- */
+function switchTab(tab){
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("hidden",p.dataset.tab!==tab));
+  generate();
+}
+
+/* ---------- WIRE ---------- */
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addRow(b.dataset.add));
+document.querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>resetTab(b.dataset.reset));
+document.querySelectorAll("[data-importtoggle]").forEach(b=>b.onclick=()=>openImport());
+document.getElementById("import-close").onclick=closeImport;
+document.getElementById("import-cancel").onclick=closeImport;
+document.getElementById("import-do").onclick=doImport;
+document.getElementById("import-modal").addEventListener("click", e=>{ if(e.target.id==="import-modal") closeImport(); });
+document.querySelectorAll("[data-search]").forEach(inp=>inp.oninput=()=>renderTable(inp.dataset.search));
+document.getElementById("open-code").onclick=openCode;
+document.getElementById("code-close").onclick=closeCode;
+document.getElementById("code-modal").addEventListener("click", e=>{ if(e.target.id==="code-modal") closeCode(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeCode(); closeImport(); } });
+document.getElementById("btn-copy").onclick=copyOut;
+document.getElementById("btn-download").onclick=downloadOut;
+document.getElementById("opt-mode").onchange=generate;
+
+/* ---------- INIT ---------- */
+renderTable("airports"); renderTable("airlines"); generate();
+</script>
+</body>
+</html>
