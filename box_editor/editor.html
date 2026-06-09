@@ -898,7 +898,7 @@ ${desktopHTML}
     
     <!-- Mobile Swiper -->
     <div class="mobile-swiper-wrapper">
-        <div class="swiper" id="boxesSwiper">
+        <div class="swiper boxesSwiper">
             <div class="swiper-wrapper">
 ${mobileHTML}
             </div>
@@ -1099,6 +1099,8 @@ ${mobileHTML}
    -------------------------------- */
 @media (max-width: 575px) {
     /* Ukryj grid na mobile */
+    .box-layout-standard .box-text {
+    padding: 10px 15px;}
     .boxes-grid { 
         display: none !important; 
     }
