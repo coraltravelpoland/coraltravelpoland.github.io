@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Import zbiorczy</title>
+</head>
+<body>
+  <script src="lib/model.js"></script>
+  <script src="lib/parser.js"></script>
+  <script>
+    globalThis.importOne = function (html, cdnBase) {
+      return JSON.stringify(CT.parser.parse(html, cdnBase));
+    };
+  </script>
+</body>
+</html>

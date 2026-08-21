@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kierunki — Zasady bezpiecznego podróżowania</title>
+  <link rel="stylesheet" href="ui/tool.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Kierunki — zasady bezpiecznego podróżowania</h1>
+    <div class="topbar__actions">
+      <button type="button" id="loadJson">Wczytaj JSON</button>
+      <button type="button" id="downloadJson" data-needs-db disabled>Pobierz destinations.json</button>
+      <button type="button" id="restoreBackup" disabled>Przywróć poprzednie dane</button>
+    </div>
+  </header>
+
+  <dialog id="loadDialog">
+    <form method="dialog">
+      <h2>Wczytaj destinations.json</h2>
+      <p>Wklej zawartość pliku. Przeglądarka nie ma dostępu do dysku przy otwarciu przez <code>file://</code>.</p>
+      <textarea id="dataPaste" rows="12" spellcheck="false"></textarea>
+      <menu>
+        <button value="cancel">Anuluj</button>
+        <button value="ok" id="loadConfirm">Wczytaj</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="importDialog">
+    <form method="dialog">
+      <h2>Importuj z HTML</h2>
+      <p>Wklej kod podstrony z CMS-a.</p>
+      <textarea id="importPaste" rows="12" spellcheck="false"></textarea>
+      <menu>
+        <button value="cancel">Anuluj</button>
+        <button value="ok" id="importConfirm" data-needs-db disabled>Importuj</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="restoreDialog">
+    <form method="dialog">
+      <h2>Przywrócić poprzednie dane?</h2>
+      <p>Bieżące dane zostaną zastąpione stanem sprzed ostatniej zmiany strukturalnej
+        (wczytania, dodania, usunięcia, importu lub zmiany kolejności). Bieżący stan
+        trafi w to miejsce do kopii, więc operację można cofnąć tym samym przyciskiem.</p>
+      <menu>
+        <button value="cancel">Anuluj</button>
+        <button value="ok" id="restoreConfirm">Przywróć</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="deleteDialog">
+    <form method="dialog">
+      <h2>Usunąć kierunek?</h2>
+      <p id="deleteName"></p>
+      <p>Tej operacji nie można cofnąć. Kierunek zniknie z danych i z listy „Inne kierunki"
+        na wszystkich pozostałych podstronach.</p>
+      <menu>
+        <button value="cancel">Anuluj</button>
+        <button value="ok" id="deleteConfirm" class="is-danger">Usuń</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <main class="layout">
+    <nav class="panel panel--list" aria-label="Kierunki">
+      <ul id="destList"></ul>
+      <button type="button" id="addDest" data-needs-db disabled>Dodaj kierunek</button>
+    </nav>
+
+    <section class="panel panel--form" aria-label="Edycja kierunku">
+      <p id="validation" role="status"></p>
+      <form id="destForm"></form>
+      <button type="button" id="deleteDest" class="is-danger" data-needs-db disabled>Usuń kierunek</button>
+    </section>
+
+    <section class="panel panel--preview" aria-label="Podgląd i eksport">
+      <div class="preview__bar">
+        <span>Podgląd:</span>
+        <button type="button" data-width="375">375</button>
+        <button type="button" data-width="768">768</button>
+        <button type="button" data-width="1440" class="is-active">1440</button>
+        <label><input type="checkbox" id="includeSync" data-needs-db disabled checked> Dołącz skrypt odświeżania menu</label>
+      </div>
+      <iframe id="preview" title="Podgląd podstrony"></iframe>
+      <div class="preview__export">
+        <button type="button" data-copy="css" data-needs-db disabled>Kopiuj CSS</button>
+        <button type="button" data-copy="html" data-needs-db disabled>Kopiuj HTML</button>
+        <button type="button" data-copy="js" data-needs-db disabled>Kopiuj JS</button>
+        <button type="button" data-copy="all" data-needs-db disabled>Kopiuj wszystko</button>
+        <p id="joinWarning" class="preview__warning" role="status" hidden>
+          Jeśli CMS wstawia to pole przez <code>innerHTML</code>, wklejony w nim skrypt się nie uruchomi i
+          odświeżanie menu nie zadziała. Bezpieczniej wklejać CSS, HTML i JS jako osobne pola.
+        </p>
+        <button type="button" id="importBtn" data-needs-db disabled>Importuj z HTML</button>
+        <span id="copyStatus" role="status"></span>
+        <div id="importStatus" class="import-status" role="status" hidden>
+          <p id="importMessage"></p>
+          <button type="button" id="importDismiss">Ukryj</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="lib/model.js"></script>
+  <script src="lib/page-css.js"></script>
+  <script src="lib/page-html.js"></script>
+  <script src="lib/page-js.js"></script>
+  <script src="lib/bundle.js"></script>
+  <script src="lib/parser.js"></script>
+  <script src="ui/app.js"></script>
+</body>
+</html>

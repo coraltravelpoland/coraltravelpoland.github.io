@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Testy narzędzia</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem; }
+    ul { list-style: none; padding: 0; }
+    li { padding: .25rem 0; }
+    .ok { color: #137333; }
+    .fail { color: #c5221f; font-weight: 600; }
+    pre { background: #fdf1f0; padding: .5rem; overflow-x: auto; font-weight: 400; }
+    #summary { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Testy narzędzia</h1>
+  <p id="summary"></p>
+  <ul id="results"></ul>
+
+  <script src="lib/model.js"></script>
+  <script src="tests/harness.js"></script>
+  <script src="tests/model.test.js"></script>
+  <script src="lib/page-css.js"></script>
+  <script src="tests/page-css.test.js"></script>
+  <script src="lib/page-html.js"></script>
+  <script src="tests/page-html.test.js"></script>
+  <script src="lib/page-js.js"></script>
+  <script src="tests/page-js.test.js"></script>
+  <script src="lib/bundle.js"></script>
+  <script src="tests/bundle.test.js"></script>
+  <script src="lib/parser.js"></script>
+  <script src="tests/parser.test.js"></script>
+  <script>runTests();</script>
+</body>
+</html>
