@@ -105,6 +105,14 @@
   function renderList() {
     const ul = $('#destList');
     ul.innerHTML = '';
+    const handle = sortable(ul, db.destinations, {
+      label: (d) => (d && d.name) || '(bez nazwy)',
+      after: (index) => {
+        saveStructural();
+        renderAll();
+        focusHandle($('#destList'), index);
+      }
+    });
     const visibleCount = (db.nav && db.nav.visibleCount) || 5;
     // Ruling 17: the fold only ever matches CT.model.menuFor(db, currentSlug) — that
     // filter drops the previewed destination's own row and any unpublished row, so
@@ -128,8 +136,8 @@
         currentSlug = d.slug;
         renderAll();
       });
+      li.appendChild(handle(d, i, li));
       li.appendChild(btn);
-      li.appendChild(orderButtons(d, i));
       ul.appendChild(li);
 
       if (menuSlugs.has(d.slug)) menuSeen++;
@@ -145,52 +153,129 @@
     });
   }
 
-  function orderButtons(d, i) {
-    const label = d.name || '(bez nazwy)';
-    const group = document.createElement('div');
-    group.className = 'dest-order';
+  let liveRegion = null;
 
-    const up = document.createElement('button');
-    up.type = 'button';
-    up.textContent = '▲';
-    up.setAttribute('aria-label', 'Przenieś wyżej: ' + label);
-    up.disabled = i === 0;
-    up.addEventListener('click', () => move(i, -1));
-
-    const down = document.createElement('button');
-    down.type = 'button';
-    down.textContent = '▼';
-    down.setAttribute('aria-label', 'Przenieś niżej: ' + label);
-    down.disabled = i === db.destinations.length - 1;
-    down.addEventListener('click', () => move(i, 1));
-
-    group.appendChild(up);
-    group.appendChild(down);
-    return group;
+  function announce(text) {
+    if (!liveRegion) {
+      liveRegion = document.createElement('div');
+      liveRegion.className = 'sr-only';
+      liveRegion.setAttribute('aria-live', 'polite');
+      document.body.appendChild(liveRegion);
+    }
+    liveRegion.textContent = text;
   }
 
-  function focusOrderButton(destIndex, delta) {
-    const row = $('#destList').querySelectorAll('.dest-row')[destIndex];
-    if (!row) return;
-    const buttons = row.querySelectorAll('.dest-order button');
-    const primary = delta < 0 ? buttons[0] : buttons[1];
-    const fallback = delta < 0 ? buttons[1] : buttons[0];
-    (primary && !primary.disabled ? primary : fallback).focus();
+  // One reorder mechanism for both the destination list and the repeater rows.
+  // The handle is a real button, not a decorated div: a pointer drags it, and
+  // ArrowUp/ArrowDown move the row without one. Native drag and drop is
+  // pointer-only, so without the key handling this would take reordering away
+  // from anyone not using a mouse — which is what the old ▲▼ pair provided.
+  function sortable(container, list, opts) {
+    let from = null;
+
+    const rows = () => Array.from(container.querySelectorAll('[data-sort]'));
+    const clearMarks = () => rows().forEach((r) => r.classList.remove('is-drop-before', 'is-drop-after'));
+
+    function commit(a, b) {
+      if (a === b || b < 0 || b >= list.length) return;
+      CT.model.moveItem(list, a, b);
+      announce(opts.label(list[b]) + ': pozycja ' + (b + 1) + ' z ' + list.length);
+      opts.after(b);
+    }
+
+    // Which slot the pointer is asking for: above the hovered row or below it.
+    function targetIndex(event) {
+      const row = event.target.closest ? event.target.closest('[data-sort]') : null;
+      if (!row || !container.contains(row)) return null;
+      const box = row.getBoundingClientRect();
+      const before = event.clientY < box.top + box.height / 2;
+      const at = Number(row.dataset.sort);
+      row.classList.add(before ? 'is-drop-before' : 'is-drop-after');
+      const slot = before ? at : at + 1;
+      // The item is lifted out before it is dropped back in, so every slot
+      // after its old position shifts down by one.
+      return from !== null && from < slot ? slot - 1 : slot;
+    }
+
+    container.addEventListener('dragover', (e) => {
+      if (from === null) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      clearMarks();
+      targetIndex(e);
+    });
+
+    container.addEventListener('drop', (e) => {
+      if (from === null) return;
+      e.preventDefault();
+      const to = targetIndex(e);
+      clearMarks();
+      if (to !== null) commit(from, to);
+    });
+
+    container.addEventListener('dragleave', (e) => {
+      if (!container.contains(e.relatedTarget)) clearMarks();
+    });
+
+    return function handle(item, index, row) {
+      row.dataset.sort = index;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sort-handle';
+      btn.textContent = '⠿';
+      btn.setAttribute('aria-label', 'Zmień kolejność: ' + opts.label(item) + ', pozycja ' + (index + 1) + ' z ' + list.length);
+      btn.title = 'Przeciągnij albo użyj strzałek góra/dół';
+
+      // draggable only while the handle is held, so text inside the row stays
+      // selectable and the row's own click still selects a destination.
+      btn.addEventListener('pointerdown', () => { row.draggable = true; });
+      btn.addEventListener('pointerup', () => { row.draggable = false; });
+
+      row.addEventListener('dragstart', (e) => {
+        from = index;
+        row.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(index));
+      });
+
+      row.addEventListener('dragend', () => {
+        from = null;
+        row.draggable = false;
+        row.classList.remove('is-dragging');
+        clearMarks();
+      });
+
+      btn.addEventListener('keydown', (e) => {
+        const delta = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+        if (!delta) return;
+        e.preventDefault();
+        commit(index, index + delta);
+      });
+
+      return btn;
+    };
   }
 
-  function move(i, delta) {
-    const j = i + delta;
-    if (j < 0 || j >= db.destinations.length) return;
-    const [d] = db.destinations.splice(i, 1);
-    db.destinations.splice(j, 0, d);
-    saveStructural();
-    renderAll();
-    focusOrderButton(j, delta);
+  function focusHandle(container, index) {
+    const row = container.querySelectorAll('[data-sort]')[index];
+    const btn = row && row.querySelector('.sort-handle');
+    if (btn) btn.focus();
   }
 
-  function field(labelText, value, onInput, multiline) {
+  let hintSeq = 0;
+
+  // Labels stay short and the qualifier drops to a hint under the input.
+  // A flat stack of long bold labels reads as one grey wall; the group legend
+  // carries the context instead, so "Flaga (ścieżka względem CDN)" can just be
+  // "Flaga".
+  function field(labelText, value, onInput, multiline, hint) {
     const label = document.createElement('label');
-    label.textContent = labelText;
+    const caption = document.createElement('span');
+    caption.className = 'field__label';
+    caption.textContent = labelText;
+    label.appendChild(caption);
+
     const input = document.createElement(multiline ? 'textarea' : 'input');
     if (!multiline) input.type = 'text';
     if (multiline) input.rows = 3;
@@ -202,37 +287,193 @@
       renderPreview();
     });
     label.appendChild(input);
+
+    if (hint) {
+      const small = document.createElement('small');
+      small.className = 'field__hint';
+      small.id = 'hint-' + ++hintSeq;
+      small.textContent = hint;
+      input.setAttribute('aria-describedby', small.id);
+      label.appendChild(small);
+    }
     return label;
   }
 
-  function repeater(legendText, items, makeEmpty, fields, onChange) {
+  function group(legendText, children) {
     const fs = document.createElement('fieldset');
     const legend = document.createElement('legend');
     legend.textContent = legendText;
     fs.appendChild(legend);
+    children.forEach((c) => fs.appendChild(c));
+    return fs;
+  }
+
+  let richFieldSeq = 0;
+
+  // execCommand is formally deprecated but has no replacement with this reach.
+  // Everything it produces goes through the sanitiser on the way to the model,
+  // so browser-to-browser differences in its output never reach the data.
+  function richField(labelText, value, onInput) {
+    const wrap = document.createElement('div');
+    wrap.className = 'rich';
+
+    const caption = document.createElement('span');
+    caption.className = 'rich__label';
+    caption.id = 'rich-label-' + ++richFieldSeq;
+    caption.textContent = labelText;
+
+    const editor = document.createElement('div');
+    editor.className = 'rich__input';
+    editor.contentEditable = 'true';
+    editor.setAttribute('role', 'textbox');
+    editor.setAttribute('aria-multiline', 'true');
+    editor.setAttribute('aria-labelledby', caption.id);
+    editor.innerHTML = CT.richText.sanitize(value);
+
+    let timer = null;
+    // Never write back into the editor here — replacing innerHTML mid-typing
+    // would drop the caret. Only the value handed to the model is sanitised.
+    const commit = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        onInput(CT.richText.sanitize(editor.innerHTML));
+        save();
+        renderValidation();
+        renderPreview();
+      }, 200);
+    };
+
+    const bar = document.createElement('div');
+    bar.className = 'rich__bar';
+    bar.setAttribute('role', 'toolbar');
+    bar.setAttribute('aria-label', labelText + ' — formatowanie');
+
+    const command = (title, cmd) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = title;
+      b.addEventListener('click', () => {
+        editor.focus();
+        document.execCommand(cmd);
+        commit();
+      });
+      bar.appendChild(b);
+    };
+
+    command('Pogrubienie', 'bold');
+    command('Kursywa', 'italic');
+
+    const urlRow = document.createElement('div');
+    urlRow.className = 'rich__url';
+    urlRow.hidden = true;
+    const url = document.createElement('input');
+    url.type = 'url';
+    url.placeholder = 'https://…';
+    url.setAttribute('aria-label', 'Adres linku');
+    const confirm = document.createElement('button');
+    confirm.type = 'button';
+    confirm.textContent = 'Zastosuj';
+    urlRow.appendChild(url);
+    urlRow.appendChild(confirm);
+
+    // Focusing the input collapses the selection, so park the range first and
+    // put it back before createLink runs.
+    let saved = null;
+    const linkBtn = document.createElement('button');
+    linkBtn.type = 'button';
+    linkBtn.textContent = 'Wstaw link';
+    linkBtn.addEventListener('click', () => {
+      const sel = window.getSelection();
+      saved = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+      urlRow.hidden = false;
+      url.focus();
+    });
+    bar.appendChild(linkBtn);
+
+    confirm.addEventListener('click', () => {
+      const href = url.value.trim();
+      urlRow.hidden = true;
+      url.value = '';
+      if (!href || !saved) return;
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(saved);
+      editor.focus();
+      document.execCommand('createLink', false, href);
+      commit();
+    });
+
+    command('Usuń link', 'unlink');
+    command('Wyczyść formatowanie', 'removeFormat');
+
+    // Plain Enter would produce <div> wrappers the sanitiser flattens back to
+    // <br> anyway; inserting the break directly keeps the DOM honest.
+    editor.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      if (!document.execCommand('insertLineBreak')) document.execCommand('insertHTML', false, '<br>');
+    });
+
+    editor.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const cd = e.clipboardData;
+      const html = cd.getData('text/html');
+      const clean = html
+        ? CT.richText.sanitize(html)
+        : CT.pageHtml.escape(cd.getData('text/plain')).replace(/\r?\n/g, '<br>');
+      document.execCommand('insertHTML', false, clean);
+      commit();
+    });
+
+    editor.addEventListener('input', commit);
+
+    wrap.appendChild(caption);
+    wrap.appendChild(bar);
+    wrap.appendChild(urlRow);
+    wrap.appendChild(editor);
+    return wrap;
+  }
+
+  function repeater(legendText, items, makeEmpty, fields, onChange, opts) {
+    const settings = opts || {};
+    const fs = document.createElement('fieldset');
+    const legend = document.createElement('legend');
+    legend.textContent = legendText;
+    fs.appendChild(legend);
+    if (settings.head) fs.appendChild(settings.head);
+
+    const rowsBox = document.createElement('div');
+    rowsBox.className = 'repeat';
+    fs.appendChild(rowsBox);
+
+    const handle = sortable(rowsBox, items, {
+      label: (it) => (it && (it.title || it.term || CT.richText.toPlain(it.text || it.desc))) || '(pusta pozycja)',
+      after: () => { onChange(); renderAll(); }
+    });
+
     items.forEach((item, i) => {
       const wrap = document.createElement('div');
-      fields.forEach((f) => wrap.appendChild(field(f.label, item[f.key], (v) => { item[f.key] = v; onChange(); }, f.multiline)));
+      wrap.className = 'repeat__row';
+      fields.forEach((f) => wrap.appendChild(
+        f.rich
+          ? richField(f.label, item[f.key], (v) => { item[f.key] = v; onChange(); })
+          : field(f.label, item[f.key], (v) => { item[f.key] = v; onChange(); }, f.multiline, f.hint)
+      ));
       const rm = document.createElement('button');
       rm.type = 'button';
       rm.textContent = 'Usuń';
       rm.addEventListener('click', () => { items.splice(i, 1); onChange(); renderAll(); });
-      const up = document.createElement('button');
-      up.type = 'button';
-      up.textContent = 'W górę';
-      up.disabled = i === 0;
-      up.addEventListener('click', () => {
-        items.splice(i - 1, 0, items.splice(i, 1)[0]);
-        onChange();
-        renderAll();
-      });
-      wrap.appendChild(up);
-      wrap.appendChild(rm);
-      fs.appendChild(wrap);
+
+      const bar = document.createElement('div');
+      bar.className = 'repeat__bar';
+      bar.appendChild(handle(item, i, wrap));
+      bar.appendChild(rm);
+      wrap.insertBefore(bar, wrap.firstChild);
+      rowsBox.appendChild(wrap);
     });
     const add = document.createElement('button');
     add.type = 'button';
-    add.textContent = 'Dodaj pozycję';
+    add.textContent = settings.addLabel || 'Dodaj pozycję';
     add.addEventListener('click', () => { items.push(makeEmpty()); onChange(); renderAll(); });
     fs.appendChild(add);
     return fs;
@@ -258,45 +499,60 @@
     ensureShape(d);
     const commit = () => { save(); renderValidation(); renderPreview(); };
 
-    form.appendChild(field('Nazwa', d.name, (v) => { d.name = v; renderList(); }, false));
-    form.appendChild(field('Slug', d.slug, (v) => { d.slug = v; currentSlug = v; renderList(); renderControls(); }, false));
-    form.appendChild(field('Adres podstrony', d.url, (v) => { d.url = v; }, false));
-    form.appendChild(field('Podtytuł', d.subtitle, (v) => { d.subtitle = v; }, false));
-    form.appendChild(field('Flaga (ścieżka względem CDN)', d.flag, (v) => { d.flag = v; }, false));
-    form.appendChild(field('Zdjęcie (ścieżka względem CDN)', d.photo.src, (v) => { d.photo.src = v; }, false));
-    form.appendChild(field('Opis alternatywny zdjęcia', d.photo.alt, (v) => { d.photo.alt = v; }, false));
-    form.appendChild(field('Podpis zdjęcia', d.photo.caption, (v) => { d.photo.caption = v; }, false));
-
     const pub = document.createElement('label');
+    pub.className = 'field--check';
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.checked = d.published !== false;
     cb.addEventListener('change', () => { d.published = cb.checked; commit(); renderList(); });
     pub.appendChild(cb);
     pub.append(' Opublikowany');
-    form.appendChild(pub);
 
-    form.appendChild(field('Tytuł sekcji wymagań', d.entryRequirements.title, (v) => { d.entryRequirements.title = v; }, false));
+    form.appendChild(group('Kierunek', [
+      field('Nazwa', d.name, (v) => { d.name = v; renderList(); }, false),
+      field('Slug', d.slug, (v) => { d.slug = v; currentSlug = v; renderList(); renderControls(); }, false,
+        'tylko małe litery, cyfry i myślniki'),
+      field('Adres podstrony', d.url, (v) => { d.url = v; }, false),
+      field('Podtytuł', d.subtitle, (v) => { d.subtitle = v; }, false),
+      pub
+    ]));
+
+    form.appendChild(group('Grafika', [
+      field('Flaga', d.flag, (v) => { d.flag = v; }, false, 'ścieżka względem CDN'),
+      field('Zdjęcie', d.photo.src, (v) => { d.photo.src = v; }, false, 'ścieżka względem CDN'),
+      field('Opis alternatywny', d.photo.alt, (v) => { d.photo.alt = v; }, false, 'czytany przez czytniki ekranu'),
+      field('Podpis', d.photo.caption, (v) => { d.photo.caption = v; }, false)
+    ]));
+
     form.appendChild(
-      repeater('Karty wymagań', d.entryRequirements.cards, () => ({ title: '', text: '' }),
-        [{ label: 'Tytuł', key: 'title' }, { label: 'Treść', key: 'text', multiline: true }], commit)
+      repeater('Wymagania wjazdowe', d.entryRequirements.cards, () => ({ title: '', text: '' }),
+        [{ label: 'Tytuł', key: 'title' }, { label: 'Treść', key: 'text', rich: true }], commit,
+        {
+          addLabel: 'Dodaj kartę',
+          head: field('Tytuł sekcji', d.entryRequirements.title, (v) => { d.entryRequirements.title = v; }, false)
+        })
     );
 
-    form.appendChild(field('Tytuł sekcji informacji', d.practicalInfo.title, (v) => { d.practicalInfo.title = v; }, false));
     form.appendChild(
       repeater('Informacje praktyczne', d.practicalInfo.items, () => ({ term: '', desc: '' }),
-        [{ label: 'Nagłówek (opcjonalny)', key: 'term' }, { label: 'Treść', key: 'desc', multiline: true }], commit)
+        [{ label: 'Nagłówek', key: 'term', hint: 'opcjonalny' }, { label: 'Treść', key: 'desc', rich: true }], commit,
+        {
+          addLabel: 'Dodaj pozycję',
+          head: field('Tytuł sekcji', d.practicalInfo.title, (v) => { d.practicalInfo.title = v; }, false)
+        })
     );
 
     const ml = d.practicalInfo.moreLink || { label: '', href: '' };
-    form.appendChild(field('Link „więcej informacji" — etykieta', ml.label, (v) => {
-      ml.label = v;
-      d.practicalInfo.moreLink = ml.href ? ml : null;
-    }, false));
-    form.appendChild(field('Link „więcej informacji" — adres', ml.href, (v) => {
-      ml.href = v;
-      d.practicalInfo.moreLink = v ? ml : null;
-    }, false));
+    form.appendChild(group('Link „więcej informacji"', [
+      field('Etykieta', ml.label, (v) => {
+        ml.label = v;
+        d.practicalInfo.moreLink = ml.href ? ml : null;
+      }, false),
+      field('Adres', ml.href, (v) => {
+        ml.href = v;
+        d.practicalInfo.moreLink = v ? ml : null;
+      }, false)
+    ]));
   }
 
   function renderAll() {
@@ -336,8 +592,10 @@
       );
   }
 
+  // Both load paths (pasted JSON and the restored backup) end up here, and so
+  // does startup — the one entry point the parser and the editor do not cover.
   function replaceDb(next, note) {
-    db = next;
+    db = CT.model.sanitizeRich(next);
     currentSlug = db.destinations.length ? db.destinations[0].slug : null;
     saveStructural();
     renderAll();
@@ -469,7 +727,7 @@
 
   const stored = load();
   const storedProblem = stored === null ? 'brak zapisanych danych' : CT.model.loadProblem(stored);
-  db = storedProblem ? null : stored;
+  db = storedProblem ? null : CT.model.sanitizeRich(stored);
   wire();
   if (db && db.destinations.length) currentSlug = db.destinations[0].slug;
   renderAll();

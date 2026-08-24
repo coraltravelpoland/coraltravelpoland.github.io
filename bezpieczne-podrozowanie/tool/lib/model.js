@@ -82,6 +82,21 @@
     if (obj && obj[key] && unsafeHref(obj[key])) errors.push({ path: path + '.' + key, message: HREF_MESSAGE });
   }
 
+  function checkRichHrefs(errors, obj, path, key) {
+    CT.richText.hrefs(obj ? obj[key] : null).forEach((href) => {
+      if (unsafeHref(href)) errors.push({ path: path + '.' + key, message: HREF_MESSAGE });
+    });
+  }
+
+  // Rich fields hold markup, so "is it empty" is a question about the text
+  // inside it: a field holding only <br> reads as blank on the page.
+  function requireRich(errors, obj, path, key, message) {
+    if (!CT.richText.toPlain(obj ? obj[key] : null)) {
+      errors.push({ path: path + '.' + key, message: message });
+    }
+    checkRichHrefs(errors, obj, path, key);
+  }
+
   function validateHero(errors, hero, path) {
     requireText(errors, hero, path, 'title', 'tytuł sekcji powitalnej jest wymagany');
     requireText(errors, hero, path, 'subtitle', 'podtytuł sekcji powitalnej jest wymagany');
@@ -104,6 +119,11 @@
         errors.push({ path: at + '.entryRequirements.cards', message: 'karty wymagań muszą być tablicą' });
       } else if (req.cards.length) {
         requireText(errors, req, at + '.entryRequirements', 'title', 'tytuł sekcji wymagań jest wymagany');
+        req.cards.forEach((c, i) => {
+          const cardAt = at + '.entryRequirements.cards[' + i + ']';
+          requireText(errors, c, cardAt, 'title', 'tytuł karty jest wymagany');
+          requireRich(errors, c, cardAt, 'text', 'treść karty jest wymagana');
+        });
       }
     }
 
@@ -113,6 +133,16 @@
         errors.push({ path: at + '.practicalInfo.items', message: 'lista informacji praktycznych musi być tablicą' });
       } else if (info.items.length || (info.moreLink && info.moreLink.href)) {
         requireText(errors, info, at + '.practicalInfo', 'title', 'tytuł sekcji informacji praktycznych jest wymagany');
+        // A term with no desc is a heading row whose content follows as the
+        // next items, so only a wholly empty item is an error.
+        info.items.forEach((it, i) => {
+          const itemAt = at + '.practicalInfo.items[' + i + ']';
+          if (!(it && String(it.term || '').trim())) {
+            requireRich(errors, it, itemAt, 'desc', 'pozycja musi mieć nagłówek albo treść');
+          } else {
+            checkRichHrefs(errors, it, itemAt, 'desc');
+          }
+        });
       }
       checkHref(errors, info.moreLink, at + '.practicalInfo.moreLink', 'href');
     }
@@ -159,7 +189,7 @@
       errors.push({ path: 'officialSource', message: 'sekcja oficjalnego źródła jest wymagana' });
     } else {
       requireText(errors, db.officialSource, 'officialSource', 'title', 'tytuł oficjalnego źródła jest wymagany');
-      requireText(errors, db.officialSource, 'officialSource', 'text', 'opis oficjalnego źródła jest wymagany');
+      requireRich(errors, db.officialSource, 'officialSource', 'text', 'opis oficjalnego źródła jest wymagany');
       requireText(errors, db.officialSource, 'officialSource', 'ctaLabel', 'etykieta przycisku oficjalnego źródła jest wymagana');
       requireText(errors, db.officialSource, 'officialSource', 'ctaHref', 'adres oficjalnego źródła jest wymagany');
       checkHref(errors, db.officialSource, 'officialSource', 'ctaHref');
@@ -178,8 +208,37 @@
     return null;
   }
 
+  // Reordering is the same operation whether a pointer dropped the row or a
+  // key nudged it, and it is pure list surgery, so it lives here where it can
+  // be tested rather than inside the drag handlers.
+  function moveItem(list, from, to) {
+    if (!Array.isArray(list)) return list;
+    const last = list.length - 1;
+    if (from < 0 || from > last || to < 0 || to > last || from === to) return list;
+    list.splice(to, 0, list.splice(from, 1)[0]);
+    return list;
+  }
+
+  // Data pasted or loaded as JSON is the one entry point the parser and the
+  // editor do not cover. Clean it before it reaches localStorage, so what is
+  // stored is what the generator would emit.
+  function sanitizeRich(db) {
+    const clean = (obj, key) => {
+      if (obj && typeof obj[key] === 'string') obj[key] = CT.richText.sanitize(obj[key]);
+    };
+    if (!db || typeof db !== 'object') return db;
+    clean(db.officialSource, 'text');
+    all(db).forEach((d) => {
+      const cards = d && d.entryRequirements && d.entryRequirements.cards;
+      if (Array.isArray(cards)) cards.forEach((c) => clean(c, 'text'));
+      const items = d && d.practicalInfo && d.practicalInfo.items;
+      if (Array.isArray(items)) items.forEach((it) => clean(it, 'desc'));
+    });
+    return db;
+  }
+
   CT.model = {
     assetUrl, emptyDestination, find, findAll, findAllByName, nextSlug, normalizeName,
-    menuFor, heroFor, validate, loadProblem, unsafeHref, SLUG_RE
+    menuFor, heroFor, moveItem, validate, loadProblem, sanitizeRich, unsafeHref, SLUG_RE
   };
 })(globalThis);

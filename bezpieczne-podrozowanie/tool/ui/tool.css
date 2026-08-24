@@ -67,19 +67,6 @@ body {
 .dest-name.is-active { background: var(--ui-bg); font-weight: 600; }
 .is-unpublished .dest-name { opacity: .5; }
 
-.dest-order {
-  display: flex;
-  flex: none;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.dest-order button {
-  padding: 0 .4rem;
-  line-height: 1.3;
-  font-size: .75em;
-}
-
 .list-boundary {
   margin: .375rem 0;
   padding-top: .5rem;
@@ -88,7 +75,12 @@ body {
   opacity: .7;
 }
 
-label { display: block; margin-bottom: .75rem; font-weight: 600; }
+/* The legend carries the weight now. Bolding every label too made the form one
+   uniform grey wall with no hierarchy to scan. */
+label { display: block; margin-bottom: .75rem; font-weight: 400; }
+.field__label { display: block; font-weight: 500; }
+.field__hint { display: block; margin-top: .1875rem; color: #6b7280; font-size: .8125rem; }
+.field--check { display: flex; align-items: center; gap: .375rem; }
 label input[type="text"], label textarea {
   display: block;
   width: 100%;
@@ -100,7 +92,70 @@ label input[type="text"], label textarea {
   border-radius: .25rem;
 }
 
-fieldset { border: 1px solid var(--ui-border); border-radius: .375rem; margin: 0 0 1rem; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sort-handle {
+  flex: none;
+  padding: .125rem .375rem;
+  color: #6b7280;
+  line-height: 1;
+  cursor: grab;
+  border-color: transparent;
+  background: none;
+}
+.sort-handle:hover { background: var(--ui-bg); border-color: var(--ui-border); }
+.sort-handle:active { cursor: grabbing; }
+
+.dest-row.is-dragging, .repeat__row.is-dragging { opacity: .4; }
+
+/* Drop marker rides on the row rather than a placeholder element, so the list
+   never reflows mid-drag and the pointer keeps the row it is aiming at. */
+.dest-row.is-drop-before, .repeat__row.is-drop-before { box-shadow: inset 0 2px 0 0 var(--ui-accent); }
+.dest-row.is-drop-after, .repeat__row.is-drop-after { box-shadow: inset 0 -2px 0 0 var(--ui-accent); }
+
+.repeat__row { border-top: 1px solid var(--ui-border); padding-top: .5rem; margin-top: .5rem; }
+.repeat__row:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.repeat__bar { display: flex; align-items: center; gap: .25rem; margin-bottom: .375rem; }
+.repeat__bar .sort-handle { margin-right: auto; }
+
+.rich { margin-bottom: .75rem; }
+.rich__label { display: block; font-weight: 500; }
+.rich__bar { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .25rem; }
+.rich__bar button { padding: .25rem .5rem; font-size: .8125rem; }
+.rich__url { display: flex; gap: .25rem; margin-top: .25rem; }
+/* display:flex outranks the UA display:none that the hidden attribute relies on. */
+.rich__url[hidden] { display: none; }
+.rich__url input {
+  flex: 1;
+  min-width: 0;
+  padding: .375rem .5rem;
+  font: inherit;
+  border: 1px solid var(--ui-border);
+  border-radius: .25rem;
+}
+.rich__input {
+  margin-top: .25rem;
+  min-height: 4.5rem;
+  padding: .375rem .5rem;
+  font: inherit;
+  font-weight: 400;
+  border: 1px solid var(--ui-border);
+  border-radius: .25rem;
+  overflow-wrap: anywhere;
+}
+.rich__input:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
+.rich__input a { color: var(--ui-accent); }
+
+fieldset { border: 1px solid var(--ui-border); border-radius: .375rem; margin: 0 0 1rem; padding: .75rem; }
 legend { font-weight: 600; padding: 0 .375rem; }
 
 button { font: inherit; padding: .375rem .75rem; border: 1px solid var(--ui-border); background: var(--ui-white); border-radius: .25rem; cursor: pointer; }

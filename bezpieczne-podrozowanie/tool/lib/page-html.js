@@ -29,6 +29,12 @@
       .replace(/"/g, '&quot;');
   }
 
+  // The three paragraph fields carry sanitised markup on purpose. Sanitising
+  // again here means a hand-edited destinations.json cannot reach the output.
+  function rich(value) {
+    return CT.richText.sanitize(value);
+  }
+
   function navItem(db, dest) {
     const arrow = CT.model.assetUrl(db.cdnBase, db.arrowIcon);
     return (
@@ -81,7 +87,7 @@
           (c) =>
             '          <article class="info-card">\n' +
             '            <h3 class="info-card__title">' + escape(c.title) + '</h3>\n' +
-            '            <p class="info-card__text">' + escape(c.text) + '</p>\n' +
+            '            <p class="info-card__text">' + rich(c.text) + '</p>\n' +
             '          </article>\n'
         )
         .join('') +
@@ -107,7 +113,7 @@
             '              <span class="fact-list__marker" aria-hidden="true"></span>\n' +
             '              <div>\n' +
             term +
-            '                <p class="fact-list__desc">' + escape(it.desc) + '</p>\n' +
+            '                <p class="fact-list__desc">' + rich(it.desc) + '</p>\n' +
             '              </div>\n' +
             '            </li>\n'
           );
@@ -176,7 +182,7 @@
       '      <section class="official-source">\n' +
       '        ' + ICON_EXTERNAL + '\n' +
       '        <h2 class="official-source__title">' + escape(db.officialSource.title) + '</h2>\n' +
-      '        <p class="official-source__text">' + escape(db.officialSource.text) + '</p>\n' +
+      '        <p class="official-source__text">' + rich(db.officialSource.text) + '</p>\n' +
       '        <a class="button button--primary button--block" href="' + escape(db.officialSource.ctaHref) + '">' + escape(db.officialSource.ctaLabel) + '</a>\n' +
       '      </section>\n' +
       '    </aside>\n' +
@@ -186,5 +192,5 @@
     return out;
   }
 
-  CT.pageHtml = { build, escape, navList };
+  CT.pageHtml = { build, escape, rich, navList };
 })(globalThis);

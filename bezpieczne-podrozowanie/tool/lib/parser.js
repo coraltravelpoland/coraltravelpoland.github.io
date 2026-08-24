@@ -1,9 +1,6 @@
 (function (g) {
   const CT = (g.CT = g.CT || {});
 
-  // <br> carries a line break that textContent drops entirely, gluing the
-  // surrounding sentences together; the model has no way to express a break
-  // inside desc/text, so a space is the closest faithful reading.
   function textOf(node) {
     if (!node) return '';
     const copy = node.cloneNode(true);
@@ -11,6 +8,13 @@
       br.replaceWith(br.ownerDocument.createTextNode(' '));
     });
     return copy.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  // Paragraph copy keeps its formatting: the CMS pages carry line breaks,
+  // in-content links and emphasis that the reader is meant to see. Everything
+  // outside the whitelist is flattened by the sanitiser.
+  function richOf(node) {
+    return node ? CT.richText.sanitize(node.innerHTML) : '';
   }
 
   function relative(src, cdnBase) {
@@ -37,7 +41,7 @@
   function listToItems(listEl) {
     return Array.from(listEl.children)
       .filter((child) => child.tagName === 'LI')
-      .map((li) => textOf(li))
+      .map((li) => richOf(li))
       .filter(Boolean)
       .map((desc) => ({ desc: desc }));
   }
@@ -56,7 +60,7 @@
         extras.push(...listToItems(el));
         return;
       }
-      const text = textOf(el);
+      const text = richOf(el);
       if (!text) return;
       if (!descTaken) {
         desc = text;
@@ -91,7 +95,7 @@
       if (el.tagName === 'UL' || el.tagName === 'OL') {
         bucket.push(...listToItems(el));
       } else if (el.tagName === 'P') {
-        const text = textOf(el);
+        const text = richOf(el);
         if (text) bucket.push({ desc: text });
       }
     });
@@ -136,7 +140,7 @@
         reqSection.querySelectorAll('.info-card, .overview-card.card')
       ).map((card) => ({
         title: textOf(card.querySelector('.info-card__title, .overview-card__title')),
-        text: textOf(card.querySelector('.info-card__text, .overview-card__text'))
+        text: richOf(card.querySelector('.info-card__text, .overview-card__text'))
       }));
     } else {
       warnings.push('nie znaleziono sekcji wymagań wjazdowych');
