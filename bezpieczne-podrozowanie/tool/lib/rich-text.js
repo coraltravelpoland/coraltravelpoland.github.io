@@ -2,13 +2,13 @@
   const CT = (g.CT = g.CT || {});
 
   // The whole point of the module: exactly these tags survive, nothing else.
-  const ALLOWED = { BR: [], STRONG: [], EM: [], A: ['href', 'target', 'rel'] };
+  const ALLOWED = { BR: [], STRONG: [], EM: [], A: ['href', 'target', 'rel'], UL: [], OL: [], LI: [] };
   const RENAME = { B: 'STRONG', I: 'EM' };
   // Dropped whole, text and all — their content is markup, not prose.
   const DROP = { SCRIPT: 1, STYLE: 1, IFRAME: 1, OBJECT: 1, EMBED: 1, TEMPLATE: 1 };
   // Unwrapping these loses a line boundary the reader can see, so leave a <br>
   // behind; trailing ones are trimmed at the end anyway.
-  const BLOCK = { P: 1, DIV: 1, LI: 1, TR: 1 };
+  const BLOCK = { P: 1, DIV: 1, TR: 1 };
 
   function doc(html) {
     return new DOMParser().parseFromString(String(html == null ? '' : html), 'text/html');
@@ -71,9 +71,54 @@
     });
   }
 
+  function isList(el) {
+    return !!el && (el.tagName === 'UL' || el.tagName === 'OL');
+  }
+
+  // The whitelist says which tags may appear; this says how they must fit
+  // together. Input arrives from a clipboard and from CMS pages, so a list
+  // nested in an item, a list holding loose text, or an item with no list at
+  // all are all shapes that actually turn up.
+  function normaliseLists(root) {
+    let nested = root.querySelector('li ul, li ol');
+    while (nested) {
+      const item = nested.closest('li');
+      const outer = item.parentNode;
+      const after = item.nextSibling;
+      while (nested.firstChild) {
+        const kid = nested.firstChild;
+        // Successive inserts before the same reference keep their order.
+        if (kid.tagName === 'LI') outer.insertBefore(kid, after);
+        else item.appendChild(kid);
+      }
+      nested.parentNode.removeChild(nested);
+      nested = root.querySelector('li ul, li ol');
+    }
+
+    Array.from(root.querySelectorAll('ul, ol')).forEach((list) => {
+      Array.from(list.childNodes).forEach((kid) => {
+        if (kid.nodeType === 1 && kid.tagName === 'LI') return;
+        list.parentNode.insertBefore(kid, list);
+      });
+    });
+
+    Array.from(root.querySelectorAll('li')).forEach((li) => {
+      if (!isList(li.parentNode)) unwrap(li, true);
+    });
+
+    Array.from(root.querySelectorAll('li')).forEach((li) => {
+      if (!li.textContent.trim()) li.parentNode.removeChild(li);
+    });
+
+    Array.from(root.querySelectorAll('ul, ol')).forEach((list) => {
+      if (!list.querySelector('li')) list.parentNode.removeChild(list);
+    });
+  }
+
   function sanitize(html) {
     const body = doc(html).body;
     walk(body);
+    normaliseLists(body);
     return body.innerHTML
       .replace(/^(?:\s*<br>)+/, '')
       .replace(/(?:<br>\s*)+$/, '')

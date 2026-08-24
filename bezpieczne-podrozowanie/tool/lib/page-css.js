@@ -237,6 +237,28 @@
   font: 400 1rem/1.5rem var(--ct-ff);
 }
 
+.info-card__text ul,
+.info-card__text ol,
+.fact-list__desc ul,
+.fact-list__desc ol,
+.official-source__text ul,
+.official-source__text ol {
+  margin: var(--ct-space-xs) 0;
+  padding-left: var(--ct-space-md);
+}
+
+.info-card__text li,
+.fact-list__desc li,
+.official-source__text li {
+  margin: 0 0 0.25rem;
+}
+
+.info-card__text li:last-child,
+.fact-list__desc li:last-child,
+.official-source__text li:last-child {
+  margin-bottom: 0;
+}
+
 .fact-box {
   padding: var(--ct-space-md);
   background: var(--ct-c-white);

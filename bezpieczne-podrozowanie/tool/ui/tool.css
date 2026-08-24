@@ -154,6 +154,12 @@ label input[type="text"], label textarea {
 }
 .rich__input:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
 .rich__input a { color: var(--ui-accent); }
+/* The editor has to show list markers, or a bulleted list looks like plain
+   lines while typing and only appears on the generated page. */
+.rich__input ul, .rich__input ol { margin: .25rem 0; padding-left: 1.5rem; }
+.rich__input ul { list-style: disc; }
+.rich__input ol { list-style: decimal; }
+.rich__input li { margin: 0 0 .125rem; }
 
 fieldset { border: 1px solid var(--ui-border); border-radius: .375rem; margin: 0 0 1rem; padding: .75rem; }
 legend { font-weight: 600; padding: 0 .375rem; }

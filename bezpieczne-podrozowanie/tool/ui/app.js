@@ -362,6 +362,8 @@
 
     command('Pogrubienie', 'bold');
     command('Kursywa', 'italic');
+    command('Lista', 'insertUnorderedList');
+    command('Numeracja', 'insertOrderedList');
 
     const urlRow = document.createElement('div');
     urlRow.className = 'rich__url';
