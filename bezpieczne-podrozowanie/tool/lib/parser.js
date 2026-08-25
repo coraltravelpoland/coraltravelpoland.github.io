@@ -17,6 +17,19 @@
     return node ? CT.richText.sanitize(node.innerHTML) : '';
   }
 
+  // A card is not just its first paragraph. The CMS also parks sublists and
+  // bare links beside it — sometimes wearing the same __text class — and those
+  // carry the links the page depends on, so read the whole body minus the
+  // title rather than a single matched element.
+  function richOfCard(card) {
+    const body = card.querySelector('.card-body') || card;
+    const copy = body.cloneNode(true);
+    copy.querySelectorAll('.info-card__title, .overview-card__title, .d-none').forEach((el) => {
+      el.parentNode.removeChild(el);
+    });
+    return CT.richText.sanitize(copy.innerHTML);
+  }
+
   function relative(src, cdnBase) {
     if (!src) return '';
     const base = String(cdnBase).replace(/\/+$/, '') + '/';
@@ -140,7 +153,7 @@
         reqSection.querySelectorAll('.info-card, .overview-card.card')
       ).map((card) => ({
         title: textOf(card.querySelector('.info-card__title, .overview-card__title')),
-        text: richOf(card.querySelector('.info-card__text, .overview-card__text'))
+        text: richOfCard(card)
       }));
     } else {
       warnings.push('nie znaleziono sekcji wymagań wjazdowych');
