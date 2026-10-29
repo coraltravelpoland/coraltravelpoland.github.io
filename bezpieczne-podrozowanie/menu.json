@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "cdnBase": "https://b2ccdn.coraltravel.pl/content/landing-pages/Zasady_bezpiecznego_podrozowania/",
+  "arrowIcon": "icon_arrow.svg",
+  "nav": {
+    "title": "Inne kierunki",
+    "visibleCount": 5,
+    "expandLabel": "Zobacz wszystkie",
+    "collapseLabel": "Zwiń"
+  },
+  "destinations": [
+    {
+      "slug": "turcja",
+      "name": "Turcja",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-turcja/",
+      "published": true
+    },
+    {
+      "slug": "chorwacja",
+      "name": "Chorwacja",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-chorwacja/",
+      "published": true
+    },
+    {
+      "slug": "czarnogora",
+      "name": "Czarnogóra",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-czarnogora/",
+      "published": true
+    },
+    {
+      "slug": "cypr",
+      "name": "Cypr",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-cypr/",
+      "published": true
+    },
+    {
+      "slug": "tunezja",
+      "name": "Tunezja",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-tunezja/",
+      "published": true
+    },
+    {
+      "slug": "egipt",
+      "name": "Egipt",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-egipt/",
+      "published": true
+    },
+    {
+      "slug": "hiszpania",
+      "name": "Hiszpania",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-hiszpania/",
+      "published": true
+    },
+    {
+      "slug": "grecja",
+      "name": "Grecja",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-grecja/",
+      "published": true
+    },
+    {
+      "slug": "bulgaria",
+      "name": "Bułgaria",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-bulgaria/",
+      "published": true
+    },
+    {
+      "slug": "dominikana",
+      "name": "Dominikana",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-dominikana/",
+      "published": true
+    },
+    {
+      "slug": "indonezja",
+      "name": "Indonezja",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-indonezja/",
+      "published": true
+    },
+    {
+      "slug": "kuba",
+      "name": "Kuba",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-kuba/",
+      "published": true
+    },
+    {
+      "slug": "malediwy",
+      "name": "Malediwy",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-malediwy/",
+      "published": true
+    },
+    {
+      "slug": "mauritius",
+      "name": "Mauritius",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-mauritius/",
+      "published": true
+    },
+    {
+      "slug": "meksyk",
+      "name": "Meksyk",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-meksyk/",
+      "published": true
+    },
+    {
+      "slug": "seszele",
+      "name": "Seszele",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-seszele/",
+      "published": true
+    },
+    {
+      "slug": "sri-lanka",
+      "name": "Sri Lanka",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-sri-lanka/",
+      "published": true
+    },
+    {
+      "slug": "tajlandia",
+      "name": "Tajlandia",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-tajlandia/",
+      "published": true
+    },
+    {
+      "slug": "wietnam",
+      "name": "Wietnam",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-wietnam/",
+      "published": true
+    },
+    {
+      "slug": "zjednoczone-emiraty-arabskie",
+      "name": "Zjednoczone Emiraty Arabskie",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-zjednoczone-emiraty-arabskie/",
+      "published": true
+    },
+    {
+      "slug": "tanzania",
+      "name": "Tanzania - Zanzibar",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-tanzania/",
+      "published": true
+    }
+  ]
+}

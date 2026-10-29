@@ -1,6 +1,26 @@
 (function (g) {
   const CT = (g.CT = g.CT || {});
 
+  // The menu feed lives on GitHub Pages, not on b2ccdn. The CDN serves its files with
+  // max-age=31536000 and a cache that ignores the query string, so a replaced or
+  // deleted destinations.json kept being served for months. Pages caches for 10 minutes
+  // and keeps Access-Control-Allow-Origin on cached responses. publish.sh writes the
+  // file from feed().
+  const FEED_URL = 'https://coraltravelpoland.github.io/bezpieczne-podrozowanie/menu.json';
+
+  // Only what the pasted script reads. Destination content stays off the web.
+  function feed(db) {
+    return {
+      version: db.version || 1,
+      cdnBase: db.cdnBase,
+      arrowIcon: db.arrowIcon,
+      nav: db.nav,
+      destinations: (db.destinations || [])
+        .filter((d) => d.published !== false)
+        .map((d) => ({ slug: d.slug, name: d.name, url: d.url, published: true }))
+    };
+  }
+
   function menuFrom(data, current) {
     if (!data || !Array.isArray(data.destinations)) return null;
     return data.destinations.filter((d) => d.published !== false && d.slug !== current);
@@ -58,23 +78,13 @@
 
   function build(db, slug, opts) {
     if (!opts || !opts.includeSync) return '';
-    const url = CT.model.assetUrl(db.cdnBase, 'destinations.json');
     const version = db.version || 1;
-    // Imperva, the CDN in front of cdnBase, drops Access-Control-Allow-Origin from every
-    // response it serves out of its edge cache; only a cache miss carries the header through
-    // from the storage origin. destinations.json ships with max-age=31536000, so a shared URL
-    // is cached within seconds and every later reader gets a CORS failure. A per-request
-    // cache buster keeps the fetch missing the edge. Drop it once the CDN keeps the header
-    // on cached responses.
     const body = String.raw`window.addEventListener('load', function () {
   var root = document.querySelector('.destinations-nav');
   if (!root) return;
   var current = root.getAttribute('data-current');
 
-  var src = '${url}';
-  src += (src.indexOf('?') === -1 ? '?' : '&') + 'cb=' + Date.now() + '.' + Math.random().toString(36).slice(2);
-
-  fetch(src, { credentials: 'omit' })
+  fetch('${FEED_URL}', { credentials: 'omit' })
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
       if (!root.isConnected) return;
@@ -133,5 +143,5 @@
     return '<script>\n' + body + '\n</' + 'script>\n';
   }
 
-  CT.pageJs = { build, applyRefresh };
+  CT.pageJs = { FEED_URL, build, applyRefresh, feed };
 })(globalThis);
