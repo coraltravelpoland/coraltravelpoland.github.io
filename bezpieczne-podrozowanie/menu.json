@@ -16,12 +16,6 @@
       "published": true
     },
     {
-      "slug": "chorwacja",
-      "name": "Chorwacja",
-      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-chorwacja/",
-      "published": true
-    },
-    {
       "slug": "czarnogora",
       "name": "Czarnogóra",
       "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-czarnogora/",
@@ -61,6 +55,18 @@
       "slug": "bulgaria",
       "name": "Bułgaria",
       "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-bulgaria/",
+      "published": true
+    },
+    {
+      "slug": "chorwacja",
+      "name": "Chorwacja",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-chorwacja/",
+      "published": true
+    },
+    {
+      "slug": "bezpieczne-podrozowanie-curacao",
+      "name": "Curaçao",
+      "url": "https://www.coraltravel.pl/bezpieczne-podrozowanie-curacao/",
       "published": true
     },
     {
