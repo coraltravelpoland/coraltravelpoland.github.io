@@ -50,6 +50,7 @@
                 <button class="btn btn-info mb-2" onclick="downloadJSON()">⬇️ Pobierz JSON</button>
                 <input type="file" id="jsonFile" accept=".json" style="display:none;" onchange="loadJSON(event)">
                 <button class="btn btn-secondary mb-2" onclick="document.getElementById('jsonFile').click()">📂 Wczytaj JSON</button>
+                <button class="btn btn-outline-primary mb-2" onclick="openImportHTML()">📥 Import HTML z CMS-a</button>
             </div>
         </div>
         
@@ -224,6 +225,28 @@
                     <button type="button" class="btn btn-danger" onclick="deleteBox()">🗑️ Usuń</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
                     <button type="button" class="btn btn-primary" onclick="saveEdit()">💾 Zapisz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL IMPORTU HTML Z CMS -->
+    <div class="modal fade" id="importHTMLModal" tabindex="-1" aria-labelledby="importHTMLTitle">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importHTMLTitle">Import HTML z CMS-a</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label" for="importHTMLInput">Wklej kod boksów skopiowany z CMS-a (ten sam format, który generuje „Generuj HTML”)</label>
+                    <textarea class="form-control font-monospace" id="importHTMLInput" rows="14" spellcheck="false"></textarea>
+                    <div class="form-text">Obecne boksy w edytorze zostaną zastąpione zaimportowanymi.</div>
+                    <div class="alert alert-danger mt-2 mb-0" id="importHTMLError" style="display:none;" role="alert"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="button" class="btn btn-primary" onclick="importHTML()">📥 Importuj</button>
                 </div>
             </div>
         </div>
@@ -1226,6 +1249,132 @@ ${mobileHTML}
             event.target.value = '';
         }
         
+        // CZĘŚĆ 12b: IMPORT HTML Z CMS (odwrotność exportCode)
+
+        function openImportHTML() {
+            document.getElementById('importHTMLInput').value = '';
+            document.getElementById('importHTMLError').style.display = 'none';
+            const modalEl = document.getElementById('importHTMLModal');
+            modalEl.addEventListener('shown.bs.modal', () => document.getElementById('importHTMLInput').focus(), { once: true });
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
+
+        function importHTML() {
+            const errorEl = document.getElementById('importHTMLError');
+            errorEl.style.display = 'none';
+            const html = document.getElementById('importHTMLInput').value.trim();
+
+            let imported;
+            try {
+                imported = parseCmsHTML(html);
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            boxes = imported;
+            saveToLocalStorage();
+            renderBoxes();
+            bootstrap.Modal.getInstance(document.getElementById('importHTMLModal')).hide();
+            exportJSON();
+        }
+
+        // Zamienia HTML boksów (z CMS-a) na tablicę obiektów w formacie edytora
+        function parseCmsHTML(html) {
+            if (!html) throw new Error('Wklej kod HTML.');
+
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            // Siatka desktop ma szerokości i podwójną wysokość; slajdy mobile to fallback
+            let items = [...doc.querySelectorAll('.boxes-grid > [class*="box-col-"]')];
+            const fromGrid = items.length > 0;
+            if (!fromGrid) items = [...doc.querySelectorAll('.swiper-slide')];
+            if (items.length === 0) {
+                throw new Error('Nie znaleziono boksów. Kod musi zawierać elementy .boxes-grid > .box-col-N albo .swiper-slide.');
+            }
+
+            const result = items.map((item, index) => {
+                const card = item.querySelector('.box-card');
+                if (!card) throw new Error(`Boks ${index + 1}: brak elementu .box-card.`);
+
+                const titleEl = card.querySelector('.box-title');
+                const subtitleEl = card.querySelector('.box-subtitle');
+                const bg = parseBackground(card.getAttribute('style') || '');
+                const widthMatch = fromGrid ? item.className.match(/box-col-(\d+)/) : null;
+                const layout = /\bbox-layout-double\b/.test(card.className) ||
+                               (fromGrid && item.classList.contains('box-double-height'))
+                               ? 'double' : 'standard';
+
+                return {
+                    id: index + 1,
+                    title: titleEl ? titleEl.innerHTML.trim() : '',
+                    subtitle: subtitleEl ? subtitleEl.innerHTML.trim() : '',
+                    image: parseImage(card),
+                    bgType: bg.bgType,
+                    color: bg.color,
+                    gradientStart: bg.gradientStart,
+                    gradientEnd: bg.gradientEnd,
+                    gradientAngle: bg.gradientAngle,
+                    width: widthMatch ? widthMatch[1] : '4',
+                    layout: layout,
+                    titleSize: parseFontSize(titleEl, 28),
+                    subtitleSize: parseFontSize(subtitleEl, 18),
+                    link: card.tagName === 'A' ? (card.getAttribute('href') || '') : ''
+                };
+            });
+
+            return result;
+        }
+
+        // <picture> z .avif/.webp/.jpg -> bazowy URL bez rozszerzenia; zwykły <img> -> pełny URL
+        function parseImage(card) {
+            const img = card.querySelector('img');
+            if (!img) return '';
+            const src = img.getAttribute('src') || '';
+            if (img.closest('picture')) return src.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+            return src;
+        }
+
+        function parseFontSize(el, fallback) {
+            const match = el && (el.getAttribute('style') || '').match(/font-size\s*:\s*(\d+(?:\.\d+)?)px/i);
+            return match ? Math.round(parseFloat(match[1])) : fallback;
+        }
+
+        // Czyta styl tła z surowego atrybutu style (DOM zamieniłby hex na rgb)
+        function parseBackground(style) {
+            const gradient = style.match(/linear-gradient\(\s*(-?\d+(?:\.\d+)?)deg\s*,\s*([^,\s]+(?:\([^)]*\))?)[^,]*,\s*([^,\s]+(?:\([^)]*\))?)/i);
+            if (gradient) {
+                return {
+                    bgType: 'gradient',
+                    color: toHex(gradient[2]),
+                    gradientStart: toHex(gradient[2]),
+                    gradientEnd: toHex(gradient[3]),
+                    gradientAngle: Math.round(parseFloat(gradient[1]))
+                };
+            }
+            const solid = style.match(/background(?:-color)?\s*:\s*([^;]+)/i);
+            return {
+                bgType: 'solid',
+                color: solid ? toHex(solid[1].trim()) : '#007BFF',
+                gradientStart: '',
+                gradientEnd: '',
+                gradientAngle: 135
+            };
+        }
+
+        // Normalizuje kolor do #rrggbb (wymóg <input type="color">)
+        function toHex(color) {
+            const value = color.trim();
+            let m = value.match(/^#([0-9a-f]{6})$/i);
+            if (m) return '#' + m[1].toLowerCase();
+            m = value.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i);
+            if (m) return ('#' + m[1] + m[1] + m[2] + m[2] + m[3] + m[3]).toLowerCase();
+            m = value.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+            if (m) return '#' + [m[1], m[2], m[3]].map(n => Number(n).toString(16).padStart(2, '0')).join('');
+            return '#007bff';
+        }
+
         // CZĘŚĆ 13: INICJALIZACJA
         
         // Wczytaj dane lub użyj domyślnych
