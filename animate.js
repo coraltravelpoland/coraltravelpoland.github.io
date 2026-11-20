@@ -1,4 +1,5 @@
   const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
+  let elements = [];
   const windowTop = offset * window.innerHeight / 100;
   const windowBottom = window.innerHeight - windowTop;
   const windowLeft = 0;
@@ -47,7 +48,11 @@
     elements && this.verifyElementsInViewport(elements);
   };
 
-  window.addEventListener("load", this.update, false);
+  if (document.readyState === "complete") {
+    this.update();
+  } else {
+    window.addEventListener("load", this.update, false);
+  }
   window.addEventListener(
   "scroll",
   () => this.verifyElementsInViewport(elements),
