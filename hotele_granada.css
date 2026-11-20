@@ -2,8 +2,10 @@
   padding-left: 0;
 }
 
-.layout-container-limit.center {
-  padding-left: 80px;
+@media screen and (min-width: 768px) {
+  .layout-container-limit.center {
+    padding-left: 80px;
+  }
 }
 .main-content-wrapper {
   max-width: 1370px;
